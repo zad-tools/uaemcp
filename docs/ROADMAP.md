@@ -56,6 +56,13 @@
 - Polygon search exposed through REST and MCP
 - Lineage on spatial, aggregate and intelligence-derived results
 
+## v1.36 — Spatial intelligence — complete
+
+- Nearest-feature ranking with calculated distances
+- Bounded point-to-point spatial joins across two sources
+- Parallel source retrieval, dual citations and transformation lineage
+- REST and MCP access with strict sample, radius and match limits
+
 ## v1.40 — Deeper intelligence
 
 - Cross-source entity resolution

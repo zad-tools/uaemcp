@@ -63,6 +63,16 @@ describe("geo", () => {
     expect(geo.parsePolygon('[[55,25],[56,25],[56,26],[55,25]]')).toHaveLength(4);
     expect(() => geo.parsePolygon('[[55,25],[56,25]]')).toThrow();
   });
+  it("ranks nearest features and performs bounded spatial joins", () => {
+    const records = [
+      { Latitude: 25.2, Longitude: 55.27, name: "Dubai" },
+      { Latitude: 24.45, Longitude: 54.37, name: "Abu Dhabi" },
+    ];
+    expect(geo.nearestRecords(records, MOIAT, [55.3, 25.2], 1)[0]).toMatchObject({ name: "Dubai", _distance_km: expect.any(Number) });
+    const joined = geo.spatialJoin(records, MOIAT, [{ Latitude: 25.21, Longitude: 55.28, id: "near" }], MOIAT, 5, 10);
+    expect(joined).toHaveLength(1);
+    expect(joined[0]).toMatchObject({ left: { name: "Dubai" }, right: { id: "near" }, distance_km: expect.any(Number) });
+  });
 });
 
 const ROWS = [

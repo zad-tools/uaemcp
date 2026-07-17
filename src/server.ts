@@ -41,6 +41,32 @@ export function buildServer(): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
 
   server.registerTool(
+    "uae_spatial_join",
+    {
+      description: "Join point records from two official sources when they fall within radius_km. Both samples and output are strictly bounded.",
+      inputSchema: {
+        left_source: z.string(), right_source: z.string(), left_dataset: z.string().optional(), right_dataset: z.string().optional(),
+        radius_km: z.number().positive().max(500).default(1), limit: z.number().int().min(1).max(200).default(100),
+        max_matches: z.number().int().min(1).max(2000).default(500),
+      },
+    },
+    async ({ left_source, right_source, left_dataset, right_dataset, radius_km, limit, max_matches }) => {
+      try {
+        const leftSource = REGISTRY.get(left_source); const rightSource = REGISTRY.get(right_source);
+        const [left, right] = await Promise.all([
+          fetchResult(leftSource, { dataset: left_dataset, limit }), fetchResult(rightSource, { dataset: right_dataset, limit }),
+        ]);
+        const matches = geo.spatialJoin(left.records, leftSource, right.records, rightSource, radius_km, max_matches);
+        return text(ok(matches, {
+          left_source, right_source, radius_km, left_scanned: left.records.length, right_scanned: right.records.length,
+          matches: matches.length, citations: [citation(leftSource), citation(rightSource)],
+          lineage: [{ operation: "fetch_pair", connectors: [leftSource.kind, rightSource.kind] }, { operation: "point_radius_spatial_join", radius_km }],
+        }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
     "uae_source_add",
     {
       description: "[WRITE — requires token] Register a custom source using a built-in or installed connector plugin.",
@@ -231,9 +257,9 @@ export function buildServer(): McpServer {
     "uae_source_geo",
     {
       description: "Spatially-filtered records as GeoJSON — powers map apps. bbox='min_lon,min_lat,max_lon,max_lat'; near='lat,lon,radius_km'.",
-      inputSchema: { source_id: z.string(), dataset: z.string().optional(), bbox: z.string().optional(), near: z.string().optional(), polygon: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
+      inputSchema: { source_id: z.string(), dataset: z.string().optional(), bbox: z.string().optional(), near: z.string().optional(), polygon: z.string().optional(), nearest: z.string().optional(), top: z.number().int().min(1).max(100).default(10), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
     },
-    async ({ source_id, dataset, bbox, near, polygon, query, limit }) => {
+    async ({ source_id, dataset, bbox, near, polygon, nearest, top, query, limit }) => {
       try {
         const s = REGISTRY.get(source_id);
         const bb = bbox ? geo.parseBbox(bbox) : undefined;
@@ -241,7 +267,8 @@ export function buildServer(): McpServer {
         const pg = polygon ? geo.parsePolygon(polygon) : undefined;
         const r = await fetchResult(s, { dataset, query, limit });
         const filtered = geo.filterRecords(r.records, s, { bbox: bb, near: nr, polygon: pg });
-        return text(ok(geo.toGeoJson(filtered, s, dataset ?? null), { source_id: s.id, citation: citation(s), scanned: r.records.length, matched: filtered.length, lineage: [{ operation: "fetch", connector: s.kind }, { operation: "spatial_filter", bbox: Boolean(bb), near: Boolean(nr), polygon: Boolean(pg) }, { operation: "geojson" }] }));
+        const ranked = nearest ? geo.nearestRecords(filtered, s, geo.parseLatLon(nearest), top) : filtered;
+        return text(ok(geo.toGeoJson(ranked, s, dataset ?? null), { source_id: s.id, citation: citation(s), scanned: r.records.length, matched: ranked.length, lineage: [{ operation: "fetch", connector: s.kind }, { operation: "spatial_filter", bbox: Boolean(bb), near: Boolean(nr), polygon: Boolean(pg) }, ...(nearest ? [{ operation: "nearest_rank", point: nearest }] : []), { operation: "geojson" }] }));
       } catch (e) {
         return text(fail(e));
       }

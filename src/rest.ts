@@ -75,6 +75,24 @@ export async function handleRest(request: Request): Promise<Response | null> {
       const data = await buildSearch(q, { limit, deep });
       return json(envelope(data, data.counts as Json));
     }
+    if (request.method === "GET" && path === "/api/v1/spatial/join") {
+      const leftSource = REGISTRY.get(optional(url.searchParams, "left_source") ?? "");
+      const rightSource = REGISTRY.get(optional(url.searchParams, "right_source") ?? "");
+      const radiusKm = Number(url.searchParams.get("radius_km") ?? 1);
+      const sampleLimit = Math.max(1, integer(url.searchParams, "limit", 100, 200));
+      const maxMatches = Math.max(1, integer(url.searchParams, "max_matches", 500, 2000));
+      const [left, right] = await Promise.all([
+        fetchResult(leftSource, { dataset: optional(url.searchParams, "left_dataset"), limit: sampleLimit }),
+        fetchResult(rightSource, { dataset: optional(url.searchParams, "right_dataset"), limit: sampleLimit }),
+      ]);
+      const matches = geo.spatialJoin(left.records, leftSource, right.records, rightSource, radiusKm, maxMatches);
+      return json(envelope(matches, {
+        left_source: leftSource.id, right_source: rightSource.id, radius_km: radiusKm,
+        left_scanned: left.records.length, right_scanned: right.records.length, matches: matches.length,
+        citations: [citation(leftSource), citation(rightSource)],
+        lineage: [{ operation: "fetch_pair", connectors: [leftSource.kind, rightSource.kind] }, { operation: "point_radius_spatial_join", radius_km: radiusKm }],
+      }));
+    }
     if (request.method === "GET" && path === "/api/v1/intelligence/dashboard-summary") return json(envelope(await buildDashboardSummary({ recordHistory: true })));
     if (request.method === "GET" && path === "/api/v1/intelligence/recipes") return json(envelope(listRecipes()));
     const recipeMatch = path.match(/^\/api\/v1\/intelligence\/recipes\/([^/]+)$/);
@@ -162,8 +180,10 @@ export async function handleRest(request: Request): Promise<Response | null> {
       const bbox = optional(url.searchParams, "bbox");
       const near = optional(url.searchParams, "near");
       const polygon = optional(url.searchParams, "polygon");
+      const nearest = optional(url.searchParams, "nearest");
       const filtered = geo.filterRecords(result.records, source, { bbox: bbox ? geo.parseBbox(bbox) : undefined, near: near ? geo.parseNear(near) : undefined, polygon: polygon ? geo.parsePolygon(polygon) : undefined });
-      return json(envelope(geo.toGeoJson(filtered, source, dataset ?? null), { source_id: source.id, citation: citation(source), scanned: result.records.length, matched: filtered.length, lineage: [{ operation: "fetch", connector: source.kind }, { operation: "spatial_filter", bbox: Boolean(bbox), near: Boolean(near), polygon: Boolean(polygon) }, { operation: "geojson" }] }));
+      const ranked = nearest ? geo.nearestRecords(filtered, source, geo.parseLatLon(nearest), Math.max(1, integer(url.searchParams, "top", 10, 100))) : filtered;
+      return json(envelope(geo.toGeoJson(ranked, source, dataset ?? null), { source_id: source.id, citation: citation(source), scanned: result.records.length, matched: ranked.length, lineage: [{ operation: "fetch", connector: source.kind }, { operation: "spatial_filter", bbox: Boolean(bbox), near: Boolean(near), polygon: Boolean(polygon) }, ...(nearest ? [{ operation: "nearest_rank", point: nearest }] : []), { operation: "geojson" }] }));
     }
     if (action === "aggregate") {
       const fields = (url.searchParams.get("group_by") || "").split(",").map((field) => field.trim()).filter(Boolean);
@@ -181,7 +201,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
     }
     return null;
   } catch (error) {
-    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near|polygon/.test(error.message)) return failure(new ValidationError(error.message));
+    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near|polygon|point|join radius/.test(error.message)) return failure(new ValidationError(error.message));
     return failure(error);
   }
 }

@@ -133,3 +133,37 @@ export function filterRecords(records: Rec[], source: Source, opts: { bbox?: Bbo
   }
   return out;
 }
+
+export function parseLatLon(raw: string): Point {
+  const parts = raw.split(",").map((part) => Number(part.trim()));
+  if (parts.length !== 2 || parts.some((part) => !Number.isFinite(part))) throw new Error("point must be 'lat,lon'");
+  const [lat, lon] = parts;
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) throw new Error("point contains an invalid coordinate");
+  return [lon, lat];
+}
+
+export function nearestRecords(records: Rec[], source: Source, point: Point, limit = 10): Rec[] {
+  return records.flatMap((record) => {
+    const candidate = extractPoint(record, source);
+    return candidate ? [{ ...record, _distance_km: Number(haversineKm(point, candidate).toFixed(3)) }] : [];
+  }).sort((left, right) => Number(left._distance_km) - Number(right._distance_km)).slice(0, Math.max(0, limit));
+}
+
+export function spatialJoin(leftRecords: Rec[], leftSource: Source, rightRecords: Rec[], rightSource: Source, radiusKm: number, maxMatches = 1000): Rec[] {
+  if (!Number.isFinite(radiusKm) || radiusKm <= 0 || radiusKm > 500) throw new Error("join radius_km must be between 0 and 500");
+  const right = rightRecords.flatMap((record) => {
+    const point = extractPoint(record, rightSource);
+    return point ? [{ record, point }] : [];
+  });
+  const matches: Rec[] = [];
+  for (const leftRecord of leftRecords) {
+    const leftPoint = extractPoint(leftRecord, leftSource);
+    if (!leftPoint) continue;
+    for (const candidate of right) {
+      const distance = haversineKm(leftPoint, candidate.point);
+      if (distance <= radiusKm) matches.push({ left: leftRecord, right: candidate.record, distance_km: Number(distance.toFixed(3)) });
+      if (matches.length >= maxMatches) return matches;
+    }
+  }
+  return matches;
+}

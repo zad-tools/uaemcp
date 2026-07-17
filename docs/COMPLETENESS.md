@@ -40,6 +40,7 @@ it does not mean every UAE portal has a public machine-readable API.
 - Durable health history, scheduled snapshots, retention and record/schema diff
 - Evidence-backed coverage, freshness and historical-comparison recipes
 - Bounding box, radius and polygon filtering with GeoJSON output
+- Nearest-feature ranking and bounded cross-source point-radius spatial joins
 - Canonical bilingual normalization for all seven emirates and stable entity keys
 - Evidence-backed emirate comparison and snapshot trend analysis
 - Bilingual dashboard, source browser, API playground and typed TypeScript client
@@ -49,8 +50,8 @@ it does not mean every UAE portal has a public machine-readable API.
 
 - Intelligence: five recipes exist; cross-source joins and broader domain
   indicators remain.
-- GIS: point extraction and spatial filters exist; vector tiles, nearest-feature
-  ranking, administrative-boundary joins and general spatial joins remain.
+- GIS: point extraction, spatial filters, nearest ranking and point-radius joins
+  exist; vector tiles and administrative-boundary joins remain.
 - Observability: request metrics and persisted source health exist; per-dataset
   freshness SLOs and connector-level traces remain.
 - Website: landing page, catalog and playground exist; benchmark and sponsor
