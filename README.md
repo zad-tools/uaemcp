@@ -41,7 +41,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 27 source-cited
+The server keeps the public `uaemcp` contract and extends it to 28 source-cited
 MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -53,6 +53,15 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/business-setup"><img src="docs/assets/business-routing.svg" alt="Animated UAE Business Setup Navigator routing across seven emirates" width="100%"></a>
+</p>
+
+The **UAE Business Setup Navigator** routes founders to the competent official
+mainland authority or federal free-zone directory across all seven emirates. It
+does not collect names, phone numbers, emails or passport data, and never
+pretends to choose a licence, calculate final fees or guarantee approval.
 
 ## Hosted endpoint
 

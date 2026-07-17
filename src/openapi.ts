@@ -1,5 +1,6 @@
 import { VERSION } from "./version.js";
 import { GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
+import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES } from "./business-setup.js";
 
 const envelope = (schema: Record<string, unknown>): Record<string, unknown> => ({
   type: "object", required: ["ok", "data", "error", "meta"],
@@ -21,6 +22,7 @@ const goldenAssessmentSchema = {
     humanitarianYears: nonNegative, volunteerHours: nonNegative, humanitarianSupportAed: nonNegative,
   },
 };
+const businessSetupRouteSchema = { type: "object", required: ["emirate", "setupType"], additionalProperties: false, properties: { emirate: { type: "string", enum: [...BUSINESS_EMIRATES] }, setupType: { type: "string", enum: [...BUSINESS_SETUP_TYPES] }, activitySector: { type: "string", enum: [...BUSINESS_ACTIVITY_SECTORS] } } };
 
 export function openApiDocument(origin = "http://localhost:8080"): Record<string, unknown> {
   const sourceId = { name: "sourceId", in: "path", required: true, schema: { type: "string" } };
@@ -33,6 +35,8 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
       "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
       "/api/v1/golden-residency": { get: { operationId: "getGoldenResidencyPathways", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/golden-residency/assess": { post: { operationId: "assessGoldenResidencyReadiness", tags: ["Intelligence"], requestBody: { required: true, content: { "application/json": { schema: goldenAssessmentSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/business-setup": { get: { operationId: "getBusinessSetupCatalogue", tags: ["Products"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/business-setup/route": { post: { operationId: "routeBusinessSetup", tags: ["Products"], requestBody: { required: true, content: { "application/json": { schema: businessSetupRouteSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/education": { get: { operationId: "getEducationLedger", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/health-indicators": { get: { operationId: "getHealthIndicators", tags: ["Intelligence"], parameters: [parameter("q"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 200 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/coverage": { get: { operationId: "getCoverage", tags: ["Catalog"], responses: { "200": response(envelope({ $ref: "#/components/schemas/Coverage" })) } } },

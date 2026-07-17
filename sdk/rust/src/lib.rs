@@ -7,6 +7,8 @@ impl UaemcpClient {
  pub async fn list_products(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/products"), params).await }
  pub async fn get_golden_residency_pathways(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/golden-residency"), params).await }
  pub async fn assess_golden_residency_readiness(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/golden-residency/assess"), params).await }
+ pub async fn get_business_setup_catalogue(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/business-setup"), params).await }
+ pub async fn route_business_setup(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/business-setup/route"), params).await }
  pub async fn get_education_ledger(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/education"), params).await }
  pub async fn get_health_indicators(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/health-indicators"), params).await }
  pub async fn get_coverage(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/coverage"), params).await }

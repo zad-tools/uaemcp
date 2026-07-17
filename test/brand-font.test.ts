@@ -10,8 +10,10 @@ import { landingPage } from "../src/web.js";
 import { educationLedgerPage } from "../src/education-ledger-web.js";
 import { handleRest } from "../src/rest.js";
 import { goldenResidencyPage } from "../src/golden-residency-web.js";
+import { businessSetupPage } from "../src/business-setup-web.js";
 
 const pages = [
+  ["/business-setup", businessSetupPage],
   ["/golden-residency", goldenResidencyPage],
   ["/", landingPage],
   ["/observatory", observatoryPage],
@@ -54,7 +56,7 @@ describe("Dubai Font public brand contract", () => {
       const response = await handleRest(new Request(`http://localhost${path}`));
       expect(response?.status).toBe(200);
       expect(response?.headers.get("content-security-policy")).toContain("font-src");
-      if (path !== "/tax-services") expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
+      if (!["/tax-services", "/business-setup"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
     }
   });
 });

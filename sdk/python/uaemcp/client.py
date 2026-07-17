@@ -12,7 +12,7 @@ class UaemcpClient:
 
     def _get(self, path, params=None):
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None}).replace("%2C", ",")
-        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.56.1"})
+        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.57.0"})
         with urlopen(request, timeout=self.timeout) as response:
             payload = loads(response.read())
         if isinstance(payload, dict) and payload.get("ok") is False:
@@ -27,6 +27,12 @@ class UaemcpClient:
 
     def assess_golden_residency_readiness(self, **params):
         return self._get(f"/api/v1/golden-residency/assess", params)
+
+    def get_business_setup_catalogue(self, **params):
+        return self._get(f"/api/v1/business-setup", params)
+
+    def route_business_setup(self, **params):
+        return self._get(f"/api/v1/business-setup/route", params)
 
     def get_education_ledger(self, **params):
         return self._get(f"/api/v1/education", params)

@@ -33,6 +33,7 @@ import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
+import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup } from "./business-setup.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -51,6 +52,21 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_business_setup",
+    {
+      description: "Route a founder to the competent official UAE business-setup authority by emirate and mainland/free-zone path. Read-only, informational, no intermediaries and no personal data stored.",
+      inputSchema: { action: z.enum(["list", "route"]).default("list"), emirate: z.enum(BUSINESS_EMIRATES).optional(), setup_type: z.enum(BUSINESS_SETUP_TYPES).optional(), activity_sector: z.enum(BUSINESS_ACTIVITY_SECTORS).optional() },
+    },
+    async ({ action, emirate, setup_type, activity_sector }) => {
+      try {
+        if (action === "list") return text(ok(businessSetupCatalogue(), { decision: "routing_only", stored: false }));
+        if (!emirate || !setup_type) throw new ValidationError("emirate and setup_type are required for route");
+        return text(ok(routeBusinessSetup({ emirate, setupType: setup_type, activitySector: activity_sector }), { decision: "routing_only", stored: false }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_golden_residency",

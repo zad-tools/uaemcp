@@ -19,6 +19,13 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "business_setup_navigator", status: "published", access: "public", category: "BUSINESS / SETUP", categoryAr: "الأعمال / التأسيس",
+    title: { en: "UAE Business Setup Navigator", ar: "دليل تأسيس الأعمال في الإمارات" },
+    description: { en: "Route founders to the competent official mainland or free-zone starting point across all seven emirates without intermediaries or personal-data collection.", ar: "وجّه المؤسسين إلى نقطة البداية الرسمية المختصة في البر الرئيسي أو المناطق الحرة عبر الإمارات السبع دون وسطاء أو جمع بيانات شخصية." },
+    webPath: "/business-setup", apiPath: "/api/v1/business-setup", sourceIds: [],
+    evidence: { scope: { en: "Official federal setup guidance and the competent mainland authority for every emirate, verified 17 July 2026.", ar: "إرشادات التأسيس الاتحادية الرسمية وجهة البر الرئيسي المختصة لكل إمارة، متحقق منها في 17 يوليو 2026." }, limitations: [{ en: "Routing only; it does not choose a legal form, calculate fees, recommend a package or guarantee approval.", ar: "توجيه فقط؛ لا يختار شكلًا قانونيًا ولا يحسب الرسوم ولا يوصي بباقة ولا يضمن الموافقة." }] },
+  },
+  {
     id: "golden_residency_navigator", status: "published", access: "public", category: "RESIDENCY / READINESS", categoryAr: "الإقامة / الجاهزية",
     title: { en: "UAE Golden Residency Navigator", ar: "دليل الإقامة الذهبية في الإمارات" },
     description: { en: "Map non-identifying evidence to current official pathway requirements without promises, intermediaries or stored personal data.", ar: "اربط أدلتك غير التعريفية بمتطلبات المسارات الرسمية الحالية دون وعود أو وسطاء أو تخزين بيانات شخصية." },

@@ -39,6 +39,8 @@ import { buildEducationLedger } from "./education-ledger.js";
 import { educationLedgerPage } from "./education-ledger-web.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS, type GoldenReadinessInput } from "./golden-residency.js";
 import { goldenResidencyPage } from "./golden-residency-web.js";
+import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup, type BusinessSetupInput } from "./business-setup.js";
+import { businessSetupPage } from "./business-setup-web.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -102,6 +104,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/business-setup") return new Response(businessSetupPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
@@ -112,6 +115,17 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/api/v1/golden-residency") {
       const catalogue = goldenResidencyCatalogue();
       return json(envelope(catalogue, { decision: "informational_only", verified_at: catalogue.verifiedAt, source_ids: ["icp_golden_residency"] }));
+    }
+    if (request.method === "GET" && path === "/api/v1/business-setup") return json(envelope(businessSetupCatalogue(), { decision: "routing_only", stored: false, verified_at: "2026-07-17" }));
+    if (request.method === "POST" && path === "/api/v1/business-setup/route") {
+      const length = Number(request.headers.get("content-length") ?? 0);
+      if (length > 2_048) throw new ValidationError("request body is too large");
+      const body = await request.json().catch(() => { throw new ValidationError("body must be valid JSON"); }) as BusinessSetupInput;
+      if (!body || typeof body !== "object" || Object.keys(body).some((key) => !["emirate", "setupType", "activitySector"].includes(key))) throw new ValidationError("only non-identifying routing fields are accepted");
+      if (!BUSINESS_EMIRATES.includes(body.emirate)) throw new ValidationError("emirate is invalid");
+      if (!BUSINESS_SETUP_TYPES.includes(body.setupType)) throw new ValidationError("setupType is invalid");
+      if (body.activitySector !== undefined && !BUSINESS_ACTIVITY_SECTORS.includes(body.activitySector)) throw new ValidationError("activitySector is invalid");
+      return json(envelope(routeBusinessSetup(body), { decision: "routing_only", stored: false, verified_at: "2026-07-17" }));
     }
     if (request.method === "POST" && path === "/api/v1/golden-residency/assess") {
       const length = Number(request.headers.get("content-length") ?? 0);

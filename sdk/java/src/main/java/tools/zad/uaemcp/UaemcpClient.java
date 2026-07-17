@@ -8,6 +8,8 @@ public final class UaemcpClient {
  public String listProducts(Map<String,String> params) throws Exception {return get("/api/v1/products",params);}
  public String getGoldenResidencyPathways(Map<String,String> params) throws Exception {return get("/api/v1/golden-residency",params);}
  public String assessGoldenResidencyReadiness(Map<String,String> params) throws Exception {return get("/api/v1/golden-residency/assess",params);}
+ public String getBusinessSetupCatalogue(Map<String,String> params) throws Exception {return get("/api/v1/business-setup",params);}
+ public String routeBusinessSetup(Map<String,String> params) throws Exception {return get("/api/v1/business-setup/route",params);}
  public String getEducationLedger(Map<String,String> params) throws Exception {return get("/api/v1/education",params);}
  public String getHealthIndicators(Map<String,String> params) throws Exception {return get("/api/v1/health-indicators",params);}
  public String getCoverage(Map<String,String> params) throws Exception {return get("/api/v1/coverage",params);}
