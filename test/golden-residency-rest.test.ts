@@ -30,4 +30,15 @@ describe("Golden Residency REST contract", () => {
     expect(response?.status).toBe(422);
     expect((await response!.json() as any).error.code).toBe("VALIDATION_ERROR");
   });
+
+  it("returns a printable executive evidence dossier without storing inputs", async () => {
+    const response = await handleRest(new Request("http://localhost/api/v1/golden-residency/assess", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pathway: "executive", attestedDegree: true, fiveYearsExperience: true, employmentContract: true, monthlySalaryAed: 50_000 }),
+    }));
+    const body = await response!.json() as any;
+    expect(body.data.dossier).toMatchObject({ completion: 1, evidenceCount: 4, officialReviewRequired: true, storesPersonalData: false });
+    expect(body.data.matchedEvidence).toHaveLength(4);
+    expect(body.meta.stored).toBe(false);
+  });
 });

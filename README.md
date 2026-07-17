@@ -106,7 +106,7 @@ Endpoints:
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
 - UAE Education Ledger: `GET /education` — FCSC-accredited 2023/2024 national totals, reconciliation checks and the separate seven-resource Ministry of Education catalogue
-- UAE Golden Residency Navigator: `GET /golden-residency` — official pathway requirements and a non-identifying readiness assessment that never claims eligibility or guarantees approval
+- UAE Golden Residency Navigator: `GET /golden-residency` — 14 official routes, authority-specific evidence and a printable non-identifying readiness dossier that never claims eligibility or guarantees approval
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
 
 <table>

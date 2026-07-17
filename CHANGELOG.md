@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.53.0
+
+- Expanded the Golden Residency Navigator from broad pathway families to 14 practical official routes, including doctors, scientists, inventors, creatives, executives, athletes and priority specialists.
+- Added authority-specific matched and missing evidence with a privacy-bounded dossier completion summary.
+- Added printable and JSON-downloadable Evidence Dossiers without collecting or retaining names, passport numbers or contact details.
+- Kept the complete bilingual result responsive after language switching and applied Dubai Font to the interface and print output.
+
 ## 1.52.0
 
 - Added the UAE Golden Residency Navigator using current ICP and u.ae pathway requirements verified on 17 July 2026.

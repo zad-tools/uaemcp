@@ -3,7 +3,8 @@ export const GOLDEN_RESIDENCY_UAE_URL = "https://u.ae/en/information-and-service
 export const GOLDEN_RESIDENCY_DUBAI_URL = "https://www.gdrfad.gov.ae/en/services/8ea80da4-f43e-11eb-0320-0050569629e8";
 
 type Localized = Readonly<{ en: string; ar: string }>;
-export type GoldenPathwayId = "public_investor" | "real_estate_investor" | "entrepreneur" | "exceptional_talent" | "high_school_student" | "university_student" | "humanitarian_frontline";
+export const GOLDEN_PATHWAY_IDS = ["public_investor", "real_estate_investor", "entrepreneur", "exceptional_talent", "doctor", "scientist", "inventor", "creative", "executive", "athlete", "priority_specialist", "high_school_student", "university_student", "humanitarian_frontline"] as const;
+export type GoldenPathwayId = typeof GOLDEN_PATHWAY_IDS[number];
 
 export type GoldenReadinessInput = Readonly<{
   pathway: GoldenPathwayId;
@@ -19,6 +20,11 @@ export type GoldenReadinessInput = Readonly<{
   ministryRecommendation?: boolean;
   universityRecommendation?: boolean;
   professionalRecommendation?: boolean;
+  attestedDegree?: boolean;
+  fiveYearsExperience?: boolean;
+  employmentContract?: boolean;
+  monthlySalaryAed?: number;
+  validPassportEvidence?: boolean;
   humanitarianYears?: number;
   volunteerHours?: number;
   humanitarianSupportAed?: number;
@@ -67,11 +73,22 @@ const pathways: readonly Pathway[] = Object.freeze([
   },
 ]);
 
+const talentVariants = Object.freeze([
+  { id: "doctor", title: { en: "Doctors", ar: "الأطباء" }, evidence: { en: "Approval letter from the health authority to practise the profession.", ar: "خطاب اعتماد من الجهة الصحية لمزاولة المهنة." } },
+  { id: "scientist", title: { en: "Scientists", ar: "العلماء" }, evidence: { en: "Recommendation from the Emirates Scientists Council or a scientific excellence award.", ar: "توصية من مجلس علماء الإمارات أو جائزة للتميز العلمي." } },
+  { id: "inventor", title: { en: "Inventors", ar: "المخترعون" }, evidence: { en: "Recommendation from the Ministry of Economy.", ar: "توصية من وزارة الاقتصاد." } },
+  { id: "creative", title: { en: "Culture & arts creatives", ar: "المبدعون في الثقافة والفنون" }, evidence: { en: "Approval from the Ministry of Culture or the competent culture and arts authority.", ar: "اعتماد من وزارة الثقافة أو الجهة المختصة بالثقافة والفنون." } },
+  { id: "executive", title: { en: "Executives", ar: "المديرون التنفيذيون" }, evidence: { en: "Attested degree, five years of experience, employment contract and salary certificate of at least AED 50,000.", ar: "شهادة جامعية مصدقة وخبرة خمس سنوات وعقد عمل وشهادة راتب لا تقل عن 50 ألف درهم." } },
+  { id: "athlete", title: { en: "Athletes", ar: "الرياضيون" }, evidence: { en: "Recommendation from the General Sports Authority or a sports council.", ar: "توصية من الهيئة العامة للرياضة أو أحد المجالس الرياضية." } },
+  { id: "priority_specialist", title: { en: "Priority scientific & engineering specialists", ar: "متخصصو المجالات العلمية والهندسية ذات الأولوية" }, evidence: { en: "Attested PhD or university degree, employment contract and passport evidence.", ar: "دكتوراه أو شهادة جامعية مصدقة وعقد عمل وإثبات جواز السفر." } },
+]);
+
 export function goldenResidencyCatalogue() {
   return {
     kind: "uae_golden_residency_navigator" as const,
     verifiedAt: "2026-07-17" as const,
     pathways: pathways.map((item) => ({ ...item, title: { ...item.title }, summary: { ...item.summary }, durationYears: [...item.durationYears], requirements: item.requirements.map((requirement) => ({ ...requirement, label: { ...requirement.label }, evidence: { ...requirement.evidence } })) })),
+    talentVariants: talentVariants.map((item) => ({ ...item, title: { ...item.title }, evidence: { ...item.evidence } })),
     authorities: [
       { jurisdiction: { en: "UAE except Dubai", ar: "جميع الإمارات باستثناء دبي" }, authority: { en: "ICP", ar: "الهيئة الاتحادية للهوية والجنسية" }, url: GOLDEN_RESIDENCY_ICP_URL },
       { jurisdiction: { en: "Dubai", ar: "دبي" }, authority: { en: "GDRFA Dubai", ar: "الإدارة العامة للهوية وشؤون الأجانب – دبي" }, url: "https://www.gdrfad.gov.ae/en/services" },
@@ -109,6 +126,22 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     case "real_estate_investor": threshold(input.propertyValueAed, 2_000_000, matched, missing, "property_value"); break;
     case "entrepreneur": threshold(input.projectValueAed, 500_000, matched, missing, "project_value"); flag(input.innovativeProjectEvidence, matched, missing, "innovation_evidence"); flag(input.incubatorRecommendation, matched, missing, "incubator_recommendation"); break;
     case "exceptional_talent": flag(input.professionalRecommendation, matched, missing, "professional_recommendation"); break;
+    case "doctor": flag(input.professionalRecommendation, matched, missing, "doctor_approval"); break;
+    case "scientist": flag(input.professionalRecommendation, matched, missing, "scientist_recommendation"); break;
+    case "inventor": flag(input.professionalRecommendation, matched, missing, "inventor_recommendation"); break;
+    case "creative": flag(input.professionalRecommendation, matched, missing, "creative_approval"); break;
+    case "athlete": flag(input.professionalRecommendation, matched, missing, "athlete_recommendation"); break;
+    case "executive":
+      flag(input.attestedDegree, matched, missing, "attested_degree");
+      flag(input.fiveYearsExperience, matched, missing, "executive_experience");
+      flag(input.employmentContract, matched, missing, "employment_contract");
+      threshold(input.monthlySalaryAed, 50_000, matched, missing, "executive_salary");
+      break;
+    case "priority_specialist":
+      flag(input.attestedDegree, matched, missing, "attested_degree");
+      flag(input.employmentContract, matched, missing, "employment_contract");
+      flag(input.validPassportEvidence, matched, missing, "passport_evidence");
+      break;
     case "high_school_student": threshold(input.gradePercent, 95, matched, missing, "school_grade"); flag(input.ministryRecommendation, matched, missing, "ministry_recommendation"); break;
     case "university_student": threshold(input.universityGpa, 3.8, matched, missing, "university_gpa"); flag(input.graduatedWithinTwoYears, matched, missing, "graduation_recency"); flag(input.universityRecommendation, matched, missing, "university_recommendation"); break;
     case "humanitarian_frontline": {
@@ -124,6 +157,16 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     innovation_evidence: { en: "Innovation or future-project evidence", ar: "إثبات مشروع ابتكاري أو مستقبلي" },
     incubator_recommendation: { en: "Accredited incubator or authority recommendation", ar: "توصية حاضنة معتمدة أو جهة مختصة" },
     professional_recommendation: { en: "Competent-body approval or recommendation", ar: "اعتماد أو توصية الجهة المختصة" },
+    doctor_approval: { en: "Health-authority approval to practise medicine", ar: "اعتماد الجهة الصحية لمزاولة مهنة الطب" },
+    scientist_recommendation: { en: "Emirates Scientists Council recommendation or scientific excellence award", ar: "توصية مجلس علماء الإمارات أو جائزة التميز العلمي" },
+    inventor_recommendation: { en: "Ministry of Economy recommendation", ar: "توصية وزارة الاقتصاد" },
+    creative_approval: { en: "Culture authority approval", ar: "اعتماد الجهة المختصة بالثقافة والفنون" },
+    athlete_recommendation: { en: "General Sports Authority or sports-council recommendation", ar: "توصية الهيئة العامة للرياضة أو مجلس رياضي" },
+    attested_degree: { en: "Attested university degree", ar: "شهادة جامعية مصدقة" },
+    executive_experience: { en: "At least five years of executive experience", ar: "خبرة تنفيذية لا تقل عن خمس سنوات" },
+    employment_contract: { en: "Current employment contract", ar: "عقد عمل حالي" },
+    executive_salary: { en: "Monthly salary certificate of at least AED 50,000", ar: "شهادة راتب شهري لا يقل عن 50 ألف درهم" },
+    passport_evidence: { en: "Valid passport copy available for official submission", ar: "نسخة جواز سفر ساري متاحة للتقديم الرسمي" },
     school_grade: { en: "High-school grade of at least 95%", ar: "نتيجة ثانوية لا تقل عن 95%" },
     ministry_recommendation: { en: "Ministry of Education recommendation", ar: "توصية وزارة التربية والتعليم" },
     university_gpa: { en: "University GPA of at least 3.8", ar: "معدل جامعي لا يقل عن 3.8" },
@@ -131,6 +174,7 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     university_recommendation: { en: "University recommendation or graduation certificate", ar: "توصية الجامعة أو شهادة التخرج" },
     humanitarian_evidence: { en: "Qualifying humanitarian service, hours or financial support", ar: "خدمة أو ساعات تطوع أو دعم مالي إنساني مؤهل" },
   };
+  const evidenceCount = matched.length + missing.length;
   return {
     kind: "uae_golden_residency_readiness" as const,
     pathway: input.pathway,
@@ -138,6 +182,14 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     matched, missing,
     matchedEvidence: matched.map((id) => ({ id, label: evidenceLabels[id] })),
     missingEvidence: missing.map((id) => ({ id, label: evidenceLabels[id] })),
+    dossier: {
+      completion: evidenceCount === 0 ? null : Math.round((matched.length / evidenceCount) * 100) / 100,
+      evidenceCount,
+      matchedCount: matched.length,
+      missingCount: missing.length,
+      officialReviewRequired: true as const,
+      storesPersonalData: false as const,
+    },
     decision: "informational_only" as const,
     nextStep: { label: { en: "Verify with ICP", ar: "تحقق عبر الهيئة" }, url: GOLDEN_RESIDENCY_ICP_URL },
     disclaimer: goldenResidencyCatalogue().disclaimer,

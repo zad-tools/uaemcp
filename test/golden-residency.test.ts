@@ -29,4 +29,26 @@ describe("Golden Residency readiness navigator", () => {
     expect(result.status).toBe("not_enough_information");
     expect(result.nextStep.url).toContain("icp.gov.ae");
   });
+
+  it("builds an executive evidence dossier from every published requirement", () => {
+    const result = assessGoldenResidencyReadiness({
+      pathway: "executive",
+      attestedDegree: true,
+      fiveYearsExperience: true,
+      employmentContract: true,
+      monthlySalaryAed: 52_000,
+    });
+    expect(result.status).toBe("potential_match");
+    expect(result.matched).toEqual(["attested_degree", "executive_experience", "employment_contract", "executive_salary"]);
+    expect(result.missing).toEqual([]);
+    expect(result.dossier.completion).toBe(1);
+    expect(result.dossier.officialReviewRequired).toBe(true);
+  });
+
+  it("keeps talent approvals specific to the competent authority", () => {
+    const scientist = assessGoldenResidencyReadiness({ pathway: "scientist", professionalRecommendation: false });
+    expect(scientist.missingEvidence[0].label.en).toContain("Emirates Scientists Council");
+    const inventor = assessGoldenResidencyReadiness({ pathway: "inventor", professionalRecommendation: true });
+    expect(inventor.matchedEvidence[0].label.en).toContain("Ministry of Economy");
+  });
 });
