@@ -117,7 +117,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.69.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.70.0" } });
     expect(document.paths).toHaveProperty("/api/v1/policy-watch");
     expect(document.paths).toHaveProperty("/api/v1/policy-watch/check");
     expect(document.paths["/api/v1/founder-pathway"].post.operationId).toBe("buildFounderPathway");
@@ -175,7 +175,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.69.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.70.0" });
     expect(manifest.endpoints).toMatchObject({ policyWatch: "/policy-watch", policyWatchApi: "/api/v1/policy-watch" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");

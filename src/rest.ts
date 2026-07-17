@@ -64,6 +64,8 @@ import { policyWatchPage } from "./policy-watch-web.js";
 import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import { policyWatchScheduler } from "./policy-watch-scheduler.js";
 import type { RuntimeDependencies } from "./dependencies.js";
+import { runtimeToolCatalog } from "./server.js";
+import { toolExplorerPage } from "./tool-explorer-web.js";
 
 type Json = Record<string, unknown>;
 
@@ -117,6 +119,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
   try {
     if ((request.method === "GET" || request.method === "HEAD") && DUBAI_FONT_FILES.has(path)) return await dubaiFont(path, request.method);
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/tools") return new Response(toolExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -139,6 +142,10 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/tools") {
+      const catalog = runtimeToolCatalog();
+      return json(envelope(catalog, { total: catalog.summary.total, generated_from: catalog.generatedFrom }));
+    }
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));

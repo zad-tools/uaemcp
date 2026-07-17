@@ -9,6 +9,7 @@ func (c *Client) get(ctx context.Context, path string, params url.Values) (map[s
  res, err := c.HTTP.Do(req); if err != nil{return nil,err}; defer res.Body.Close(); body, err := io.ReadAll(res.Body); if err != nil{return nil,err}; if res.StatusCode>=400{return nil,fmt.Errorf("uaemcp HTTP %d: %s",res.StatusCode,string(body))}; var out map[string]any; err=json.Unmarshal(body,&out); return out,err
 }
 func (c *Client) ListProducts(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/products", params) }
+func (c *Client) ListMcpTools(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tools", params) }
 func (c *Client) GetPolicyEvidenceWatch(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/policy-watch", params) }
 func (c *Client) CheckPolicyEvidenceWatch(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/policy-watch/check", params) }
 func (c *Client) GetPolicyEvidenceWatchOperations(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/operations/policy-watch", params) }

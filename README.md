@@ -191,7 +191,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.69.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.70.0` or newer.
 
 MCP client configuration:
 
@@ -232,7 +232,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.69.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.70.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -380,6 +380,8 @@ server:
 - [Readable catalogue](docs/MCP_TOOLS.md)
 - [Machine-readable catalogue](docs/mcp-tools.json)
 - MCP resource: `uae://tools`
+- [Public bilingual Tools Explorer](https://uaemcp.zad.tools/tools)
+- REST contract: `GET /api/v1/tools`
 
 ```bash
 bun run generate:tools

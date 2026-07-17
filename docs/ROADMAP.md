@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.70 — Public MCP Tools Explorer — complete
+
+- Searchable bilingual catalogue generated from the actual running MCP server
+- Read, write and mixed filters with honest guarded-write messaging
+- Public `/api/v1/tools` contract documented in OpenAPI and generated SDKs
+- Same-origin Dubai Font, responsive RTL layout and direct agent connection snippet
+- Main landing navigation and README linked to the live capability surface
+
 ## v1.69 — Runtime-generated MCP tool catalogue — complete
 
 - Authoritative Markdown and machine-readable JSON generated from registered runtime tools

@@ -50,6 +50,7 @@ import type { RuntimeDependencies } from "./dependencies.js";
 import { createToolCatalog } from "./tool-catalog.js";
 
 type Json = Record<string, unknown>;
+let cachedRuntimeToolCatalog: ReturnType<typeof createToolCatalog> | undefined;
 
 function ok(data: unknown, meta: Json = {}): Json {
   return { ok: true, data, error: null, meta };
@@ -750,6 +751,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   registerResources(server);
   registerPrompts(server);
   return server;
+}
+
+export function runtimeToolCatalog(): ReturnType<typeof createToolCatalog> {
+  if (cachedRuntimeToolCatalog) return cachedRuntimeToolCatalog;
+  const server = buildServer() as unknown as { _registeredTools: Record<string, { description?: string }> };
+  cachedRuntimeToolCatalog = createToolCatalog(server._registeredTools, VERSION);
+  return cachedRuntimeToolCatalog;
 }
 
 // ── MCP resources: the catalog + each source/dataset as addressable context ──

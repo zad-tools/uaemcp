@@ -18,8 +18,10 @@ import { ajmanUrbanPage } from "../src/ajman-urban-web.js";
 import { nationalBriefPage } from "../src/national-brief-web.js";
 import { healthFacilitiesPage } from "../src/health-facilities-web.js";
 import { evidenceStudioPage } from "../src/evidence-studio-web.js";
+import { toolExplorerPage } from "../src/tool-explorer-web.js";
 
 const pages = [
+  ["/tools", toolExplorerPage],
   ["/evidence-studio", evidenceStudioPage],
   ["/health-facilities", healthFacilitiesPage],
   ["/national-brief", nationalBriefPage],

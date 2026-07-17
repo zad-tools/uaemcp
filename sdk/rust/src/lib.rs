@@ -5,6 +5,7 @@ impl UaemcpClient {
  pub fn new(base_url: &str) -> Self { Self { base_url: base_url.trim_end_matches('/').into(), http: reqwest::Client::new() } }
  async fn get(&self, path: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.http.get(format!("{}{}",self.base_url,path)).query(params).send().await?.error_for_status()?.json().await }
  pub async fn list_products(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/products"), params).await }
+ pub async fn list_mcp_tools(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/tools"), params).await }
  pub async fn get_policy_evidence_watch(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/policy-watch"), params).await }
  pub async fn check_policy_evidence_watch(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/policy-watch/check"), params).await }
  pub async fn get_policy_evidence_watch_operations(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/operations/policy-watch"), params).await }

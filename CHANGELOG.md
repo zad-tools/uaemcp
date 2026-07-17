@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.70.0
+
+- Launch the bilingual Dubai Font MCP Tools Explorer at `/tools` with search and access-kind filters.
+- Publish the runtime-derived catalogue at `GET /api/v1/tools` and document it in OpenAPI and generated SDKs.
+- Link the live explorer from the primary landing navigation and README.
+
 ## 1.69.0
 
 - Generate the authoritative MCP tool catalogue directly from runtime registrations.
