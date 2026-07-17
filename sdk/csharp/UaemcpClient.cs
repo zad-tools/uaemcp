@@ -11,6 +11,7 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> GetPolicyEvidenceWatchOperations(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/operations/policy-watch",parameters,cancellationToken);
  public Task<JsonDocument> BuildEvidenceDossier(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/evidence-dossier",parameters,cancellationToken);
  public Task<JsonDocument> GetNationalEvidenceBrief(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/national-brief",parameters,cancellationToken);
+ public Task<JsonDocument> GetConnectivityPulse(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/connectivity",parameters,cancellationToken);
  public Task<JsonDocument> SearchPlaceNames(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/places",parameters,cancellationToken);
  public Task<JsonDocument> BuildFounderPathway(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/founder-pathway",parameters,cancellationToken);
  public Task<JsonDocument> GetGoldenResidencyPathways(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/golden-residency",parameters,cancellationToken);

@@ -11,6 +11,7 @@ export interface RuntimeDependencies {
   fetchAjmanParksRecords?: typeof fetchResult;
   fetchHealthRecords?: typeof fetchResult;
   fetchHealthFacilitiesRecords?: typeof fetchResult;
+  fetchConnectivityRecords?: typeof fetchResult;
   fetchPlaceRecords?: typeof fetchResult;
   fetchPolicyPage?: (url: string) => Promise<string>;
   policyEvidenceStore?: PolicyEvidenceStore;

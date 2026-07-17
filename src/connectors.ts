@@ -386,6 +386,26 @@ async function csvDatasets(source: Source): Promise<DatasetRef[]> {
   return [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: source.category, modified: "", has_geo: Boolean(source.connector_config.has_geo) }];
 }
 
+function coerceRedactionExemptNumericFields(records: Rec[], configured: unknown): Rec[] {
+  if (configured === undefined) return records;
+  if (!Array.isArray(configured) || configured.length > 32 || configured.some((field) => typeof field !== "string" || field.length < 1 || field.length > 128)) {
+    throw new ValidationError("XLSX redaction_exempt_fields must be an array of at most 32 non-empty field names");
+  }
+  const fields = configured as string[];
+  return records.map((record) => {
+    const output = { ...record };
+    for (const field of fields) {
+      if (!(field in output)) continue;
+      const value = output[field];
+      const normalized = typeof value === "string" ? value.replace(/[\s\u00a0,]/g, "") : value;
+      const numeric = typeof normalized === "number" ? normalized : Number(normalized);
+      if (!Number.isFinite(numeric) || numeric < 0) throw new ValidationError(`XLSX redaction-exempt field ${field} must contain only non-negative numeric values`);
+      output[field] = numeric;
+    }
+    return output;
+  });
+}
+
 async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> {
   const configuredColumns = source.connector_config.columns;
   let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1), {
@@ -395,6 +415,7 @@ async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> 
       ? configuredColumns as Record<string, string>
       : undefined,
   });
+  records = coerceRedactionExemptNumericFields(records, source.connector_config.redaction_exempt_fields);
   const configuredRowLimit = Number(source.connector_config.row_limit);
   if (Number.isInteger(configuredRowLimit) && configuredRowLimit > 0) records = records.slice(0, Math.min(configuredRowLimit, 10_000));
   const total = records.length;

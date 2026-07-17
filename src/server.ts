@@ -48,6 +48,7 @@ import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-doss
 import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 import { createToolCatalog } from "./tool-catalog.js";
+import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-service.js";
 
 type Json = Record<string, unknown>;
 let cachedRuntimeToolCatalog: ReturnType<typeof createToolCatalog> | undefined;
@@ -66,6 +67,25 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_connectivity_pulse",
+    {
+      description: "Read three separate official TDRA monthly connectivity series through December 2025: active mobile subscriptions, broadband subscriptions per 100 inhabitants and fixed lines per 100 inhabitants. Subscriptions are not unique people and the per-100 series do not measure coverage, speed, quality or affordability.",
+      inputSchema: {
+        series: z.enum(["active_mobile_subscriptions", "broadband_per_100_inhabitants", "fixed_lines_per_100_inhabitants"]).optional(),
+        from: z.string().date().optional(),
+        to: z.string().date().optional(),
+      },
+    },
+    async ({ series, from, to }) => {
+      try {
+        if (from && to && from > to) throw new ValidationError("from must not be after to");
+        const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series, from, to });
+        return text(ok(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_place_names",
@@ -772,6 +792,23 @@ function registerResources(server: McpServer): void {
       const registered = (server as unknown as { _registeredTools: Record<string, { description?: string }> })._registeredTools;
       return { contents: [{ uri: uri.href, mimeType: "application/json", text: json(createToolCatalog(registered, VERSION)) }] };
     },
+  );
+
+  server.registerResource(
+    "connectivity_pulse_methodology",
+    "uae://connectivity/methodology",
+    { title: "UAE Connectivity Pulse methodology", description: "Source-native TDRA series, units, filters and prohibited interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      period: "2011-01 to 2025-12",
+      frequency: "monthly",
+      series: CONNECTIVITY_SERIES_IDS,
+      unitsKeptSeparate: true,
+      compositeScore: false,
+      subscriptionsArePeople: false,
+      per100MeansCoverage: false,
+      prohibitedClaims: ["unique users", "population", "network coverage", "speed", "quality", "affordability", "digital inclusion", "economic growth"],
+      attribution: "TDRA, source workbook name and publication date",
+    }) }] }),
   );
 
   server.registerResource(

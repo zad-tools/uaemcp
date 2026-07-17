@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.0",
-  "serverVersion": "1.70.0",
+  "serverVersion": "1.71.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
-    "total": 38,
-    "read": 35,
+    "total": 39,
+    "read": 36,
     "write": 2,
     "mixed": 1
   },
@@ -28,6 +28,11 @@
       "name": "uae_business_setup",
       "kind": "read",
       "description": "Route a founder to the competent official UAE business-setup authority by emirate and mainland/free-zone path. Read-only, informational, no intermediaries and no personal data stored."
+    },
+    {
+      "name": "uae_connectivity_pulse",
+      "kind": "read",
+      "description": "Read three separate official TDRA monthly connectivity series through December 2025: active mobile subscriptions, broadband subscriptions per 100 inhabitants and fixed lines per 100 inhabitants. Subscriptions are not unique people and the per-100 series do not measure coverage, speed, quality or affordability."
     },
     {
       "name": "uae_dashboard_summary",

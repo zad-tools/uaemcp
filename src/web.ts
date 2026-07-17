@@ -73,6 +73,6 @@ document.querySelector('#loadDatasets').addEventListener('click',async()=>{const
 const observer=new IntersectionObserver(entries=>entries.forEach(entry=>entry.isIntersecting&&entry.target.classList.add('visible')),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 boot();
 </script></body></html>`
-    .replaceAll("Sixteen public applications", "Nineteen public applications")
+    .replaceAll("Sixteen public applications", "Twenty public applications")
     .replaceAll("ستة عشر تطبيقًا عامًا", "سبعة عشر تطبيقًا عامًا");
 }

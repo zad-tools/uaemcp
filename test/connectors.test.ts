@@ -232,6 +232,26 @@ describe("xlsx connector", () => {
     expect(result.records).toEqual([{ name: "Clinic", count: "12", email: "[redacted-open-data-contact]" }]);
   });
 
+  it("coerces only source-allowlisted statistical fields before redaction", async () => {
+    const workbook = exportRecords([
+      { Statistics: 44105, "Active Mobile Subscriptions[ii]": "16,716,782 ", ContactPhone: "0501234567", ContactEmail: "person@example.ae" },
+      { Statistics: 44136, "Active Mobile Subscriptions[ii]": "16,707,715 ", ContactPhone: "0507654321", ContactEmail: "other@example.ae" },
+      { Statistics: 44166, "Active Mobile Subscriptions[ii]": "16,820,680 ", ContactPhone: "0501112223", ContactEmail: "third@example.ae" },
+    ], "xlsx", mkSource({}), null).body;
+    mockGetBytes.mockResolvedValue(workbook);
+    const source = mkSource({ kind: "xlsx", connector_config: { redaction_exempt_fields: ["Active Mobile Subscriptions[ii]"] } });
+    const result = await fetchResult(source, { limit: 10 });
+    expect(result.records.map((record) => record["Active Mobile Subscriptions[ii]"])).toEqual([16_716_782, 16_707_715, 16_820_680]);
+    expect(result.records.every((record) => record.ContactPhone === "[redacted-open-data-contact]" && record.ContactEmail === "[redacted-open-data-contact]")).toBe(true);
+  });
+
+  it("rejects invalid exemption configuration and non-numeric exempt values", async () => {
+    const workbook = exportRecords([{ mobile: "not-a-statistic" }], "xlsx", mkSource({}), null).body;
+    mockGetBytes.mockResolvedValue(workbook);
+    await expect(fetchResult(mkSource({ kind: "xlsx", connector_config: { redaction_exempt_fields: "mobile" } }))).rejects.toThrow("redaction_exempt_fields");
+    await expect(fetchResult(mkSource({ kind: "xlsx", connector_config: { redaction_exempt_fields: ["mobile"] } }))).rejects.toThrow("non-negative numeric values");
+  });
+
   it("honors a source-declared table row boundary before search and pagination", async () => {
     const source = mkSource({ kind: "xlsx", base_url: "https://example.gov.ae/activity.xlsx", connector_config: { row_limit: 2 } });
     const workbook = exportRecords([{ service: "A" }, { service: "B" }, { service: "unrelated footer table" }], "xlsx", source, null).body;

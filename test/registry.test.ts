@@ -7,8 +7,18 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 41 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(41);
+  it("lists 44 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(44);
+  });
+
+  it("registers three live official TDRA connectivity workbooks", () => {
+    const sources = [
+      REGISTRY.get("tdra_active_mobile_subscriptions_2025"),
+      REGISTRY.get("tdra_broadband_per_100_2025"),
+      REGISTRY.get("tdra_fixed_lines_per_100_2025"),
+    ];
+    expect(sources.every(({ kind, access_status }) => kind === "xlsx" && access_status === "live")).toBe(true);
+    expect(sources.every(({ license }) => license.includes("attribution to TDRA"))).toBe(true);
   });
 
   it("registers the official FGIC National Gazetteer as a live geospatial source", () => {

@@ -19,6 +19,27 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "connectivity_pulse",
+    status: "published",
+    access: "public",
+    category: "CONNECTIVITY / SERIES",
+    categoryAr: "الاتصالات / السلاسل",
+    title: { en: "UAE Connectivity Pulse", ar: "نبض الاتصالات في الإمارات" },
+    description: {
+      en: "Inspect three official TDRA monthly subscription series from 2011–2025 without merging unlike units.",
+      ar: "افحص ثلاث سلاسل شهرية رسمية لاشتراكات الاتصالات من الهيئة للفترة 2011–2025 دون دمج الوحدات المختلفة.",
+    },
+    webPath: "/connectivity",
+    apiPath: "/api/v1/connectivity",
+    sourceIds: ["tdra_active_mobile_subscriptions_2025", "tdra_broadband_per_100_2025", "tdra_fixed_lines_per_100_2025"],
+    evidence: {
+      scope: { en: "Three source-native monthly TDRA series published through December 2025.", ar: "ثلاث سلاسل شهرية أصلية للمصدر منشورة من الهيئة حتى ديسمبر 2025." },
+      limitations: [
+        { en: "Subscriptions are not unique people; per-100 measures do not prove coverage, speed, quality, affordability or digital inclusion.", ar: "الاشتراكات ليست أشخاصًا فريدين، ومؤشرات كل 100 نسمة لا تثبت التغطية أو السرعة أو الجودة أو التكلفة أو الشمول الرقمي." },
+      ],
+    },
+  },
+  {
     id: "policy_evidence_watch", status: "published", access: "public", category: "POLICY / EVIDENCE", categoryAr: "السياسات / الأدلة",
     title: { en: "UAE Policy Evidence Watch", ar: "مرصد أدلة السياسات في الإمارات" },
     description: { en: "Track bounded content fingerprints for five audited official UAE legislation and policy pages without claiming that a detected page difference changed the law.", ar: "تتبّع بصمات محتوى محدودة لخمس صفحات إماراتية رسمية مدققة للتشريعات والسياسات دون الادعاء بأن اختلاف الصفحة غيّر القانون." },

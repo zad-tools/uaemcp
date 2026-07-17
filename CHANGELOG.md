@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.71.0
+
+- Added UAE Connectivity Pulse over three official TDRA monthly workbooks covering January 2011 through December 2025.
+- Added `/connectivity`, `/api/v1/connectivity`, `uae_connectivity_pulse` and `uae://connectivity/methodology` with source, date and unit boundaries intact.
+- Kept active mobile subscriptions, broadband subscriptions per 100 inhabitants and fixed lines per 100 inhabitants separate; no composite score is produced.
+- Added source-scoped statistical-field redaction exemptions so aggregate observations remain numeric without weakening default PII protection.
+- Added a verified year-end snapshot fallback, bilingual RTL Dubai Font interface and animated README evidence visual.
+
 ## 1.70.0
 
 - Launch the bilingual Dubai Font MCP Tools Explorer at `/tools` with search and access-kind filters.

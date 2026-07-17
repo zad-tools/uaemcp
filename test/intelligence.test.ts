@@ -9,8 +9,8 @@ describe("intelligence recipes", () => {
 
   test("coverage is honest and evidence-backed", () => {
     const result = coverageRecipe(REGISTRY.list());
-    expect((result.answer as Record<string, unknown>).officialPortalsIndexed).toBe(41);
-    expect((result.evidence as unknown[]).length).toBe(9);
+    expect((result.answer as Record<string, unknown>).officialPortalsIndexed).toBe(44);
+    expect((result.evidence as unknown[]).length).toBe(12);
     expect(result.limitations).toBeArray();
   });
 

@@ -19,8 +19,10 @@ import { nationalBriefPage } from "../src/national-brief-web.js";
 import { healthFacilitiesPage } from "../src/health-facilities-web.js";
 import { evidenceStudioPage } from "../src/evidence-studio-web.js";
 import { toolExplorerPage } from "../src/tool-explorer-web.js";
+import { connectivityPage } from "../src/connectivity-web.js";
 
 const pages = [
+  ["/connectivity", connectivityPage],
   ["/tools", toolExplorerPage],
   ["/evidence-studio", evidenceStudioPage],
   ["/health-facilities", healthFacilitiesPage],

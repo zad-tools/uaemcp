@@ -66,6 +66,8 @@ import { policyWatchScheduler } from "./policy-watch-scheduler.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 import { runtimeToolCatalog } from "./server.js";
 import { toolExplorerPage } from "./tool-explorer-web.js";
+import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse, type ConnectivitySeriesId } from "./connectivity-service.js";
+import { connectivityPage } from "./connectivity-web.js";
 
 type Json = Record<string, unknown>;
 
@@ -90,6 +92,16 @@ function integer(params: URLSearchParams, key: string, fallback: number, max: nu
 }
 
 const optional = (params: URLSearchParams, key: string): string | undefined => params.get(key) || undefined;
+
+function isoDate(params: URLSearchParams, key: string): string | undefined {
+  const value = optional(params, key);
+  if (!value) return undefined;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) throw new ValidationError(`${key} must use YYYY-MM-DD format`);
+  const parsed = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) throw new ValidationError(`${key} must be a valid calendar date`);
+  return value;
+}
 
 const REST_DEFAULTS: RuntimeDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult, fetchHealthRecords: fetchResult };
 
@@ -120,6 +132,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if ((request.method === "GET" || request.method === "HEAD") && DUBAI_FONT_FILES.has(path)) return await dubaiFont(path, request.method);
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tools") return new Response(toolExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/connectivity") return new Response(connectivityPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -149,6 +162,15 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/connectivity") {
+      const series = optional(url.searchParams, "series");
+      if (series && !CONNECTIVITY_SERIES_IDS.includes(series as ConnectivitySeriesId)) throw new ValidationError("series is invalid");
+      const from = isoDate(url.searchParams, "from");
+      const to = isoDate(url.searchParams, "to");
+      if (from && to && from > to) throw new ValidationError("from must not be after to");
+      const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series: series as ConnectivitySeriesId | undefined, from, to });
+      return json(envelope(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
     }
     if (request.method === "GET" && path === "/api/v1/policy-watch") {
       return json(envelope(policyEvidenceWatchReport(dependencies.policyEvidenceStore ?? policyEvidenceStore()), { hidden_upstream_work: false }));

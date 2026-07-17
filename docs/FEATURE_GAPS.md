@@ -2,7 +2,7 @@
 
 ## Executive finding
 
-The platform exposes nineteen verified public products, but most research still
+The platform exposes twenty verified public products, but most research still
 ends as separate pages and JSON responses. The highest-value missing workflow
 is a way to compose selected facts into one source-cited, bilingual deliverable.
 
@@ -10,9 +10,9 @@ is a way to compose selected facts into one source-cited, bilingual deliverable.
 
 | Gap | Current evidence | Priority |
 | --- | --- | --- |
-| Cross-product research workflow | Nineteen entries in `src/products.ts`; Evidence Studio composes bounded source-native evidence | P1 |
+| Cross-product research workflow | Twenty entries in `src/products.ts`; Evidence Studio composes bounded source-native evidence | P1 |
 | Policy freshness monitoring | Complete in v1.67 across five audited official surfaces | Complete |
-| Live national breadth | 41 indexed sources and nine live record connectors | P1 |
+| Live national breadth | 44 indexed sources and twelve live record connectors; TDRA now adds three national monthly connectivity series | P1 |
 | Tool documentation parity | Complete in v1.69: Markdown, JSON and `uae://tools` are generated from runtime registrations | Complete |
 
 ## Highest-ROI feature
