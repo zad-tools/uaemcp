@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.48.0
+
+- Completed Arabic localization across the landing-page navigation, proof metrics, workflow, catalog, connectors, dataset explorer, playground, community and runtime states.
+- Localized dynamic access labels, connector summaries, dataset results, validation messages and partial-failure states while preserving technical identifiers.
+- Kept product and source registries failure-isolated and added a browser-script and bilingual contract regression suite.
+
 ## 1.47.0
 
 - Added a public bilingual registry for all six evidence products with explicit scope and limitations.

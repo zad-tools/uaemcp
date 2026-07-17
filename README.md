@@ -34,6 +34,10 @@
   <img src="docs/assets/screenshots/product-registry.jpg" alt="Bilingual public product registry with evidence scope and limitations" width="100%">
 </p>
 
+<p align="center">
+  <img src="docs/assets/screenshots/landing-arabic.jpg" alt="Arabic RTL Open Emirates Intelligence gateway" width="100%">
+</p>
+
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
@@ -44,6 +48,10 @@ SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
 bounded dataset snapshots for repeatable comparisons.
+
+The public gateway is fully bilingual: navigation, product evidence, catalog,
+connectors, dataset discovery, playground controls and runtime states switch
+between English and Arabic with native RTL layout.
 
 ## Hosted endpoint
 

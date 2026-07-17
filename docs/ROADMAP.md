@@ -121,6 +121,13 @@ reusable government core remains v2.0.
 - Product discovery through REST, OpenAPI, MCP tool and MCP resource
 - Trade Flow Radar and FTA Archive promoted from hidden routes to first-class products
 
+## v1.48 — Complete bilingual gateway — complete
+
+- Full Arabic localization for navigation, evidence workflow, catalog and interactive controls
+- Arabic runtime states for search, connectors, datasets, validation and partial failures
+- RTL browser verification across the live six-product registry and supporting platform sections
+- Failure isolation between product discovery and source catalog loading
+
 ## v2.0 — Government intelligence core
 
 - Extract reusable `govmcp-core` contracts
