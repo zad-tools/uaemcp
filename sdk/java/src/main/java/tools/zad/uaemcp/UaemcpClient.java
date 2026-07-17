@@ -25,6 +25,7 @@ public final class UaemcpClient {
  public String getHealthIndicators(Map<String,String> params) throws Exception {return get("/api/v1/health-indicators",params);}
  public String getHealthFacilitiesAtlas(Map<String,String> params) throws Exception {return get("/api/v1/health-facilities",params);}
  public String getHealthFacilitiesMap(Map<String,String> params) throws Exception {return get("/api/v1/health-facilities-map",params);}
+ public String getAeronauticalPublications(Map<String,String> params) throws Exception {return get("/api/v1/aeronautical-publications",params);}
  public String getCoverage(Map<String,String> params) throws Exception {return get("/api/v1/coverage",params);}
  public String getIndustryAtlas(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas",params);}
  public String getIndustryChange(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas/change",params);}

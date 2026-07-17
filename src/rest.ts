@@ -69,9 +69,12 @@ import { toolExplorerPage } from "./tool-explorer-web.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse, type ConnectivitySeriesId } from "./connectivity-service.js";
 import { connectivityPage } from "./connectivity-web.js";
 import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
+import { loadAeronauticalPublications, type AeronauticalPublicationKind } from "./aeronautical-publications-service.js";
+import { aeronauticalPublicationsPage } from "./aeronautical-publications-web.js";
 import { healthFacilitiesMapPage } from "./health-facilities-map-web.js";
 
 type Json = Record<string, unknown>;
+const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
 
 const envelope = (data: unknown, meta: Json = {}): Json => ({ ok: true, data, error: null, meta });
 
@@ -155,6 +158,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tools") return new Response(toolExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/connectivity") return new Response(connectivityPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/aeronautical-publications") return new Response(aeronauticalPublicationsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -206,6 +210,15 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       const limit = rawLimit === null ? 100 : Number(rawLimit);
       const loaded = await loadHealthFacilitiesMap(dependencies.fetchHealthFacilitiesMapRecords ?? fetchResult, { q, bbox: healthBbox(bboxRaw), near: healthNear(nearRaw), limit });
       return json(envelope(loaded.data, { ...loaded.meta, filters: { q, bbox: bboxRaw, near: nearRaw, limit }, privacy: "direct_contact_fields_redacted" }));
+    }
+    if (request.method === "GET" && path === "/api/v1/aeronautical-publications") {
+      const kind = optional(url.searchParams, "kind");
+      if (kind && !AERONAUTICAL_PUBLICATION_KINDS.includes(kind as AeronauticalPublicationKind)) throw new ValidationError("kind is invalid");
+      const rawLimit = url.searchParams.get("limit");
+      if (rawLimit !== null && (!/^\d+$/.test(rawLimit) || Number(rawLimit) < 1 || Number(rawLimit) > 50)) throw new ValidationError("limit must be an integer from 1 to 50");
+      const limit = rawLimit === null ? 25 : Number(rawLimit);
+      const loaded = await loadAeronauticalPublications(dependencies.fetchAeronauticalPublicationsPage, { kind: kind as AeronauticalPublicationKind | undefined, limit });
+      return json(envelope(loaded.data, { ...loaded.meta, filters: { kind, limit }, decision: "discovery_only", operational_use: false }));
     }
     if (request.method === "GET" && path === "/api/v1/policy-watch") {
       return json(envelope(policyEvidenceWatchReport(dependencies.policyEvidenceStore ?? policyEvidenceStore()), { hidden_upstream_work: false }));

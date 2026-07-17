@@ -50,8 +50,10 @@ import type { RuntimeDependencies } from "./dependencies.js";
 import { createToolCatalog } from "./tool-catalog.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-service.js";
 import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
+import { loadAeronauticalPublications } from "./aeronautical-publications-service.js";
 
 type Json = Record<string, unknown>;
+const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
 let cachedRuntimeToolCatalog: ReturnType<typeof createToolCatalog> | undefined;
 
 function ok(data: unknown, meta: Json = {}): Json {
@@ -117,6 +119,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         if (bbox && near) throw new ValidationError("use bbox or near, not both");
         const loaded = await loadHealthFacilitiesMap(dependencies.fetchHealthFacilitiesMapRecords ?? fetchResult, { q, bbox: mapBbox(bbox), near: mapNear(near), limit });
         return text(ok(loaded.data, { ...loaded.meta, filters: { q, bbox, near, limit }, privacy: "direct_contact_fields_redacted" }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_aeronautical_publications",
+    {
+      description: "List current GCAA eAIP publication-index entries and their source-native dates. Discovery only: not NOTAM, flight-planning data, operational guidance, regulatory interpretation, or a substitute for the current official AIP package.",
+      inputSchema: { kind: z.enum(["airac_amendment", "supplement", "other"]).optional(), limit: z.number().int().min(1).max(50).default(25) },
+    },
+    async ({ kind, limit }) => {
+      try {
+        const loaded = await loadAeronauticalPublications(dependencies.fetchAeronauticalPublicationsPage, { kind, limit });
+        return text(ok(loaded.data, { ...loaded.meta, filters: { kind, limit }, decision: "discovery_only", operational_use: false }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -861,6 +877,23 @@ function registerResources(server: McpServer): void {
       missingCoordinatesMeanZeroFacilities: false,
       emirateOrFacilityTypeInferred: false,
       filters: { query: "2-100 characters", bbox: "ordered coordinates within UAE map bounds", near: "UAE coordinate plus radius of at most 200 km", maximumResults: 200 },
+    }) }] }),
+  );
+
+  server.registerResource(
+    "aeronautical_publications_methodology",
+    "uae://aeronautical-publications/methodology",
+    { title: "UAE Aeronautical Publications methodology", description: "GCAA index parsing, source-native date treatment and prohibited operational interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      authority: "UAE General Civil Aviation Authority",
+      sourceSurface: "Current UAE eAIP publication index",
+      kinds: AERONAUTICAL_PUBLICATION_KINDS,
+      datesInterpreted: false,
+      regulatoryEffectDetermined: false,
+      operationalUse: false,
+      notamFeed: false,
+      flightPlanningSource: false,
+      limitations: ["Consult the current official GCAA AIP package.", "Consult official NOTAM and competent operational sources for time-critical aviation information.", "UAEMCP does not determine airspace status, route availability, regulatory effect or safety impact."],
     }) }] }),
   );
 

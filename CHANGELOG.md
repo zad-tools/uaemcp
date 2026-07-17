@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.73.0 — 2026-07-18
+
+- Added a current UAE GCAA aeronautical-publications monitor with package, publication and effective dates preserved from the official eAIP index.
+- Added `/aeronautical-publications`, a bounded REST endpoint, MCP tool and methodology resource with bilingual Dubai Font presentation.
+- Added a verified snapshot fallback and strict parser limits for upstream HTML size, row count and cell length.
+- Kept the safety boundary explicit: the product is an index, not NOTAM, flight-planning information or operational guidance.
+
 ## 1.72.0 — 2026-07-18
 
 - Added the official MOHAP 2026 Health Facilities GIS sheet as a distinct live source without changing the aggregate Health Facilities Atlas.

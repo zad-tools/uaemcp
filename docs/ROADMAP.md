@@ -1,5 +1,14 @@
 # Roadmap
 
+## v1.73 — GCAA Aeronautical Publications — complete
+
+- Current official GCAA eAIP publication-index parsing with bounded results
+- AIRAC amendment and supplement filters preserving package, publication and effective dates
+- Verified retained snapshot when the official index is temporarily unavailable
+- Bilingual Dubai Font web ledger, REST, MCP and methodology contracts
+- Explicit index-not-NOTAM boundary with no route, airspace, regulatory or safety interpretation
+- Animated README evidence visual and direct official-source verification links
+
 ## v1.72 — MOHAP Health Facilities Map — complete
 
 - Complete 15,326-row official MOHAP 2026 GIS-sheet retrieval with a 15-minute cache

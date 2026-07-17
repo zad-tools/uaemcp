@@ -28,6 +28,7 @@ func (c *Client) GetEducationLedger(ctx context.Context, params url.Values) (map
 func (c *Client) GetHealthIndicators(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/health-indicators", params) }
 func (c *Client) GetHealthFacilitiesAtlas(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/health-facilities", params) }
 func (c *Client) GetHealthFacilitiesMap(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/health-facilities-map", params) }
+func (c *Client) GetAeronauticalPublications(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/aeronautical-publications", params) }
 func (c *Client) GetCoverage(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/coverage", params) }
 func (c *Client) GetIndustryAtlas(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas", params) }
 func (c *Client) GetIndustryChange(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas/change", params) }

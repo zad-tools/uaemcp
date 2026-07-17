@@ -15,5 +15,6 @@ export interface RuntimeDependencies {
   fetchConnectivityRecords?: typeof fetchResult;
   fetchPlaceRecords?: typeof fetchResult;
   fetchPolicyPage?: (url: string) => Promise<string>;
+  fetchAeronauticalPublicationsPage?: (url: string, params?: Record<string, unknown>, timeoutMs?: number) => Promise<string>;
   policyEvidenceStore?: PolicyEvidenceStore;
 }

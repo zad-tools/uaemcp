@@ -165,6 +165,27 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     },
   },
   {
+    id: "aeronautical_publications",
+    status: "published",
+    access: "public",
+    category: "AVIATION / PUBLICATIONS",
+    categoryAr: "الطيران / المنشورات",
+    title: { en: "UAE Aeronautical Publications", ar: "منشورات الطيران في الإمارات" },
+    description: {
+      en: "Inspect current GCAA eAIP publication-index entries with source-native publication and effective dates.",
+      ar: "استعرض إدخالات فهرس منشورات معلومات الطيران الحالي للهيئة مع تواريخ النشر والسريان كما وردت في المصدر.",
+    },
+    webPath: "/aeronautical-publications",
+    apiPath: "/api/v1/aeronautical-publications",
+    sourceIds: ["gcaa_current_aip_publications"],
+    evidence: {
+      scope: { en: "Current official GCAA eAIP publication index with a verified retained fallback.", ar: "فهرس منشورات معلومات الطيران الحالي والرسمي للهيئة مع نسخة احتياطية موثقة." },
+      limitations: [
+        { en: "Discovery only: not NOTAM, flight-planning information, operational guidance or regulatory interpretation.", ar: "للاكتشاف فقط: ليس NOTAM ولا معلومات لتخطيط الرحلات ولا إرشادًا تشغيليًا أو تفسيرًا تنظيميًا." },
+      ],
+    },
+  },
+  {
     id: "trade_flow_radar",
     status: "published",
     access: "public",

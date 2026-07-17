@@ -12,7 +12,7 @@ is a way to compose selected facts into one source-cited, bilingual deliverable.
 | --- | --- | --- |
 | Cross-product research workflow | Twenty-one entries in `src/products.ts`; Evidence Studio composes bounded source-native evidence | P1 |
 | Policy freshness monitoring | Complete in v1.67 across five audited official surfaces | Complete |
-| Live national breadth | 45 indexed sources and thirteen live record connectors; MOHAP GIS adds 7,471 valid published coordinates from 15,326 rows | P1 |
+| Live national breadth | 46 indexed sources and fourteen live record connectors; GCAA adds a current publication-index feed and MOHAP GIS adds 7,471 valid published coordinates from 15,326 rows | P1 |
 | Tool documentation parity | Complete in v1.69: Markdown, JSON and `uae://tools` are generated from runtime registrations | Complete |
 
 ## Highest-ROI feature

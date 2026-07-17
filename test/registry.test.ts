@@ -7,8 +7,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 45 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(45);
+  it("lists 46 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(46);
+  });
+
+  it("registers the official GCAA publication index with honest discovery boundaries", () => {
+    expect(REGISTRY.get("gcaa_current_aip_publications")).toMatchObject({ owner: "UAE General Civil Aviation Authority", category: "aviation", access_status: "live" });
+    expect(REGISTRY.get("gcaa_current_aip_publications").notes).toContain("not NOTAM");
   });
 
   it("registers the official MOHAP 2026 GIS sheet as a distinct live source", () => {

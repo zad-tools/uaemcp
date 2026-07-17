@@ -1,14 +1,19 @@
 {
   "schemaVersion": "1.0",
-  "serverVersion": "1.72.0",
+  "serverVersion": "1.73.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
-    "total": 40,
-    "read": 37,
+    "total": 41,
+    "read": 38,
     "write": 2,
     "mixed": 1
   },
   "tools": [
+    {
+      "name": "uae_aeronautical_publications",
+      "kind": "read",
+      "description": "List current GCAA eAIP publication-index entries and their source-native dates. Discovery only: not NOTAM, flight-planning data, operational guidance, regulatory interpretation, or a substitute for the current official AIP package."
+    },
     {
       "name": "uae_ajman_business_evidence",
       "kind": "read",
