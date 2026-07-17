@@ -163,6 +163,28 @@ export function buildServer(): McpServer {
   );
 
   server.registerTool(
+    "uae_observatory",
+    {
+      description: "Read the UAE Open Data Observatory: national reliability report, derived incidents, or one source reliability profile. Uses stored observations and never triggers hidden upstream work.",
+      inputSchema: {
+        action: z.enum(["report", "incidents", "source"]).default("report"),
+        source_id: z.string().optional(),
+        limit: z.number().int().min(1).max(1000).default(100),
+      },
+    },
+    async ({ action, source_id, limit }) => {
+      try {
+        const store = reliabilityStore();
+        if (action === "report") return text(ok(store.observatoryReport(REGISTRY.list().map((source) => source.id))));
+        if (action === "incidents") return text(ok(store.incidents(source_id, limit), { limit, source_id: source_id ?? null }));
+        if (!source_id) throw new ValidationError("source_id is required for action=source");
+        const source = REGISTRY.get(source_id);
+        return text(ok({ source, reliability: store.healthHistory(source.id, limit), incidents: store.incidents(source.id, limit), citation: citation(source) }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
     "uae_intelligence_recipe",
     {
       description: "Run an evidence-backed analytical recipe. Results include methodology, evidence, limitations and citations.",
@@ -382,6 +404,13 @@ export function buildServer(): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "open_data_observatory",
+    "uae://observatory",
+    { title: "UAE Open Data Observatory", description: "Stored source reliability, uptime and incident evidence without live fan-out.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json(reliabilityStore().observatoryReport(REGISTRY.list().map((source) => source.id))) }] }),
+  );
 
   server.registerResource(
     "snapshot_scheduler_status",

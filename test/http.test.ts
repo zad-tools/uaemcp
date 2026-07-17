@@ -92,7 +92,15 @@ describe("Bun HTTP runtime", () => {
       "uae_spatial_join",
       "uae_indicator",
       "uae_entity_resolve",
+      "uae_observatory",
     ].sort());
+  });
+
+  it("exposes the observatory through MCP without triggering upstream probes", async () => {
+    const { payload } = await rpc("tools/call", { name: "uae_observatory", arguments: { action: "report" } });
+    const body = JSON.parse(payload.result.content[0].text);
+    expect(body.ok).toBe(true);
+    expect(body.data).toMatchObject({ monitoredSources: 33, currentStatus: expect.any(Object), incidents: expect.any(Object) });
   });
 
   it("rejects untrusted hosts when an allowlist is configured", async () => {
