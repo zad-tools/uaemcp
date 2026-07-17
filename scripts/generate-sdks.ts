@@ -96,7 +96,7 @@ const files: Record<string, string> = {
   "sdk/java/src/main/java/tools/zad/uaemcp/UaemcpClient.java": java, "sdk/csharp/UaemcpClient.cs": csharp,
   "sdk/python/pyproject.toml": `[project]\nname = "uaemcp"\nversion = "${document.info.version}"\nrequires-python = ">=3.10"\ndescription = "Generated Python client for Open Emirates Intelligence"\n[build-system]\nrequires = ["setuptools>=68"]\nbuild-backend = "setuptools.build_meta"\n`,
   "sdk/python/uaemcp/__init__.py": `from .client import UaemcpClient, UaemcpError\n__all__ = ["UaemcpClient", "UaemcpError"]\n`,
-  "sdk/go/go.mod": `module github.com/ahmedvnabil/uaemcp/sdk/go\n\ngo 1.22\n`,
+  "sdk/go/go.mod": `module github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/sdk/go\n\ngo 1.22\n`,
   "sdk/rust/Cargo.toml": `[package]\nname = "uaemcp"\nversion = "${document.info.version}"\nedition = "2021"\ndescription = "Generated Rust client for Open Emirates Intelligence"\nlicense = "MIT"\n[dependencies]\nreqwest = { version = "0.12", features = ["json"] }\nserde_json = "1"\nurlencoding = "2"\n`,
   "sdk/java/pom.xml": `<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>tools.zad</groupId><artifactId>uaemcp-client</artifactId><version>${document.info.version}</version><properties><maven.compiler.release>17</maven.compiler.release></properties></project>\n`,
   "sdk/csharp/Uaemcp.csproj": `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><Version>${document.info.version}</Version></PropertyGroup></Project>\n`,

@@ -3,6 +3,12 @@
   "version": "1.40.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP.git"
+  },
+  "homepage": "https://uaemcp.zad.tools",
+  "bugs": "https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/issues",
   "license": "MIT",
   "type": "module",
   "bin": {
