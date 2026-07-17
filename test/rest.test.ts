@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { runHttp } from "../src/index.js";
+import { trustSummary } from "../src/manifest.js";
 
 let server: Bun.Server<unknown>;
 let baseUrl: string;
@@ -19,7 +20,7 @@ describe("REST v1", () => {
     expect(html).toContain("Open Emirates Intelligence");
     expect(html).toContain('id="productLedger"');
     expect(html).toContain("/api/v1/products");
-    expect(html).toContain('<strong>30</strong><span data-en="Focused tools');
+    expect(html).toContain(`<strong id="toolCount">${trustSummary().totalTools}</strong><span data-en="MCP tools`);
     const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
     expect(script).toBeDefined();
     expect(() => new Function(script ?? "")).not.toThrow();

@@ -20,6 +20,19 @@ const READ_TOOLS = [
   "uae_trade_flow_radar",
 ];
 
+const WRITE_TOOLS = ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"];
+
+export function trustSummary(): {
+  version: string;
+  readTools: number;
+  writeTools: number;
+  totalTools: number;
+} {
+  const readTools = READ_TOOLS.length + 2;
+  const writeTools = WRITE_TOOLS.length;
+  return { version: VERSION, readTools, writeTools, totalTools: readTools + writeTools };
+}
+
 export function trustManifest(): Record<string, unknown> {
   return {
     schemaVersion: "1.0",
@@ -28,7 +41,7 @@ export function trustManifest(): Record<string, unknown> {
     endpoints: { mcp: "/mcp", rest: "/api/v1", products: "/api/v1/products", placeNames: "/places", placeNamesApi: "/api/v1/places", founderPathway: "/founder-pathway", founderPathwayApi: "/api/v1/founder-pathway", startupSupport: "/startup-support", startupSupportApi: "/api/v1/startup-support", businessSetup: "/business-setup", businessSetupApi: "/api/v1/business-setup", goldenResidency: "/golden-residency", goldenResidencyApi: "/api/v1/golden-residency", educationLedger: "/education", educationLedgerApi: "/api/v1/education", healthIndicators: "/health-indicators", healthIndicatorsApi: "/api/v1/health-indicators", observatory: "/observatory", industryAtlas: "/industry-atlas", tradeFlowRadar: "/trade-flow", tradeFlowApi: "/api/v1/trade-flow", taxServiceActivity: "/tax-services", taxServiceArchivePage: "/tax-services/archive", taxServiceArchive: "/api/v1/tax-services/archive", health: "/health", metrics: "/metrics" },
     tools: {
       read: [...READ_TOOLS, "uae_dataset_snapshot:list", "uae_dataset_snapshot:diff"],
-      write: ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"],
+      write: [...WRITE_TOOLS],
       writesEnabledByDefault: false,
     },
     safeguards: ["ssrf-protection", "pii-redaction", "bounded-fetches", "rate-limiting", "host-allowlist", "origin-allowlist"],

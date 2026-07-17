@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { trustSummary } from "../src/manifest.js";
 import { landingPage } from "../src/web.js";
 
 describe("bilingual landing page", () => {
@@ -23,5 +24,15 @@ describe("bilingual landing page", () => {
     const script = landingPage().match(/<script>([\s\S]*)<\/script>/)?.[1];
     expect(script).toBeDefined();
     expect(() => new Function(script ?? "")).not.toThrow();
+  });
+
+  it("renders the current trust contract instead of stale brand metrics", () => {
+    const html = landingPage();
+    const summary = trustSummary();
+
+    expect(html).toContain(`VERSION ${summary.version}`);
+    expect(html).toContain(`id="toolCount">${summary.totalTools}</strong>`);
+    expect(html).toContain(`${summary.readTools} READ / ${summary.writeTools} GUARDED WRITE`);
+    expect(html).not.toContain("VERSION 1.61</span>");
   });
 });
