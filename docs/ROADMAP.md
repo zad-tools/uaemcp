@@ -1,5 +1,20 @@
 # Roadmap
 
+## v1.72 — MOHAP Health Facilities Map — complete
+
+- Complete 15,326-row official MOHAP 2026 GIS-sheet retrieval with a 15-minute cache
+- 7,471 valid UAE-frame coordinates and 7,855 explicit exclusions by reason
+- Bilingual name search, bounded box and radius queries without inferred emirates or facility types
+- Separate web, REST, MCP and methodology contracts preserving the aggregate Atlas
+- Same-origin Dubai Font interface and animated README evidence visual
+
+## v1.71 — TDRA Connectivity Pulse — complete
+
+- Three separate official monthly TDRA series from January 2011 through December 2025
+- 540 observations with source-native units, citations and verified snapshot fallback
+- Bilingual Dubai Font chart, REST, MCP and methodology contracts
+- Subscription counts explicitly separated from people, coverage, quality and affordability
+
 ## v1.70 — Public MCP Tools Explorer — complete
 
 - Searchable bilingual catalogue generated from the actual running MCP server

@@ -7,8 +7,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 44 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(44);
+  it("lists 45 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(45);
+  });
+
+  it("registers the official MOHAP 2026 GIS sheet as a distinct live source", () => {
+    expect(REGISTRY.get("mohap_health_facilities_gis_2026")).toMatchObject({
+      kind: "xlsx",
+      access_status: "live",
+      max_page_size: 16_000,
+      connector_config: { sheet: 2, header_row: 4, data_start_row: 5, row_limit: 15_326 },
+    });
   });
 
   it("registers three live official TDRA connectivity workbooks", () => {

@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.0",
-  "serverVersion": "1.71.0",
+  "serverVersion": "1.72.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
-    "total": 39,
-    "read": 36,
+    "total": 40,
+    "read": 37,
     "write": 2,
     "mixed": 1
   },
@@ -78,6 +78,11 @@
       "name": "uae_health_facilities_atlas",
       "kind": "read",
       "description": "Explore official MOHAP aggregate facility counts for 2015–2024 by emirate, sector, category and type. Rows are not individual facilities; results do not measure beds, capacity, access or quality."
+    },
+    {
+      "name": "uae_health_facilities_map",
+      "kind": "read",
+      "description": "Search and spatially filter the official MOHAP 2026 health-facility location workbook as privacy-bounded map features. Direct contact fields are removed; published and mappable row counts remain explicit, and missing locations are never treated as zero facilities."
     },
     {
       "name": "uae_health_indicators",

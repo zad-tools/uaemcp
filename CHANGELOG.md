@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.72.0 — 2026-07-18
+
+- Added the official MOHAP 2026 Health Facilities GIS sheet as a distinct live source without changing the aggregate Health Facilities Atlas.
+- Added a bilingual map, bounded REST endpoint, MCP tool and methodology resource over 7,471 valid published coordinates.
+- Added explicit quality accounting for all 15,326 source rows: 2,671 blank, 1,102 `90,90` sentinel and 4,082 malformed or out-of-frame coordinates are excluded rather than guessed.
+- Added cached full-workbook retrieval, safe large-XLSX page bounds and a verified SHA-256 snapshot fallback.
+
 ## 1.71.0
 
 - Added UAE Connectivity Pulse over three official TDRA monthly workbooks covering January 2011 through December 2025.

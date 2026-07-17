@@ -11,7 +11,7 @@
   <rect class="box" x="54" y="106" width="260" height="150"/>
   <circle class="accent pulse" cx="84" cy="137" r="7"/>
   <text class="txt" x="105" y="144" font-size="25">Runtime registrations</text>
-  <text class="muted" x="82" y="188" font-size="18">39 tools · actual server</text>
+  <text class="muted" x="82" y="188" font-size="18">40 tools · actual server</text>
   <text class="muted" x="82" y="220" font-size="18">names · kinds · descriptions</text>
   <path class="flow" d="M314 181H420"/>
   <rect class="box" x="420" y="82" width="330" height="198"/>

@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 39 source-cited
-MCP tools, thirteen resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 40 source-cited
+MCP tools, fourteen resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -54,6 +54,20 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/health-facilities-map"><img src="docs/assets/health-facilities-map-motion.svg" alt="Animated MOHAP Health Facilities Map showing published rows, valid coordinates and explicit exclusions" width="100%"></a>
+</p>
+
+The **UAE Health Facilities Map** exposes the second GIS sheet in MOHAP's
+official 2026 workbook: 15,326 published rows, of which 7,471 contain
+coordinates inside a conservative UAE frame. It reports and excludes the other
+7,855 rows—2,671 blank coordinates, 1,102 `90,90` sentinels and 4,082 malformed
+or out-of-frame values—instead of guessing locations. Names and coordinates do
+not establish facility type, licence, ownership, current operation, services,
+capacity, accessibility or quality. Use the
+[hosted map](https://uaemcp.zad.tools/health-facilities-map),
+`GET /api/v1/health-facilities-map`, or `uae_health_facilities_map`.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/connectivity"><img src="docs/assets/connectivity-pulse-motion.svg" alt="Animated TDRA Connectivity Pulse with three separate official monthly series" width="100%"></a>
@@ -204,7 +218,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.71.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.72.0` or newer.
 
 MCP client configuration:
 
@@ -245,7 +259,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.71.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.72.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -422,8 +436,9 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 44 official sources indexed, 12 live record
-connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
+Current conservative coverage is 45 official sources indexed, 13 live record
+connectors, at least 221 known queryable datasets, 1 blocked connector, and 3
+key-required portals. Counts never imply
 that metadata-only portals are queryable.
 
 One live connector is the official FGIC National Gazetteer. It exposes

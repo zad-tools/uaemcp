@@ -68,6 +68,8 @@ import { runtimeToolCatalog } from "./server.js";
 import { toolExplorerPage } from "./tool-explorer-web.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse, type ConnectivitySeriesId } from "./connectivity-service.js";
 import { connectivityPage } from "./connectivity-web.js";
+import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
+import { healthFacilitiesMapPage } from "./health-facilities-map-web.js";
 
 type Json = Record<string, unknown>;
 
@@ -101,6 +103,26 @@ function isoDate(params: URLSearchParams, key: string): string | undefined {
   const parsed = new Date(`${value}T00:00:00Z`);
   if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) throw new ValidationError(`${key} must be a valid calendar date`);
   return value;
+}
+
+const UAE_MAP_BOUNDS = { minLat: 22, maxLat: 27, minLon: 51, maxLon: 57 } as const;
+function healthBbox(value: string | undefined): [number, number, number, number] | undefined {
+  if (!value) return undefined;
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (numbers.length !== 4 || numbers.some((number) => !Number.isFinite(number))) throw new ValidationError("bbox must be min_lon,min_lat,max_lon,max_lat");
+  const [minLon, minLat, maxLon, maxLat] = numbers;
+  if (minLon < UAE_MAP_BOUNDS.minLon || maxLon > UAE_MAP_BOUNDS.maxLon || minLat < UAE_MAP_BOUNDS.minLat || maxLat > UAE_MAP_BOUNDS.maxLat) throw new ValidationError("bbox must stay within UAE map bounds");
+  if (minLon > maxLon || minLat > maxLat) throw new ValidationError("bbox minimums must not exceed maximums");
+  return [minLon, minLat, maxLon, maxLat];
+}
+function healthNear(value: string | undefined): [number, number, number] | undefined {
+  if (!value) return undefined;
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (numbers.length !== 3 || numbers.some((number) => !Number.isFinite(number))) throw new ValidationError("near must be lat,lon,radius_km");
+  const [lat, lon, radius] = numbers;
+  if (lat < UAE_MAP_BOUNDS.minLat || lat > UAE_MAP_BOUNDS.maxLat || lon < UAE_MAP_BOUNDS.minLon || lon > UAE_MAP_BOUNDS.maxLon) throw new ValidationError("near coordinates must stay within UAE map bounds");
+  if (radius <= 0 || radius > 200) throw new ValidationError("near radius_km must be greater than 0 and at most 200");
+  return [lat, lon, radius];
 }
 
 const REST_DEFAULTS: RuntimeDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult, fetchHealthRecords: fetchResult };
@@ -144,6 +166,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/ajman-parks") return new Response(ajmanParksPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-facilities") return new Response(healthFacilitiesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/health-facilities-map") return new Response(healthFacilitiesMapPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/business-setup") return new Response(businessSetupPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -171,6 +194,18 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       if (from && to && from > to) throw new ValidationError("from must not be after to");
       const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series: series as ConnectivitySeriesId | undefined, from, to });
       return json(envelope(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+    }
+    if (request.method === "GET" && path === "/api/v1/health-facilities-map") {
+      const q = optional(url.searchParams, "q")?.trim();
+      if (q && (q.length < 2 || q.length > 100)) throw new ValidationError("q must contain 2-100 characters");
+      const bboxRaw = optional(url.searchParams, "bbox");
+      const nearRaw = optional(url.searchParams, "near");
+      if (bboxRaw && nearRaw) throw new ValidationError("use bbox or near, not both");
+      const rawLimit = url.searchParams.get("limit");
+      if (rawLimit !== null && (!/^\d+$/.test(rawLimit) || Number(rawLimit) < 1 || Number(rawLimit) > 200)) throw new ValidationError("limit must be an integer from 1 to 200");
+      const limit = rawLimit === null ? 100 : Number(rawLimit);
+      const loaded = await loadHealthFacilitiesMap(dependencies.fetchHealthFacilitiesMapRecords ?? fetchResult, { q, bbox: healthBbox(bboxRaw), near: healthNear(nearRaw), limit });
+      return json(envelope(loaded.data, { ...loaded.meta, filters: { q, bbox: bboxRaw, near: nearRaw, limit }, privacy: "direct_contact_fields_redacted" }));
     }
     if (request.method === "GET" && path === "/api/v1/policy-watch") {
       return json(envelope(policyEvidenceWatchReport(dependencies.policyEvidenceStore ?? policyEvidenceStore()), { hidden_upstream_work: false }));

@@ -261,6 +261,14 @@ describe("xlsx connector", () => {
     expect(result.total).toBe(2);
   });
 
+  it("allows an explicitly bounded large XLSX source to return its declared rows", async () => {
+    const workbook = exportRecords(Array.from({ length: 1002 }, (_, index) => ({ row: index + 1 })), "xlsx", mkSource({}), null).body;
+    mockGetBytes.mockResolvedValue(workbook);
+    const source = mkSource({ kind: "xlsx", max_page_size: 15326 });
+    expect((await fetchResult(source, { limit: 1002 })).records).toHaveLength(1002);
+    await expect(fetchResult(mkSource({ kind: "xlsx", max_page_size: 20001 }), { limit: 1002 })).rejects.toThrow("max_page_size");
+  });
+
   it("rejects non-XLSX bytes", () => {
     expect(() => parseXlsx(new Uint8Array([1, 2, 3]))).toThrow("valid XLSX");
   });

@@ -49,6 +49,7 @@ import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore,
 import type { RuntimeDependencies } from "./dependencies.js";
 import { createToolCatalog } from "./tool-catalog.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-service.js";
+import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 
 type Json = Record<string, unknown>;
 let cachedRuntimeToolCatalog: ReturnType<typeof createToolCatalog> | undefined;
@@ -63,6 +64,24 @@ function fail(err: unknown): Json {
 }
 function text(payload: Json) {
   return { content: [{ type: "text" as const, text: JSON.stringify(payload, null, 2) }] };
+}
+
+const HEALTH_MAP_BOUNDS = { minLat: 22, maxLat: 27, minLon: 51, maxLon: 57 } as const;
+function mapBbox(raw: string | undefined): [number, number, number, number] | undefined {
+  if (!raw) return undefined;
+  const values = raw.split(",").map(Number);
+  if (values.length !== 4 || values.some((value) => !Number.isFinite(value))) throw new ValidationError("bbox must be min_lon,min_lat,max_lon,max_lat");
+  const [minLon, minLat, maxLon, maxLat] = values;
+  if (minLon < HEALTH_MAP_BOUNDS.minLon || maxLon > HEALTH_MAP_BOUNDS.maxLon || minLat < HEALTH_MAP_BOUNDS.minLat || maxLat > HEALTH_MAP_BOUNDS.maxLat || minLon > maxLon || minLat > maxLat) throw new ValidationError("bbox must be ordered and stay within UAE map bounds");
+  return [minLon, minLat, maxLon, maxLat];
+}
+function mapNear(raw: string | undefined): [number, number, number] | undefined {
+  if (!raw) return undefined;
+  const values = raw.split(",").map(Number);
+  if (values.length !== 3 || values.some((value) => !Number.isFinite(value))) throw new ValidationError("near must be lat,lon,radius_km");
+  const [lat, lon, radius] = values;
+  if (lat < HEALTH_MAP_BOUNDS.minLat || lat > HEALTH_MAP_BOUNDS.maxLat || lon < HEALTH_MAP_BOUNDS.minLon || lon > HEALTH_MAP_BOUNDS.maxLon || radius <= 0 || radius > 200) throw new ValidationError("near must stay within UAE map bounds with radius_km from 0 to 200");
+  return [lat, lon, radius];
 }
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
@@ -83,6 +102,21 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         if (from && to && from > to) throw new ValidationError("from must not be after to");
         const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series, from, to });
         return text(ok(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_health_facilities_map",
+    {
+      description: "Search and spatially filter the official MOHAP 2026 health-facility location workbook as privacy-bounded map features. Direct contact fields are removed; published and mappable row counts remain explicit, and missing locations are never treated as zero facilities.",
+      inputSchema: { q: z.string().trim().min(2).max(100).optional(), bbox: z.string().max(100).optional(), near: z.string().max(100).optional(), limit: z.number().int().min(1).max(200).default(100) },
+    },
+    async ({ q, bbox, near, limit }) => {
+      try {
+        if (bbox && near) throw new ValidationError("use bbox or near, not both");
+        const loaded = await loadHealthFacilitiesMap(dependencies.fetchHealthFacilitiesMapRecords ?? fetchResult, { q, bbox: mapBbox(bbox), near: mapNear(near), limit });
+        return text(ok(loaded.data, { ...loaded.meta, filters: { q, bbox, near, limit }, privacy: "direct_contact_fields_redacted" }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -808,6 +842,25 @@ function registerResources(server: McpServer): void {
       per100MeansCoverage: false,
       prohibitedClaims: ["unique users", "population", "network coverage", "speed", "quality", "affordability", "digital inclusion", "economic growth"],
       attribution: "TDRA, source workbook name and publication date",
+    }) }] }),
+  );
+
+  server.registerResource(
+    "health_facilities_map_methodology",
+    "uae://health-facilities-map/methodology",
+    { title: "UAE Health Facilities Map methodology", description: "MOHAP 2026 facility-location grain, coordinate validation, privacy boundary and excluded-row accounting.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      period: "2026 publication",
+      grain: "published facility location",
+      publishedRows: 15326,
+      mappableRows: 7471,
+      excludedRows: 7855,
+      counts: "computed from the current official workbook or identified verified snapshot",
+      directContactFieldsReturned: false,
+      individualHealthDataReturned: false,
+      missingCoordinatesMeanZeroFacilities: false,
+      emirateOrFacilityTypeInferred: false,
+      filters: { query: "2-100 characters", bbox: "ordered coordinates within UAE map bounds", near: "UAE coordinate plus radius of at most 200 km", maximumResults: 200 },
     }) }] }),
   );
 

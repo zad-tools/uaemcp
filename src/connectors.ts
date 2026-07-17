@@ -417,12 +417,14 @@ async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> 
   });
   records = coerceRedactionExemptNumericFields(records, source.connector_config.redaction_exempt_fields);
   const configuredRowLimit = Number(source.connector_config.row_limit);
-  if (Number.isInteger(configuredRowLimit) && configuredRowLimit > 0) records = records.slice(0, Math.min(configuredRowLimit, 10_000));
+  if (Number.isInteger(configuredRowLimit) && configuredRowLimit > 0) records = records.slice(0, Math.min(configuredRowLimit, 20_000));
   const total = records.length;
   let clientFiltered = false;
   if (opts.query) { const query = opts.query.toLocaleLowerCase(); records = records.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query)); clientFiltered = true; }
   const offset = opts.offset ?? 0;
-  records = redactRecords(records.slice(offset, offset + Math.min(opts.limit ?? 10, 1000)));
+  const configuredMaxRecords = source.max_page_size ?? 1000;
+  if (!Number.isInteger(configuredMaxRecords) || configuredMaxRecords < 1 || configuredMaxRecords > 20_000) throw new ValidationError("XLSX max_page_size must be an integer from 1 to 20,000");
+  records = redactRecords(records.slice(offset, offset + Math.min(opts.limit ?? 10, configuredMaxRecords)));
   return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
 }
 

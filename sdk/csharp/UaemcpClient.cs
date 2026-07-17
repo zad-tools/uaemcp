@@ -23,6 +23,7 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> GetEducationLedger(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/education",parameters,cancellationToken);
  public Task<JsonDocument> GetHealthIndicators(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/health-indicators",parameters,cancellationToken);
  public Task<JsonDocument> GetHealthFacilitiesAtlas(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/health-facilities",parameters,cancellationToken);
+ public Task<JsonDocument> GetHealthFacilitiesMap(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/health-facilities-map",parameters,cancellationToken);
  public Task<JsonDocument> GetCoverage(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/coverage",parameters,cancellationToken);
  public Task<JsonDocument> GetIndustryAtlas(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/industry-atlas",parameters,cancellationToken);
  public Task<JsonDocument> GetIndustryChange(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/industry-atlas/change",parameters,cancellationToken);

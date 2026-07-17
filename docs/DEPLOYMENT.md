@@ -62,7 +62,7 @@ and the packed archive must remain below 1 MB.
 
 The `publish-npm.yml` workflow already uses a GitHub-hosted runner with
 `id-token: write`; it deliberately has no long-lived npm token. Before creating
-the first `v1.71.0` tag, the `uaemcp` package owner must open the package settings
+the next `v*` release tag, the `uaemcp` package owner must open the package settings
 on npm and add this GitHub Actions trusted publisher:
 
 | Field | Value |
@@ -84,8 +84,9 @@ verified `main` commit:
 test "$(git branch --show-current)" = main
 test -z "$(git status --porcelain)"
 bun run check
-git tag -s v1.71.0 -m "Open Emirates Intelligence v1.71.0"
-git push origin v1.71.0
+VERSION=1.72.0
+git tag -s "v$VERSION" -m "Open Emirates Intelligence v$VERSION"
+git push origin "v$VERSION"
 ```
 
 That tag publishes the exact tested tarball with provenance and creates the

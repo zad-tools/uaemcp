@@ -144,6 +144,27 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     evidence: { scope: { en: "950 aggregate MOHAP rows covering seven emirates and ten published years.", ar: "950 صفًا مجمعًا من وزارة الصحة تغطي الإمارات السبع وعشر سنوات منشورة." }, limitations: [{ en: "Rows are not individual facilities; counts do not measure beds, capacity, workforce, access or quality.", ar: "الصفوف ليست منشآت فردية، والأعداد لا تقيس الأسرّة أو الطاقة الاستيعابية أو الكوادر أو الوصول أو الجودة." }] },
   },
   {
+    id: "health_facilities_map",
+    status: "published",
+    access: "public",
+    category: "HEALTH / COORDINATES",
+    categoryAr: "الصحة / الإحداثيات",
+    title: { en: "UAE Health Facilities Map", ar: "خريطة المنشآت الصحية في الإمارات" },
+    description: {
+      en: "Search official MOHAP 2026 facility names and plot only coordinates that fall inside a bounded UAE frame.",
+      ar: "ابحث في أسماء المنشآت الرسمية المنشورة من وزارة الصحة لعام 2026 واعرض فقط الإحداثيات الواقعة داخل إطار الإمارات المحدد.",
+    },
+    webPath: "/health-facilities-map",
+    apiPath: "/api/v1/health-facilities-map",
+    sourceIds: ["mohap_health_facilities_gis_2026"],
+    evidence: {
+      scope: { en: "15,326 published rows; 7,471 have coordinates inside the bounded UAE frame and 7,855 invalid, empty or 90,90 coordinates are excluded.", ar: "15,326 صفًا منشورًا؛ منها 7,471 بإحداثيات داخل إطار الإمارات المحدد، واستُبعدت 7,855 قيمة فارغة أو غير صالحة أو 90,90." },
+      limitations: [
+        { en: "A name and coordinate do not establish licence, type, ownership, operation, services, capacity, accessibility or quality.", ar: "لا يثبت الاسم والإحداثي الترخيص أو النوع أو الملكية أو التشغيل أو الخدمات أو السعة أو سهولة الوصول أو الجودة." },
+      ],
+    },
+  },
+  {
     id: "trade_flow_radar",
     status: "published",
     access: "public",
