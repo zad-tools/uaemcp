@@ -75,4 +75,17 @@ describe("Golden Residency readiness navigator", () => {
     expect(sources.some((url) => url.includes("gdrfad.gov.ae"))).toBe(true);
     expect(sources.some((url) => url.includes("adro.gov.ae"))).toBe(true);
   });
+
+  it("routes local applications to the published category page when one exists", () => {
+    const dubaiInvestor = assessGoldenResidencyReadiness({ pathway: "real_estate_investor", jurisdiction: "dubai" });
+    const dubaiStudent = assessGoldenResidencyReadiness({ pathway: "university_student", jurisdiction: "dubai" });
+    const abuDhabiEntrepreneur = assessGoldenResidencyReadiness({ pathway: "entrepreneur", jurisdiction: "abu_dhabi" });
+    const abuDhabiSpecialist = assessGoldenResidencyReadiness({ pathway: "doctor", jurisdiction: "abu_dhabi" });
+
+    expect(dubaiInvestor.nextStep.url).toContain("8ea80da4-f43e");
+    expect(dubaiStudent.nextStep.url).toContain("8ea80dad-f43e");
+    expect(abuDhabiEntrepreneur.nextStep.url).toEndWith("/Entrepreneurs");
+    expect(abuDhabiSpecialist.nextStep.url).toEndWith("/Specialists");
+    expect(dubaiInvestor.nextStep.categorySpecific).toBe(true);
+  });
 });

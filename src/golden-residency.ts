@@ -7,6 +7,40 @@ type Localized = Readonly<{ en: string; ar: string }>;
 export const GOLDEN_PATHWAY_IDS = ["public_investor", "real_estate_investor", "entrepreneur", "exceptional_talent", "doctor", "scientist", "inventor", "creative", "executive", "athlete", "priority_specialist", "high_school_student", "university_student", "humanitarian_frontline"] as const;
 export type GoldenPathwayId = typeof GOLDEN_PATHWAY_IDS[number];
 
+const DUBAI_CATEGORY_ROUTES: Readonly<Record<GoldenPathwayId, string | null>> = Object.freeze({
+  public_investor: "https://www.gdrfad.gov.ae/en/services/8ea80da4-f43e-11eb-0320-0050569629e8",
+  real_estate_investor: "https://www.gdrfad.gov.ae/en/services/8ea80da4-f43e-11eb-0320-0050569629e8",
+  entrepreneur: "https://www.gdrfad.gov.ae/en/services/8ea80da7-f43e-11eb-0320-0050569629e8",
+  exceptional_talent: "https://www.gdrfad.gov.ae/en/services/2e7da546-f815-11eb-0320-0050569629e8",
+  doctor: "https://www.gdrfad.gov.ae/en/services/8ea80daa-f43e-11eb-0320-0050569629e8",
+  scientist: "https://www.gdrfad.gov.ae/en/services/8ea80daa-f43e-11eb-0320-0050569629e8",
+  inventor: "https://www.gdrfad.gov.ae/en/services/2e7da546-f815-11eb-0320-0050569629e8",
+  creative: "https://www.gdrfad.gov.ae/en/services/2e7da546-f815-11eb-0320-0050569629e8",
+  executive: "https://www.gdrfad.gov.ae/en/services/8ea80daa-f43e-11eb-0320-0050569629e8",
+  athlete: "https://www.gdrfad.gov.ae/en/services/2e7da546-f815-11eb-0320-0050569629e8",
+  priority_specialist: "https://www.gdrfad.gov.ae/en/services/8ea80daa-f43e-11eb-0320-0050569629e8",
+  high_school_student: "https://www.gdrfad.gov.ae/en/services/8ea80dad-f43e-11eb-0320-0050569629e8",
+  university_student: "https://www.gdrfad.gov.ae/en/services/8ea80dad-f43e-11eb-0320-0050569629e8",
+  humanitarian_frontline: null,
+});
+
+const ABU_DHABI_CATEGORY_ROUTES: Readonly<Record<GoldenPathwayId, string | null>> = Object.freeze({
+  public_investor: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Investors`,
+  real_estate_investor: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Investors`,
+  entrepreneur: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Entrepreneurs`,
+  exceptional_talent: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Brilliant-Talents`,
+  doctor: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Specialists`,
+  scientist: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Specialists`,
+  inventor: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Brilliant-Talents`,
+  creative: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Brilliant-Talents`,
+  executive: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Specialists`,
+  athlete: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Brilliant-Talents`,
+  priority_specialist: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Specialists`,
+  high_school_student: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Students`,
+  university_student: `${GOLDEN_RESIDENCY_ABU_DHABI_URL}/Students`,
+  humanitarian_frontline: null,
+});
+
 export type GoldenReadinessInput = Readonly<{
   pathway: GoldenPathwayId;
   jurisdiction?: "federal" | "dubai" | "abu_dhabi";
@@ -184,6 +218,12 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     dubai: { authority: "gdrfa_dubai", label: { en: "Open GDRFA Dubai Golden Residency", ar: "افتح الإقامة الذهبية لدى إقامة دبي" }, url: GOLDEN_RESIDENCY_DUBAI_URL },
     abu_dhabi: { authority: "adro_abu_dhabi", label: { en: "Open Abu Dhabi Residents Office", ar: "افتح مكتب أبوظبي للمقيمين" }, url: GOLDEN_RESIDENCY_ABU_DHABI_URL },
   } as const;
+  const categoryUrl = jurisdiction === "dubai"
+    ? DUBAI_CATEGORY_ROUTES[input.pathway]
+    : jurisdiction === "abu_dhabi"
+      ? ABU_DHABI_CATEGORY_ROUTES[input.pathway]
+      : GOLDEN_RESIDENCY_ICP_URL;
+  const routedUrl = categoryUrl ?? nextSteps[jurisdiction].url;
   const localCriteriaNotEvaluated = jurisdiction !== "federal";
   const routingNotice = localCriteriaNotEvaluated
     ? {
@@ -212,7 +252,7 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     },
     decision: "informational_only" as const,
     criteria: { scope: "federal_baseline" as const, localCriteriaNotEvaluated },
-    nextStep: { jurisdiction, ...nextSteps[jurisdiction], notice: routingNotice },
+    nextStep: { jurisdiction, ...nextSteps[jurisdiction], url: routedUrl, categorySpecific: jurisdiction !== "federal" && categoryUrl !== null, notice: routingNotice },
     disclaimer: goldenResidencyCatalogue().disclaimer,
   };
 }

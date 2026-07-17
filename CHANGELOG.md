@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.56.0
+
+- Routes Dubai and Abu Dhabi dossiers to the published official category page for investors, entrepreneurs, talents, specialists and students.
+- Keeps the authority hub as an honest fallback when a distinct issuance page is not confirmed, avoiding renewal-only or inferred links.
+- Adds `categorySpecific` to routing output so agents can explain whether the next step is a precise category page or an authority hub.
+- Verified the direct student flow in Arabic, RTL and Dubai Font without mobile overflow.
+
 ## 1.55.0
 
 - Distinguishes the federal baseline assessment from Dubai and Abu Dhabi local category criteria instead of implying that one threshold set is universal.
