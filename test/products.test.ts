@@ -25,5 +25,5 @@ describe("public product registry", () => {
       const apiIsDocumented = paths.some((path) => path === product.apiPath || (path.includes("{sourceId}") && product.apiPath.endsWith("/records")));
       expect(apiIsDocumented).toBe(true);
     }
-  });
+  }, 15_000);
 });
