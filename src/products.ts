@@ -113,6 +113,27 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     },
   },
   {
+    id: "ajman_business_evidence",
+    status: "published",
+    access: "public",
+    category: "BUSINESS / EVIDENCE",
+    categoryAr: "الأعمال / الأدلة",
+    title: { en: "Ajman Business Evidence", ar: "أدلة الأعمال في عجمان" },
+    description: {
+      en: "Explore bounded official Ajman license records by activity, area, legal form, type and published status.",
+      ar: "استكشف عينات محدودة من سجلات الرخص الرسمية في عجمان حسب النشاط والمنطقة والشكل القانوني والنوع والحالة المنشورة.",
+    },
+    webPath: "/ajman-business",
+    apiPath: "/api/v1/ajman-business",
+    sourceIds: ["ajman_data_portal"],
+    evidence: {
+      scope: { en: "Three distinct live OpenDataSoft datasets published through the official Ajman Data portal.", ar: "ثلاث مجموعات بيانات حية ومتميزة منشورة عبر بوابة بيانات عجمان الرسمية." },
+      limitations: [
+        { en: "Dataset rows are bounded samples and cannot be added together as unique companies, market size or business growth.", ar: "صفوف البيانات عينات محدودة ولا يجوز جمعها باعتبارها شركات فريدة أو حجم سوق أو نمو أعمال." },
+      ],
+    },
+  },
+  {
     id: "industry_atlas",
     status: "published",
     access: "public",

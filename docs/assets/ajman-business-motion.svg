@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+  <title id="title">Ajman Business Evidence</title>
+  <desc id="desc">Three official dataset views remain separate while evidence flows into bounded rankings.</desc>
+  <style>
+    @font-face{font-family:Dubai;src:url('../assets/fonts/Dubai-Regular.woff')}text{font-family:Dubai,Arial,sans-serif}.small{font:12px monospace;letter-spacing:1.5px}.title{font-size:48px;font-weight:700}.label{font-size:19px;font-weight:700}.note{font-size:14px}.route{stroke-dasharray:10 12;animation:flow 5s linear infinite}.pulse{animation:pulse 2.4s ease-in-out infinite}.b{animation-delay:.8s}.c{animation-delay:1.6s}@keyframes flow{to{stroke-dashoffset:-88}}@keyframes pulse{50%{r:10;opacity:.35}}@media(prefers-reduced-motion:reduce){.route,.pulse{animation:none}}
+  </style>
+  <rect width="1200" height="460" fill="#f1eddf"/><rect x="0" y="0" width="1200" height="74" fill="#173d2d"/>
+  <text x="48" y="47" fill="#f1eddf" class="small">OPEN EMIRATES INTELLIGENCE / AJMAN / 1.62.0</text>
+  <text x="48" y="142" fill="#10271e" class="title">THREE VIEWS. NEVER ONE TOTAL.</text>
+  <g transform="translate(48 190)"><rect width="270" height="150" fill="#173d2d"/><text x="24" y="38" fill="#cbb56f" class="small">01 / ACTIVITY VIEW</text><text x="24" y="81" fill="#f1eddf" class="label">Activities + licence types</text><text x="24" y="112" fill="#c4d2ca" class="note">Bounded official sample</text></g>
+  <g transform="translate(465 190)"><rect width="270" height="150" fill="#173d2d"/><text x="24" y="38" fill="#cbb56f" class="small">02 / AREA VIEW</text><text x="24" y="81" fill="#f1eddf" class="label">Areas + licence types</text><text x="24" y="112" fill="#c4d2ca" class="note">Bounded official sample</text></g>
+  <g transform="translate(882 190)"><rect width="270" height="150" fill="#173d2d"/><text x="24" y="38" fill="#cbb56f" class="small">03 / STATUS VIEW</text><text x="24" y="81" fill="#f1eddf" class="label">Published status + type</text><text x="24" y="112" fill="#c4d2ca" class="note">Bounded official sample</text></g>
+  <path class="route" d="M318 265H465M735 265H882" fill="none" stroke="#c94133" stroke-width="3"/><circle class="pulse" cx="318" cy="265" r="5" fill="#c94133"/><circle class="pulse b" cx="600" cy="265" r="5" fill="#c94133"/><circle class="pulse c" cx="882" cy="265" r="5" fill="#c94133"/>
+  <rect x="48" y="377" width="1104" height="48" fill="#c94133"/><text x="600" y="407" fill="#f1eddf" text-anchor="middle" class="small">NOT UNIQUE COMPANIES · NOT MARKET SIZE · NOT INVESTMENT ADVICE</text>
+</svg>

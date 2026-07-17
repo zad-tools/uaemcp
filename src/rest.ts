@@ -33,6 +33,8 @@ import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-a
 import { taxArchivePage } from "./tax-archive-web.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { tradeFlowPage } from "./trade-flow-web.js";
+import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
+import { ajmanBusinessPage } from "./ajman-business-web.js";
 import { listProducts } from "./products.js";
 import { healthIndicatorsPage } from "./health-indicators-web.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
@@ -106,6 +108,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tax-services/archive") return new Response(taxArchivePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/ajman-business") return new Response(ajmanBusinessPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -226,6 +229,14 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       const requestedLimit = integer(url.searchParams, "limit", 500, 1000);
       if (requestedLimit < 1) throw new ValidationError("limit must be at least 1");
       const product = await loadTradeFlowProduct(dependencies.fetchTradeRecords ?? fetchResult, requestedLimit);
+      return json(envelope(product.data, product.meta));
+    }
+    if (request.method === "GET" && path === "/api/v1/ajman-business") {
+      const requestedLimit = integer(url.searchParams, "limit", 500, 1000);
+      if (requestedLimit < 1) throw new ValidationError("limit must be at least 1");
+      const query = optional(url.searchParams, "q");
+      if (query && query.length > 100) throw new ValidationError("q must contain at most 100 characters");
+      const product = await loadAjmanBusinessProduct(dependencies.fetchAjmanBusinessRecords ?? fetchResult, requestedLimit, query);
       return json(envelope(product.data, product.meta));
     }
     if (request.method === "GET" && path === "/api/v1/industry-atlas/change") {

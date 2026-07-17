@@ -29,6 +29,7 @@ import { buildIndustrialChangeReport } from "./industry-change.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
+import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
@@ -199,6 +200,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     async ({ limit }) => {
       try {
         const product = await loadTradeFlowProduct(dependencies.fetchTradeRecords ?? fetchResult, limit);
+        return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_ajman_business_evidence",
+    {
+      description: "Explore three distinct official Ajman business-license dataset samples by activity, area, legal form, license type and published status. Samples are not unique-company counts, market size or investment advice.",
+      inputSchema: { query: z.string().trim().max(100).optional(), limit: z.number().int().min(1).max(1000).default(500) },
+    },
+    async ({ query, limit }) => {
+      try {
+        const product = await loadAjmanBusinessProduct(dependencies.fetchAjmanBusinessRecords ?? fetchResult, limit, query);
         return text(ok(product.data, product.meta));
       } catch (error) { return text(fail(error)); }
     },

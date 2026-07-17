@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.62.0
+
+- Added the Ajman Business Evidence Explorer over three official OpenDataSoft licence views for activities, areas and published company status.
+- Kept rankings and date observations isolated per dataset so records are never added together or presented as unique companies, market size, survival or growth.
+- Added `/ajman-business`, `/api/v1/ajman-business` and the read-only `uae_ajman_business_evidence` MCP tool with OpenAPI, SDK and trust-manifest discovery.
+- Preserved ISO source dates during PII redaction instead of mistaking date strings for telephone numbers.
+- Added a bilingual RTL interface using same-origin Dubai Font and an animated evidence-boundary diagram for the README.
+
 ## 1.61.1
 
 - Unified every public interface on same-origin Dubai Regular and Dubai Bold assets, removing direct third-party font requests from page markup.

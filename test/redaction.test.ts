@@ -15,9 +15,11 @@ describe("redaction", () => {
   });
 
   it("keeps non-contact values untouched", () => {
-    const out = redactRecord({ Latitude: "24.28", Longitude: "54.49", ID: "B38C48E8" });
+    const out = redactRecord({ Latitude: "24.28", Longitude: "54.49", ID: "B38C48E8", startdate: "2008-10-20", observed_at: "2026-07-17T13:12:49Z" });
     expect(out.Latitude).toBe("24.28");
     expect(out.ID).toBe("B38C48E8");
+    expect(out.startdate).toBe("2008-10-20");
+    expect(out.observed_at).toBe("2026-07-17T13:12:49Z");
   });
 
   it("does not mutate the input", () => {

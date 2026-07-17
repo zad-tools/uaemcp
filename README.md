@@ -42,7 +42,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 31 source-cited
+The server keeps the public `uaemcp` contract and extends it to 32 source-cited
 MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -86,6 +86,15 @@ mainland authority or federal free-zone directory across all seven emirates. It
 does not collect names, phone numbers, emails or passport data, and never
 pretends to choose a licence, calculate final fees or guarantee approval.
 
+<p align="center">
+  <a href="https://uaemcp.zad.tools/ajman-business"><img src="docs/assets/ajman-business-motion.svg" alt="Animated Ajman Business Evidence explorer with three separate official dataset views" width="100%"></a>
+</p>
+
+The **Ajman Business Evidence Explorer** turns three large official open-data
+views into bounded rankings for activities, areas, licence types and published
+status. It keeps every dataset separate: sampled rows are not added together as
+unique companies, market size, survival or investment performance.
+
 ## Hosted endpoint
 
 ```json
@@ -114,7 +123,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.61.1` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.62.0` or newer.
 
 MCP client configuration:
 
@@ -155,7 +164,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.61.1` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.62.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -185,6 +194,7 @@ Endpoints:
 - UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
+- Ajman Business Evidence: `GET /ajman-business` — three separately ranked official licence-data views with bounded sampling, citations and explicit non-market limitations
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — normalized bilingual official place-name search and mapped FGIC evidence; API at `GET /api/v1/places`

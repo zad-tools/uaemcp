@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.62 — Ajman business evidence — complete
+
+- Three separately ranked official Ajman licence-data views for activity, area and published status
+- Per-view licence, legal-form and date observations without cross-dataset totals
+- Bounded REST and MCP contracts with citations, lineage and explicit interpretation limits
+- Bilingual Dubai Font explorer and animated README evidence diagram
+
 ## v1.61 — National place-name evidence — complete
 
 - Dedicated normalized REST and MCP contract over the official FGIC National Gazetteer

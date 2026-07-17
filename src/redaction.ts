@@ -21,6 +21,7 @@ const PII_NAME_HINTS = [
 
 const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
 const PHONE_RE = /(?<!\d)(?:\+?\d[\d\s\-()]{6,}\d)(?!\d)/;
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$/;
 
 function fieldIsPii(name: string): boolean {
   const low = name.toLowerCase().replace(/[_-]/g, "");
@@ -29,6 +30,7 @@ function fieldIsPii(name: string): boolean {
 
 function looksLikeContact(value: string): boolean {
   if (EMAIL_RE.test(value)) return true;
+  if (ISO_DATE_RE.test(value)) return false;
   const digits = value.replace(/\D/g, "");
   return digits.length >= 7 && digits.length <= 15 && PHONE_RE.test(value);
 }
