@@ -530,11 +530,74 @@ async function fetchGraphql(source: Source, opts: FetchOpts): Promise<FetchResul
 }
 
 // ── SPARQL SELECT ────────────────────────────────────────────────────────────
+function sparqlStartsWithSelect(query: string): boolean {
+  let cursor = 0;
+  const skipWhitespace = (): void => {
+    while (cursor < query.length && (query[cursor] === " " || query[cursor] === "\t" || query[cursor] === "\r" || query[cursor] === "\n")) cursor += 1;
+  };
+  skipWhitespace();
+  while (query.slice(cursor, cursor + 6).toUpperCase() === "PREFIX") {
+    const boundary = query[cursor + 6];
+    if (boundary !== " " && boundary !== "\t" && boundary !== "\r" && boundary !== "\n") break;
+    cursor += 6;
+    skipWhitespace();
+    while (cursor < query.length && /[A-Za-z0-9_-]/.test(query[cursor])) cursor += 1;
+    if (query[cursor] !== ":") return false;
+    cursor += 1;
+    skipWhitespace();
+    if (query[cursor] !== "<") return false;
+    const iriEnd = query.indexOf(">", cursor + 1);
+    if (iriEnd < 0) return false;
+    cursor = iriEnd + 1;
+    skipWhitespace();
+  }
+  if (query.slice(cursor, cursor + 6).toUpperCase() !== "SELECT") return false;
+  const boundary = query[cursor + 6];
+  return boundary === undefined || boundary === " " || boundary === "\t" || boundary === "\r" || boundary === "\n";
+}
+
+function containsForbiddenSparqlKeyword(query: string): boolean {
+  const forbidden = new Set(["INSERT", "DELETE", "LOAD", "CLEAR", "CREATE", "DROP", "COPY", "MOVE", "ADD", "SERVICE"]);
+  let cursor = 0;
+  while (cursor < query.length) {
+    const character = query[cursor];
+    if (character === "#") {
+      const lineEnd = query.indexOf("\n", cursor + 1);
+      cursor = lineEnd < 0 ? query.length : lineEnd + 1;
+      continue;
+    }
+    if (character === "<") {
+      const iriEnd = query.indexOf(">", cursor + 1);
+      cursor = iriEnd < 0 ? query.length : iriEnd + 1;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      const quote = character;
+      cursor += 1;
+      while (cursor < query.length) {
+        if (query[cursor] === "\\") cursor += 2;
+        else if (query[cursor] === quote) { cursor += 1; break; }
+        else cursor += 1;
+      }
+      continue;
+    }
+    if (/[A-Za-z]/.test(character)) {
+      const start = cursor;
+      while (cursor < query.length && /[A-Za-z]/.test(query[cursor])) cursor += 1;
+      const prefix = start > 0 ? query[start - 1] : "";
+      if (prefix !== ":" && prefix !== "?" && prefix !== "$" && forbidden.has(query.slice(start, cursor).toUpperCase())) return true;
+      continue;
+    }
+    cursor += 1;
+  }
+  return false;
+}
+
 function boundedSparql(query: string, limit: number): string {
   const normalized = query.trim();
   if (normalized.length > 10_000) throw new ValidationError("SPARQL query exceeds 10,000 characters");
-  if (!/^(?:PREFIX\s+\S+:\s*<[^>]+>\s*)*SELECT\b/is.test(normalized)) throw new ValidationError("SPARQL connector only permits SELECT queries");
-  if (/\b(?:INSERT|DELETE|LOAD|CLEAR|CREATE|DROP|COPY|MOVE|ADD|SERVICE)\b/i.test(normalized)) throw new ValidationError("SPARQL update and SERVICE clauses are not permitted");
+  if (!sparqlStartsWithSelect(normalized)) throw new ValidationError("SPARQL connector only permits SELECT queries");
+  if (containsForbiddenSparqlKeyword(normalized)) throw new ValidationError("SPARQL update and SERVICE clauses are not permitted");
   if (/\bLIMIT\s+\d+/i.test(normalized)) return normalized.replace(/\bLIMIT\s+(\d+)/i, (_match, value) => `LIMIT ${Math.min(Number(value), limit)}`);
   return `${normalized}\nLIMIT ${limit}`;
 }

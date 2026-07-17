@@ -174,6 +174,12 @@ describe("sparql connector", () => {
     expect(params.query).toContain("LIMIT 5");
     expect(params.query).toContain('"health"');
   });
+  it("accepts bounded PREFIX declarations before SELECT", async () => {
+    mockGetJson.mockResolvedValue({ results: { bindings: [] } });
+    await fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "PREFIX ex: <https://example.gov/>\nSELECT ?s WHERE { ?s a ex:Service }" } }));
+    const params = mockGetJson.mock.calls[0][1] as Record<string, string>;
+    expect(params.query).toContain("PREFIX ex:");
+  });
   it("rejects updates, SERVICE and arbitrary queries by default", async () => {
     await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "DELETE WHERE { ?s ?p ?o }" } }))).rejects.toThrow("only permits SELECT");
     await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "SELECT * WHERE { SERVICE <https://x> { ?s ?p ?o } }" } }))).rejects.toThrow("SERVICE");
