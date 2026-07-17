@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.76.0 - 2026-07-18
+
+- Added a live Canvas site atlas that maps all public applications around the Open Emirates platform core.
+- Added six practical domain filters, node selection, evidence details and direct routes generated from the live product registry.
+- Added accessible fallback navigation, Arabic RTL rendering, responsive mobile behavior and reduced-motion support.
+- Reworked the landing-page information hierarchy so visitors can understand the platform before opening the full product directory.
+
 ## 1.75.1 — 2026-07-18
 
 - Updated every local MCP client recipe to use the signed npm release through Bun instead of the moving GitHub branch.

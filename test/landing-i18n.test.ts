@@ -25,6 +25,21 @@ describe("bilingual landing page", () => {
     expect(() => new Function(singleInlineScript(landingPage()))).not.toThrow();
   });
 
+  it("renders an accessible interactive site atlas for the public product graph", () => {
+    const html = landingPage();
+
+    expect(html).toContain('id="site-atlas"');
+    expect(html).toContain('id="atlasCanvas"');
+    expect(html).toContain('id="atlasFallback"');
+    expect(html).toContain('id="atlasDetail"');
+    expect(html).toContain('function renderAtlas');
+    expect(html).toContain('ResizeObserver');
+    expect(html).toContain("prefers-reduced-motion: reduce");
+    expect(html).toContain('data-ar="خريطة المنصة"');
+    expect(html).not.toContain("—");
+    expect(html).not.toContain("–");
+  });
+
   it("renders the current trust contract instead of stale brand metrics", () => {
     const html = landingPage();
     const summary = trustSummary();
