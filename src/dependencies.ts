@@ -6,4 +6,5 @@ export interface RuntimeDependencies {
   fetchTaxArchiveRecords?: typeof fetchResult;
   fetchTradeRecords?: typeof fetchResult;
   fetchHealthRecords?: typeof fetchResult;
+  fetchPlaceRecords?: typeof fetchResult;
 }

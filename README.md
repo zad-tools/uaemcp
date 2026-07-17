@@ -136,7 +136,7 @@ Endpoints:
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
-- UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
+- UAE Place Names Explorer: `GET /places` — normalized bilingual official place-name search and mapped FGIC evidence; API at `GET /api/v1/places`
 - UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
 - UAE Education Ledger: `GET /education` — FCSC-accredited 2023/2024 national totals, reconciliation checks and the separate seven-resource Ministry of Education catalogue
 - UAE Golden Residency Navigator: `GET /golden-residency` — 14 official routes with direct category pages at ICP/GDRFA/ADRO, federal-vs-local criteria warnings and a printable non-identifying readiness dossier
@@ -292,8 +292,12 @@ One live connector is the official FGIC National Gazetteer. It exposes
 bilingual UAE place names and coordinates through ArcGIS while omitting a known
 placeholder English-description field and retaining FGIC's informational-use disclaimer:
 
+<p align="center">
+  <a href="https://uaemcp.zad.tools/places"><img src="docs/assets/place-names-motion.svg" alt="Animated bilingual UAE National Gazetteer search and mapping" width="920"></a>
+</p>
+
 ```bash
-curl 'https://uaemcp.zad.tools/api/v1/sources/fgic_national_gazetteer/records?query=%D8%AF%D8%A8%D9%8A&limit=5'
+curl 'https://uaemcp.zad.tools/api/v1/places?q=%D8%AF%D8%A8%D9%8A&limit=5'
 ```
 
 Tool results use `{ ok, data, error, meta }`. Data responses include source,

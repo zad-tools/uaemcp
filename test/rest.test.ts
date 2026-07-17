@@ -82,7 +82,7 @@ describe("REST v1", () => {
     expect(response.status).toBe(200);
     expect(html).toContain("UAE Place Names Explorer");
     expect(html).toContain("مستكشف أسماء الأماكن في الإمارات");
-    expect(html).toContain("/api/v1/sources/fgic_national_gazetteer/records");
+    expect(html).toContain("/api/v1/places");
     expect(html).toContain("Federal Geographic Information Center");
   });
 
@@ -98,7 +98,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.60.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.61.0" } });
     expect(document.paths["/api/v1/founder-pathway"].post.operationId).toBe("buildFounderPathway");
   });
 
@@ -153,7 +153,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.60.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.61.0" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");
     expect(manifest.endpoints.founderPathway).toBe("/founder-pathway");

@@ -187,7 +187,7 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
       ar: "ابحث في الأسماء الجغرافية الرسمية في الإمارات مع التسميات الثنائية والإحداثيات.",
     },
     webPath: "/places",
-    apiPath: "/api/v1/sources/fgic_national_gazetteer/records",
+    apiPath: "/api/v1/places",
     sourceIds: ["fgic_national_gazetteer"],
     evidence: {
       scope: { en: "Bounded records from the official national gazetteer source.", ar: "سجلات محدودة من المصدر الرسمي للمعجم الجغرافي الوطني." },

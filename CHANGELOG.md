@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.61.0
+
+- Promoted the official FGIC National Gazetteer from a generic source query to the dedicated `/api/v1/places` evidence product and `uae_place_names` MCP tool.
+- Normalized Arabic and English names, source-native categories and valid coordinates while deliberately excluding FGIC's known placeholder English-description field.
+- Rebuilt the Place Names Explorer around the stable product contract with complete Arabic runtime states, responsive RTL and locally served Dubai Font.
+- Added OpenAPI and generated SDK support, strict query budgets, provenance, lineage, explicit map limitations and an animated README visual.
+
 ## 1.60.0
 
 - Expanded the UAE Founder Pathway into a source-linked Action Dossier with ordered setup, support and entrepreneur-residency tasks.

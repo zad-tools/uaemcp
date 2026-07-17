@@ -36,6 +36,7 @@ import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWA
 import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup } from "./business-setup.js";
 import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSupport, startupSupportCatalogue } from "./startup-support.js";
 import { buildFounderPathway } from "./founder-pathway.js";
+import { buildPlaceNamesProduct } from "./places.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -54,6 +55,21 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_place_names",
+    {
+      description: "Search the official FGIC National Gazetteer for bilingual UAE place names and coordinates. Returns a bounded, normalized, source-cited evidence product; points are not an authoritative boundary reference.",
+      inputSchema: { query: z.string().trim().min(2).max(100), limit: z.number().int().min(1).max(100).default(20) },
+    },
+    async ({ query, limit }) => {
+      try {
+        const source = REGISTRY.get("fgic_national_gazetteer");
+        const result = await (dependencies.fetchPlaceRecords ?? fetchResult)(source, { query, limit });
+        return text(ok(buildPlaceNamesProduct(result.records, { query, citation: result.citation, fetchedAt: result.fetched_at }), { ...metaOf(result), requested_limit: limit }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_founder_pathway",

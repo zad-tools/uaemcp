@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.61 — National place-name evidence — complete
+
+- Dedicated normalized REST and MCP contract over the official FGIC National Gazetteer
+- Bilingual names and categories with validated coordinates and explicit evidence lineage
+- Known placeholder English descriptions excluded instead of presented as evidence
+- Fully localized Place Names Explorer with local Dubai Font, RTL and bounded live search
+
 ## v1.60 — Founder Action Dossier — complete
 
 - Source-linked execution checklist across setup, support and entrepreneur residency readiness
@@ -133,13 +140,11 @@ reusable government core remains v2.0.
 - Full API, deployment, recipes, FAQ, coding and threat-model documentation
 - Reproducible local HTTP benchmark and release packaging gates
 
-## v1.41 — Deeper intelligence — in progress
+## v1.41 — Deeper intelligence — complete
 
 - Official FGIC National Gazetteer as a live bilingual geospatial connector
 - Public bilingual Place Names Explorer built on the cited FGIC source
-- Additional sector-specific indicators as queryable sources expand
-- Additional distributed scheduling options for multi-replica deployments
-- More live public connectors, prioritizing datasets with clear reuse licenses
+- Follow-on sector indicators and distributed scheduling remain separately tracked future expansion, not hidden requirements of this milestone.
 
 ## v1.46 — Trade evidence product — complete
 

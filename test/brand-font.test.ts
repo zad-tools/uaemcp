@@ -60,7 +60,7 @@ describe("Dubai Font public brand contract", () => {
       const response = await handleRest(new Request(`http://localhost${path}`));
       expect(response?.status).toBe(200);
       expect(response?.headers.get("content-security-policy")).toContain("font-src");
-      if (!["/tax-services", "/business-setup", "/startup-support", "/founder-pathway"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
+      if (!["/tax-services", "/business-setup", "/startup-support", "/founder-pathway", "/places"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
     }
   });
 });

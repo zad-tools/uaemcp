@@ -1,1 +1,1 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>tools.zad</groupId><artifactId>uaemcp-client</artifactId><version>1.60.0</version><properties><maven.compiler.release>17</maven.compiler.release></properties></project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>tools.zad</groupId><artifactId>uaemcp-client</artifactId><version>1.61.0</version><properties><maven.compiler.release>17</maven.compiler.release></properties></project>

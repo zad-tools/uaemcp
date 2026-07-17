@@ -26,6 +26,7 @@ import { buildIndustryAtlas } from "./industry-atlas.js";
 import { industryAtlasPage } from "./industry-atlas-web.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
 import { placesExplorerPage } from "./places-web.js";
+import { buildPlaceNamesProduct } from "./places.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { taxServicesPage } from "./tax-services-web.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
@@ -101,7 +102,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tax-services/archive") return new Response(taxArchivePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -117,6 +118,18 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/places") {
+      const query = url.searchParams.get("q")?.trim() ?? "";
+      if (query.length < 2 || query.length > 100) throw new ValidationError("q must contain 2-100 characters");
+      const rawLimit = url.searchParams.get("limit");
+      if (rawLimit !== null && (!/^\d+$/.test(rawLimit) || Number(rawLimit) < 1 || Number(rawLimit) > 100)) throw new ValidationError("limit must be an integer from 1 to 100");
+      const limit = rawLimit === null ? 20 : Number(rawLimit);
+      const source = REGISTRY.get("fgic_national_gazetteer");
+      const result = await (dependencies.fetchPlaceRecords ?? fetchResult)(source, { query, limit });
+      return json(envelope(buildPlaceNamesProduct(result.records, { query, citation: result.citation, fetchedAt: result.fetched_at }), {
+        ...metaOf(result), requested_limit: limit, returned_records: result.records.length,
+      }));
     }
     if (request.method === "GET" && path === "/api/v1/golden-residency") {
       const catalogue = goldenResidencyCatalogue();
