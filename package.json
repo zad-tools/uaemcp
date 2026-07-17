@@ -44,11 +44,11 @@
   "scripts": {
     "dev": "bun --watch src/index.ts http",
     "start": "bun src/index.ts",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
+    "test": "bun test --max-concurrency=1",
+    "test:coverage": "bun test --coverage --max-concurrency=1",
     "benchmark": "bun scripts/benchmark.ts",
     "typecheck": "bunx tsc --noEmit",
-    "check": "bun run typecheck && bun test && bun run check:sdks",
+    "check": "bun run typecheck && bun run test && bun run check:sdks",
     "generate:sdks": "bun scripts/generate-sdks.ts",
     "check:sdks": "bun scripts/generate-sdks.ts --check",
     "prepublishOnly": "bun run check && bun run benchmark"
