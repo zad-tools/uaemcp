@@ -10,6 +10,7 @@ import { checkRateLimit } from "./rate-limit.js";
 import { snapshotScheduler } from "./scheduler.js";
 import { completionScript, doctorReport, formatDoctor, helpText, parseCli } from "./cli.js";
 import { VERSION } from "./version.js";
+import { healthScanScheduler } from "./health-scheduler.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
@@ -150,6 +151,7 @@ export async function runStdio(): Promise<void> {
 export function runHttp(host = SETTINGS.host, port = SETTINGS.port): Bun.Server<unknown> {
   const server = Bun.serve({ hostname: host, port, fetch: createFetchHandler() });
   snapshotScheduler.start();
+  healthScanScheduler.start();
   process.stderr.write(`uaemcp http listening on ${server.url}mcp\n`);
   return server;
 }
