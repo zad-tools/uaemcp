@@ -380,6 +380,8 @@ async function csvDatasets(source: Source): Promise<DatasetRef[]> {
 
 async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> {
   let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1));
+  const configuredRowLimit = Number(source.connector_config.row_limit);
+  if (Number.isInteger(configuredRowLimit) && configuredRowLimit > 0) records = records.slice(0, Math.min(configuredRowLimit, 10_000));
   const total = records.length;
   let clientFiltered = false;
   if (opts.query) { const query = opts.query.toLocaleLowerCase(); records = records.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query)); clientFiltered = true; }

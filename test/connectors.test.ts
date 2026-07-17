@@ -184,6 +184,15 @@ describe("xlsx connector", () => {
     expect(result.records).toEqual([{ name: "Clinic", count: "12", email: "[redacted-open-data-contact]" }]);
   });
 
+  it("honors a source-declared table row boundary before search and pagination", async () => {
+    const source = mkSource({ kind: "xlsx", base_url: "https://example.gov.ae/activity.xlsx", connector_config: { row_limit: 2 } });
+    const workbook = exportRecords([{ service: "A" }, { service: "B" }, { service: "unrelated footer table" }], "xlsx", source, null).body;
+    mockGetBytes.mockResolvedValue(workbook);
+    const result = await fetchResult(source, { query: "table", limit: 10 });
+    expect(result.records).toEqual([]);
+    expect(result.total).toBe(2);
+  });
+
   it("rejects non-XLSX bytes", () => {
     expect(() => parseXlsx(new Uint8Array([1, 2, 3]))).toThrow("valid XLSX");
   });

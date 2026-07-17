@@ -26,6 +26,8 @@ import { buildIndustryAtlas } from "./industry-atlas.js";
 import { industryAtlasPage } from "./industry-atlas-web.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
 import { placesExplorerPage } from "./places-web.js";
+import { buildTaxServiceReport } from "./tax-services.js";
+import { taxServicesPage } from "./tax-services-web.js";
 
 type Json = Record<string, unknown>;
 
@@ -53,9 +55,10 @@ const optional = (params: URLSearchParams, key: string): string | undefined => p
 
 export interface RestDependencies {
   fetchIndustryRecords: typeof fetchResult;
+  fetchTaxRecords?: typeof fetchResult;
 }
 
-const REST_DEFAULTS: RestDependencies = { fetchIndustryRecords: fetchResult };
+const REST_DEFAULTS: RestDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult };
 
 export async function handleRest(request: Request, dependencies: RestDependencies = REST_DEFAULTS): Promise<Response | null> {
   const url = new URL(request.url);
@@ -66,9 +69,18 @@ export async function handleRest(request: Request, dependencies: RestDependencie
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/tax-services") {
+      const source = REGISTRY.get("fta_service_activity_2025");
+      const result = await (dependencies.fetchTaxRecords ?? fetchResult)(source, { limit: 10 });
+      return json(envelope(buildTaxServiceReport(result.records, { citation: result.citation, fetchedAt: result.fetched_at }), {
+        source_id: source.id, citation: result.citation, fetched_at: result.fetched_at,
+        returned_records: result.records.length, data_quality: result.data_quality,
+      }));
+    }
     if (request.method === "GET" && path === "/api/v1/industry-atlas/change") {
       const source = REGISTRY.get("moiat_industrial_licenses");
       const store = reliabilityStore();

@@ -87,6 +87,7 @@ Endpoints:
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
+- UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
 
@@ -96,6 +97,10 @@ Endpoints:
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/industry-atlas"><img src="docs/assets/screenshots/industry-atlas.png" alt="UAE Industry Atlas" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/tax-services"><img src="docs/assets/screenshots/tax-service-activity.png" alt="UAE Tax Service Activity 2025" width="100%"></a>
 </p>
 
 <p align="center">
@@ -148,7 +153,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
-| `uae_sources_list` | List the 34 registered official sources |
+| `uae_sources_list` | List the 35 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -181,7 +186,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 34 official sources indexed, 4 live record
+Current conservative coverage is 35 official sources indexed, 5 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

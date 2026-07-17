@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.42.0
+
+- Added the official FTA 2025 service-activity workbook as a bounded live XLSX source.
+- Added `/tax-services` and `/api/v1/tax-services`, with bilingual presentation, official totals, methodology, and explicit non-revenue limitations.
+- Added source-declared XLSX row boundaries so unrelated embedded tables cannot leak into a dataset.
+
 ## 1.41.0
 
 - Add the official FGIC National Gazetteer as a live bilingual ArcGIS source.

@@ -33,7 +33,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(health).toEqual({ status: "alive", runtime: "bun" });
     expect(ready.status).toBe("ready");
-    expect(ready.sources).toBe(34);
+    expect(ready.sources).toBe(35);
     expect(metrics).toContain("uaemcp_http_requests_total");
     expect(metrics).toContain("uaemcp_http_responses_total{outcome=\"success\"}");
     expect(metrics).toContain("uaemcp_http_request_duration_seconds_sum");
@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.41.0",
+      version: "1.42.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -101,7 +101,7 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_observatory", arguments: { action: "report" } });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.data).toMatchObject({ monitoredSources: 34, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(body.data).toMatchObject({ monitoredSources: 35, currentStatus: expect.any(Object), incidents: expect.any(Object) });
   });
 
   it("exposes the industrial change-monitor state without fabricating history", async () => {
