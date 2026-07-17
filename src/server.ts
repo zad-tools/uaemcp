@@ -25,6 +25,7 @@ import { snapshotScheduler } from "./scheduler.js";
 import { resolveEntities } from "./entity-resolution.js";
 import { coverageIndicator, healthIndicator, industrialDistributionIndicator, listIndicators, stabilityIndicator } from "./indicators.js";
 import { buildIndustryAtlas } from "./industry-atlas.js";
+import { buildIndustrialChangeReport } from "./industry-change.js";
 
 type Json = Record<string, unknown>;
 
@@ -47,11 +48,23 @@ export function buildServer(): McpServer {
     "uae_industry_atlas",
     {
       description: "Build an evidence-backed UAE industrial-establishment atlas from a bounded official MOIAT sample. Counts are never presented as population totals without upstream coverage proof.",
-      inputSchema: { emirate: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
+      inputSchema: { action: z.enum(["atlas", "change"]).default("atlas"), emirate: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
     },
-    async ({ emirate, query, limit }) => {
+    async ({ action, emirate, query, limit }) => {
       try {
         const source = REGISTRY.get("moiat_industrial_licenses");
+        if (action === "change") {
+          const store = reliabilityStore();
+          const snapshots = store.listSnapshots(source.id, null, 100);
+          const diff = snapshots.length >= 2
+            ? store.diffSnapshots(Number(snapshots[1].id), Number(snapshots[0].id))
+            : undefined;
+          return text(ok(buildIndustrialChangeReport(snapshots, diff), {
+            source_id: source.id,
+            citation: citation(source),
+            snapshot_policy: "changed_content_only",
+          }));
+        }
         const result = await fetchResult(source, { limit });
         const atlas = buildIndustryAtlas(result.records, {
           sourceId: source.id, citation: result.citation, fetchedAt: result.fetched_at,

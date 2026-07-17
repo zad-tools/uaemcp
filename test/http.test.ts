@@ -104,6 +104,13 @@ describe("Bun HTTP runtime", () => {
     expect(body.data).toMatchObject({ monitoredSources: 33, currentStatus: expect.any(Object), incidents: expect.any(Object) });
   });
 
+  it("exposes the industrial change-monitor state without fabricating history", async () => {
+    const { payload } = await rpc("tools/call", { name: "uae_industry_atlas", arguments: { action: "change" } });
+    const body = JSON.parse(payload.result.content[0].text);
+    expect(body.ok).toBe(true);
+    expect(body.data).toMatchObject({ status: "insufficient_history", changePoints: 0, change: null });
+  });
+
   it("rejects untrusted hosts when an allowlist is configured", async () => {
     const previous = SETTINGS.allowedHosts;
     SETTINGS.allowedHosts = ["uaemcp.example"];

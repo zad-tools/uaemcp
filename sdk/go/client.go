@@ -10,6 +10,7 @@ func (c *Client) get(ctx context.Context, path string, params url.Values) (map[s
 }
 func (c *Client) GetCoverage(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/coverage", params) }
 func (c *Client) GetIndustryAtlas(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas", params) }
+func (c *Client) GetIndustryChange(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas/change", params) }
 func (c *Client) ListSources(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources", params) }
 func (c *Client) Search(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/search", params) }
 func (c *Client) GetRecords(ctx context.Context, SourceId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources/" + url.PathEscape(SourceId) + "/records", params) }

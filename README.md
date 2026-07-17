@@ -87,6 +87,7 @@ Endpoints:
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
+- Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/observatory"><img src="docs/assets/screenshots/observatory.png" alt="Emirates Open Data Observatory" width="100%"></a>
@@ -154,7 +155,7 @@ language. It is included in the main release check.
 | `uae_indicator` | List or calculate explainable national-data indicators |
 | `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
 | `uae_observatory` | Read national reliability, incidents and source profiles |
-| `uae_industry_atlas` | Build a bounded industrial evidence slice by emirate, area and product label |
+| `uae_industry_atlas` | Build a bounded industrial evidence slice (`action=atlas`) or read the honest Change Monitor (`action=change`) |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |

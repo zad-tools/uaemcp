@@ -24,6 +24,7 @@ import { healthScanScheduler } from "./health-scheduler.js";
 import { coverageIndicator, healthIndicator, INDICATOR_IDS, industrialDistributionIndicator, listIndicators, stabilityIndicator, type IndicatorId } from "./indicators.js";
 import { buildIndustryAtlas } from "./industry-atlas.js";
 import { industryAtlasPage } from "./industry-atlas-web.js";
+import { buildIndustrialChangeReport } from "./industry-change.js";
 
 type Json = Record<string, unknown>;
 
@@ -66,6 +67,15 @@ export async function handleRest(request: Request, dependencies: RestDependencie
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/industry-atlas/change") {
+      const source = REGISTRY.get("moiat_industrial_licenses");
+      const store = reliabilityStore();
+      const snapshots = store.listSnapshots(source.id, null, 100);
+      const diff = snapshots.length >= 2 ? store.diffSnapshots(Number(snapshots[1].id), Number(snapshots[0].id)) : undefined;
+      return json(envelope(buildIndustrialChangeReport(snapshots, diff), {
+        source_id: source.id, citation: citation(source), snapshot_policy: "changed_content_only",
+      }));
+    }
     if (request.method === "GET" && path === "/api/v1/industry-atlas") {
       const source = REGISTRY.get("moiat_industrial_licenses");
       const requestedLimit = Math.max(1, integer(url.searchParams, "limit", 500, 1000));

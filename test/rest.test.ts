@@ -34,6 +34,17 @@ describe("REST v1", () => {
     expect(html).toContain("UAE Industry Atlas");
     expect(html).toContain("أطلس الصناعة في الإمارات");
     expect(html).toContain("/api/v1/industry-atlas");
+    expect(html).toContain("/api/v1/industry-atlas/change");
+    expect(html).toContain("Industrial Change Monitor");
+    expect(html).toContain("مراقب التغير الصناعي");
+  });
+
+  it("publishes an honest industrial change-monitor state", async () => {
+    const response = await fetch(`${baseUrl}/api/v1/industry-atlas/change`);
+    const payload = await response.json();
+    expect(response.status).toBe(200);
+    expect(payload.data).toMatchObject({ status: "insufficient_history", changePoints: 0, change: null });
+    expect(payload.meta).toMatchObject({ source_id: "moiat_industrial_licenses", snapshot_policy: "changed_content_only" });
   });
 
   it("serves the SDK-generating OpenAPI contract", async () => {

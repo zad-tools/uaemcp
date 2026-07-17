@@ -25,6 +25,9 @@ class UaemcpClient:
     def get_industry_atlas(self, **params):
         return self._get(f"/api/v1/industry-atlas", params)
 
+    def get_industry_change(self, **params):
+        return self._get(f"/api/v1/industry-atlas/change", params)
+
     def list_sources(self, **params):
         return self._get(f"/api/v1/sources", params)
 

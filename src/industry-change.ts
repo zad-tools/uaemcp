@@ -22,7 +22,8 @@ const LIMITATIONS = [
   "Unchanged scheduled checks are deduplicated and do not create additional Change Points.",
 ];
 
-export function buildIndustrialChangeReport(rawSnapshots: Rec[], diff?: SnapshotDiff) {
+export function buildIndustrialChangeReport(rawSnapshots: Rec[], rawDiff?: Rec) {
+  const diff = rawDiff as unknown as SnapshotDiff | undefined;
   const snapshots = rawSnapshots.map((item) => ({
     id: Number(item.id), recordCount: Number(item.recordCount), capturedAt: String(item.capturedAt), contentHash: String(item.contentHash),
   })).sort((left, right) => right.capturedAt.localeCompare(left.capturedAt)) as SnapshotSummary[];
