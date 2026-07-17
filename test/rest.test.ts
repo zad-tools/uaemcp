@@ -19,6 +19,14 @@ describe("REST v1", () => {
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
+  it("serves the public Open Data Observatory interface", async () => {
+    const response = await fetch(`${baseUrl}/observatory`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(html).toContain("Emirates Open Data Observatory");
+    expect(html).toContain("/api/v1/observatory");
+  });
+
   it("serves the SDK-generating OpenAPI contract", async () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
