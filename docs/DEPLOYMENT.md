@@ -1,5 +1,25 @@
 # Deployment
 
+## Prebuilt multi-architecture image
+
+The `publish-container` workflow builds the same Dockerfile for `linux/amd64`
+and `linux/arm64`, publishes it to
+`ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp`, attaches an SBOM and
+maximum-mode provenance, then runs the published amd64 image to verify its CLI
+version. Use `compose.ghcr.yml` for a registry-backed self-host with a persistent
+data volume and reduced container privileges.
+
+For a public reverse proxy, explicitly set both trust boundaries:
+
+```bash
+UAEMCP_ALLOWED_HOSTS=uaemcp.example.com \
+UAEMCP_ALLOWED_ORIGINS=https://uaemcp.example.com \
+docker compose -f compose.ghcr.yml up -d
+```
+
+Do not expose a write token unless mutating source or snapshot operations are
+required. Read tools remain available when writes are disabled.
+
 ## Bun process
 
 ```bash

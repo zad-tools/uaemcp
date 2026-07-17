@@ -132,6 +132,28 @@ bun install
 bun src/index.ts stdio
 ```
 
+## Run the signed container
+
+Prebuilt `linux/amd64` and `linux/arm64` images are published to GitHub Container
+Registry with an SBOM and build provenance:
+
+```bash
+docker run --rm -p 127.0.0.1:8080:8080 \
+  -e UAEMCP_ALLOWED_HOSTS=127.0.0.1,localhost \
+  ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp:edge
+```
+
+Or use the hardened registry Compose file with a persistent SQLite volume,
+read-only root filesystem, dropped Linux capabilities and no-new-privileges:
+
+```bash
+docker compose -f compose.ghcr.yml up -d
+curl http://127.0.0.1:8080/ready
+```
+
+Release tags such as `:1.61.0` and `:latest` are produced from verified Git tags;
+`:edge` tracks the tested `main` branch.
+
 The installed CLI also provides deployment diagnostics and shell completion:
 
 ```bash

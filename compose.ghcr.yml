@@ -1,0 +1,26 @@
+services:
+  uaemcp:
+    image: ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp:edge
+    pull_policy: always
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${UAEMCP_BIND_ADDRESS:-127.0.0.1}:${UAEMCP_PORT:-8080}:8080"
+    environment:
+      UAEMCP_HOST: "0.0.0.0"
+      UAEMCP_PORT: "8080"
+      UAEMCP_ALLOWED_HOSTS: "${UAEMCP_ALLOWED_HOSTS:-127.0.0.1,localhost}"
+      UAEMCP_ALLOWED_ORIGINS: "${UAEMCP_ALLOWED_ORIGINS:-}"
+      UAEMCP_DATABASE_PATH: "/app/data/uaemcp.sqlite"
+    volumes:
+      - uaemcp-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  uaemcp-data:
