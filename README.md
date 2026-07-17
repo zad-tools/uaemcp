@@ -60,6 +60,21 @@ Endpoints:
 }
 ```
 
+## TypeScript SDK
+
+The same Bun package includes a zero-dependency typed REST client:
+
+```ts
+import { UaemcpClient } from "uaemcp";
+
+const uae = new UaemcpClient();
+const matches = await uae.search("عقارات دبي", { deep: true });
+const records = await uae.records("moiat_industrial_licenses", { limit: 10 });
+```
+
+Point `baseUrl` at the hosted endpoint or any self-hosted instance. Structured
+API failures throw `UaemcpClientError` with the HTTP status and public error code.
+
 ## Tools
 
 | Tool | Purpose |

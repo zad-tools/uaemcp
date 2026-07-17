@@ -14,6 +14,7 @@ import { trustManifest } from "./manifest.js";
 import { VERSION } from "./version.js";
 import { reliabilityStore } from "./reliability.js";
 import { listRecipes, runRecipe, type RecipeId, RECIPE_IDS } from "./intelligence.js";
+import { landingPage } from "./web.js";
 
 type Json = Record<string, unknown>;
 
@@ -38,14 +39,13 @@ function integer(params: URLSearchParams, key: string, fallback: number, max: nu
 }
 
 const optional = (params: URLSearchParams, key: string): string | undefined => params.get(key) || undefined;
-const landing = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Open Emirates Intelligence</title><style>body{margin:0;background:#090b0d;color:#e8f0e8;font:16px ui-monospace,monospace}main{max-width:920px;margin:0 auto;padding:10vh 24px}h1{font-size:clamp(42px,8vw,88px);line-height:.95;margin:0 0 28px}p{color:#a9b4ad;line-height:1.7;max-width:720px}code{color:#6eff9a}.bar{border-top:1px solid #29302b;margin-top:48px;padding-top:20px}</style></head><body><main><p>UAE / OPEN DATA / MCP</p><h1>Open Emirates<br>Intelligence</h1><p>Source-cited official UAE open data for agents and applications. Bun-powered, open source, bilingual, and safe to self-host.</p><div class="bar"><p>MCP <code>/mcp</code> · REST <code>/api/v1</code> · Health <code>/health</code></p></div></main></body></html>`;
 
 export async function handleRest(request: Request): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, "") || "/";
 
   try {
-    if (request.method === "GET" && path === "/") return new Response(landing, { headers: { "content-type": "text/html; charset=utf-8" } });
+    if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/catalog") {

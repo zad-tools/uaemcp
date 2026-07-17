@@ -16,6 +16,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/`);
     expect(response.status).toBe(200);
     expect(await response.text()).toContain("Open Emirates Intelligence");
+    expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
   it("lists sources using the stable envelope", async () => {

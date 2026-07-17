@@ -11,6 +11,9 @@ Clients -> Bun.serve -> MCP transport / REST router
                             -> connector dispatch
                                -> SSRF-safe HTTP client
                                   -> official UAE portals
+                            -> reliability store (Bun SQLite)
+                               -> health history / snapshots / diffs
+                            -> intelligence recipes
 ```
 
 Every data result carries provenance. Public contracts are additive: tool names,
@@ -27,6 +30,20 @@ catalogs so the registry never fabricates assets.
 Schema discovery samples bounded live records and returns inferred field types,
 nullability, uniqueness within the sample, examples, statistics, bilingual
 semantic concepts, provenance, and inference lineage.
+
+## Reliability and intelligence
+
+The Bun SQLite store records bounded health observations and explicit dataset
+snapshots. Snapshot creation is a protected write; listing and comparison are
+read operations. Containers mount `/app/data`, so history survives deployments.
+
+Intelligence recipes are application services rather than new one-off connector
+tools. Every recipe returns an answer, methodology, evidence, limitations and
+citations. This keeps analytical claims reviewable and prevents a narrative from
+being presented without the data and method that produced it.
+
+The browser workbench and the exported `UaemcpClient` consume the same REST v1
+surface. They do not bypass authentication, redaction or provenance rules.
 
 ## Trust boundaries
 

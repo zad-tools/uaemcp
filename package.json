@@ -8,6 +8,10 @@
   "bin": {
     "uaemcp": "src/index.ts"
   },
+  "exports": {
+    ".": "./src/client.ts",
+    "./server": "./src/server.ts"
+  },
   "files": [
     "src",
     "README.md",
@@ -19,7 +23,8 @@
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "typecheck": "bunx tsc --noEmit",
-    "check": "bun run typecheck && bun test"
+    "check": "bun run typecheck && bun test",
+    "prepublishOnly": "bun run check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
