@@ -1,7 +1,7 @@
 export function healthIndicatorsPage(): string {
   return `<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore official UAE health core indicators published by MOHAP with source-native values and explicit limitations."><title>UAE Health Indicators | Open Emirates Intelligence</title><style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
-@font-face{font-family:"Dubai";src:url("https://dubaihumanitarian.ae/fonts/Dubai-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Dubai";src:url("https://dubaihumanitarian.ae/fonts/Dubai-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+html body *{font-family:"Dubai",Arial,sans-serif!important}
+@font-face{font-family:"Dubai";src:url("/assets/fonts/Dubai-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Dubai";src:url("/assets/fonts/Dubai-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
 html body,html[dir=rtl] body{font-family:"Dubai",Arial,sans-serif}html body button,html body input{font-family:"Dubai",Arial,sans-serif}
 html,body{max-width:100%;overflow-x:hidden}.hero>*{min-width:0}.top{min-width:0}.brand{min-width:0;max-width:calc(100vw - 105px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.nav{flex:0 0 auto}.nav button{display:block;min-width:54px}
 @media(max-width:560px){.top{width:100vw}.nav{position:absolute;inset-inline-end:12px}.hero,.hero-copy{width:100vw;max-width:100vw}}

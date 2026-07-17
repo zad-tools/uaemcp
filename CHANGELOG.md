@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.61.1
+
+- Unified every public interface on same-origin Dubai Regular and Dubai Bold assets, removing direct third-party font requests from page markup.
+- Restricted public page content-security policies to the trusted local font route and removed unused Google font imports.
+- Added GET and HEAD font delivery contracts so browsers, reverse proxies and deployment probes observe the same production behavior.
+
 ## 1.61.0
 
 - Promoted the official FGIC National Gazetteer from a generic source query to the dedicated `/api/v1/places` evidence product and `uae_place_names` MCP tool.

@@ -151,7 +151,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.61.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.61.1` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:

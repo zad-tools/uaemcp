@@ -36,13 +36,16 @@ describe("Dubai Font public brand contract", () => {
       const html = render();
       expect(html).toContain('font-family:"Dubai"');
       expect(html).toMatch(/html\[dir=rtl\] body|\*\{box-sizing:border-box;font-family:"Dubai"/);
-      expect(html).toContain("Dubai-Regular.woff");
-      expect(html).toContain("Dubai-Bold.woff");
+      expect(html).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
+      expect(html).toMatch(/url\(["']\/assets\/fonts\/Dubai-Regular\.woff["']\)/);
+      expect(html).toMatch(/url\(["']\/assets\/fonts\/Dubai-Bold\.woff["']\)/);
+      expect(html).not.toContain("https://dubaihumanitarian.ae/fonts/");
+      expect(html).not.toContain("fonts.googleapis.com");
     }
   });
 
-  it("keeps the tax product typography entirely on Dubai Font", () => {
-    for (const render of [taxServicesPage, taxArchivePage]) {
+  it("keeps every public product typography entirely on Dubai Font", () => {
+    for (const [, render] of pages) {
       expect(render()).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
     }
   });
@@ -55,12 +58,26 @@ describe("Dubai Font public brand contract", () => {
     expect(response?.headers.get("content-security-policy")).toContain("font-src 'self'");
   });
 
-  it("allows the Dubai Font origin in every public interface CSP", async () => {
+  it("restricts every public interface to the same-origin Dubai Font", async () => {
     for (const [path] of pages) {
       const response = await handleRest(new Request(`http://localhost${path}`));
       expect(response?.status).toBe(200);
-      expect(response?.headers.get("content-security-policy")).toContain("font-src");
-      if (!["/tax-services", "/business-setup", "/startup-support", "/founder-pathway", "/places"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
+      expect(response?.headers.get("content-security-policy")).toContain("font-src 'self'");
+      expect(response?.headers.get("content-security-policy")).not.toContain("https://dubaihumanitarian.ae");
+      expect(response?.headers.get("content-security-policy")).not.toContain("fonts.gstatic.com");
+    }
+  });
+
+  it("serves both Dubai Font weights for GET and HEAD requests", async () => {
+    for (const path of ["/assets/fonts/Dubai-Regular.woff", "/assets/fonts/Dubai-Bold.woff"]) {
+      const getResponse = await handleRest(new Request(`http://localhost${path}`));
+      expect(getResponse?.status).toBe(200);
+      expect(getResponse?.headers.get("content-type")).toBe("font/woff");
+
+      const headResponse = await handleRest(new Request(`http://localhost${path}`, { method: "HEAD" }));
+      expect(headResponse?.status).toBe(200);
+      expect(headResponse?.headers.get("content-type")).toBe("font/woff");
+      expect(await headResponse?.text()).toBe("");
     }
   });
 });
