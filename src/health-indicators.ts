@@ -17,7 +17,7 @@ export interface HealthIndicatorsReport {
     years: number[];
   };
   indicators: HealthIndicator[];
-  source: { citation: string; fetchedAt: string; unit: "indicator row" };
+  source: { citation: string; fetchedAt: string; unit: "indicator row"; delivery?: "live" | "verified_snapshot"; sha256?: string };
   methodology: string[];
   limitations: string[];
 }

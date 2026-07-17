@@ -33,8 +33,8 @@ import { taxArchivePage } from "./tax-archive-web.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { tradeFlowPage } from "./trade-flow-web.js";
 import { listProducts } from "./products.js";
-import { buildHealthIndicators } from "./health-indicators.js";
 import { healthIndicatorsPage } from "./health-indicators-web.js";
+import { loadHealthIndicators } from "./health-indicators-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -84,17 +84,11 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
     }
     if (request.method === "GET" && path === "/api/v1/health-indicators") {
-      const source = REGISTRY.get("mohap_health_core_indicators_2024");
-      const result = await (dependencies.fetchHealthRecords ?? fetchResult)(source, { limit: 200 });
       const limit = Math.max(1, integer(url.searchParams, "limit", 100, 200));
-      const report = buildHealthIndicators(result.records, {
-        citation: result.citation, fetchedAt: result.fetched_at,
+      const loaded = await loadHealthIndicators(dependencies.fetchHealthRecords ?? fetchResult, {
         query: optional(url.searchParams, "q"), limit,
       });
-      return json(envelope(report, {
-        source_id: source.id, citation: result.citation, fetched_at: result.fetched_at,
-        returned_records: result.records.length, data_quality: result.data_quality,
-      }));
+      return json(envelope(loaded.report, loaded.meta));
     }
     if (request.method === "GET" && path === "/api/v1/tax-services") {
       const source = REGISTRY.get("fta_service_activity_2025");

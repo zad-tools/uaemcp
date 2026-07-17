@@ -4,6 +4,7 @@
 
 - Added the official MOHAP Health Core Indicators workbook as the eighth live connector, preserving all source-native values and the visible 2016–2023 series.
 - Added the bilingual `/health-indicators` evidence ledger, `GET /api/v1/health-indicators`, and the `uae_health_indicators` MCP tool with explicit methodology, limits, provenance, and bounded search.
+- Added a SHA-256 identified retained snapshot fallback because the official MOHAP host can reject cloud-server connections; responses declare live versus snapshot delivery.
 - Adopted Dubai Font for the new health product, the public gateway, and the tax-service evidence product.
 
 ## 1.48.0

@@ -16,4 +16,15 @@ describe("Health Indicators REST contract", () => {
     expect(payload.data).toMatchObject({ kind: "mohap_health_core_indicators_2024", scope: { usableIndicators: 1 } });
     expect(payload.meta).toMatchObject({ source_id: "mohap_health_core_indicators_2024", returned_records: 1 });
   });
+
+  it("serves a verified snapshot instead of failing when MOHAP blocks the runtime", async () => {
+    const response = await handleRest(new Request("http://localhost/api/v1/health-indicators?limit=2"), {
+      fetchHealthRecords: async () => { throw new Error("upstream unavailable"); },
+    });
+    const payload = await response?.json();
+    expect(response?.status).toBe(200);
+    expect(payload.meta).toMatchObject({ delivery: "verified_snapshot", returned_records: 111 });
+    expect(payload.data.source).toMatchObject({ delivery: "verified_snapshot", sha256: "d44fc92682b2bc5b76a98fcf53578c9f4ebc4d39acb3c06aca12291673f7a3d0" });
+    expect(payload.data.limitations.at(-1)).toContain("verified snapshot");
+  });
 });

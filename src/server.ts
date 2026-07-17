@@ -30,7 +30,7 @@ import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { listProducts } from "./products.js";
-import { buildHealthIndicators } from "./health-indicators.js";
+import { loadHealthIndicators } from "./health-indicators-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -58,11 +58,8 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     },
     async ({ query, limit }) => {
       try {
-        const source = REGISTRY.get("mohap_health_core_indicators_2024");
-        const result = await (dependencies.fetchHealthRecords ?? fetchResult)(source, { limit: 200 });
-        return text(ok(buildHealthIndicators(result.records, {
-          citation: result.citation, fetchedAt: result.fetched_at, query, limit,
-        }), { ...metaOf(result), source_id: source.id, returned_records: result.records.length }));
+        const loaded = await loadHealthIndicators(dependencies.fetchHealthRecords ?? fetchResult, { query, limit });
+        return text(ok(loaded.report, loaded.meta));
       } catch (error) { return text(fail(error)); }
     },
   );
