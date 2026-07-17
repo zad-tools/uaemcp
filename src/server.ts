@@ -47,6 +47,7 @@ import { loadEvidenceDossier } from "./evidence-dossier-service.js";
 import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-dossier.js";
 import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
+import { createToolCatalog } from "./tool-catalog.js";
 
 type Json = Record<string, unknown>;
 
@@ -754,6 +755,16 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "runtime_tool_catalog",
+    "uae://tools",
+    { title: "Runtime MCP tool catalog", description: "Generated directly from every currently registered MCP tool and its runtime description.", mimeType: "application/json" },
+    async (uri) => {
+      const registered = (server as unknown as { _registeredTools: Record<string, { description?: string }> })._registeredTools;
+      return { contents: [{ uri: uri.href, mimeType: "application/json", text: json(createToolCatalog(registered, VERSION)) }] };
+    },
+  );
 
   server.registerResource(
     "policy_evidence_watch_methodology",

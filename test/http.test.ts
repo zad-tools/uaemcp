@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.68.0",
+      version: "1.69.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -128,9 +128,15 @@ describe("Bun HTTP runtime", () => {
   it("publishes the product registry as addressable MCP context", async () => {
     const listed = await rpc("resources/list");
     const templates = await rpc("resources/templates/list");
-    expect(listed.payload.result.resources).toHaveLength(11);
+    expect(listed.payload.result.resources).toHaveLength(12);
     expect(templates.payload.result.resourceTemplates).toHaveLength(2);
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
+    expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://tools");
+    const toolsResource = await rpc("resources/read", { uri: "uae://tools" });
+    const toolsCatalog = JSON.parse(toolsResource.payload.result.contents[0].text);
+    expect(toolsCatalog.summary.total).toBe(38);
+    expect(toolsCatalog.tools.some((tool: { name: string }) => tool.name === "uae_ajman_parks_footfall")).toBe(true);
+
     const { payload } = await rpc("resources/read", { uri: "uae://products" });
     const body = JSON.parse(payload.result.contents[0].text);
     expect(body.total).toBe(19);

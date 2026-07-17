@@ -34,6 +34,13 @@ effort - technical risk - dependency complexity.
 - Add the audited Ajman parks footfall product with snapshot fallback.
 - Preserve visits as published observations, not unique people or demand.
 
+### Sprint 4 — Generated MCP tool catalogue
+
+**Status: complete in v1.69.0.** The Markdown catalogue, machine-readable JSON
+and `uae://tools` resource are generated directly from the 38 runtime
+registrations. The release gate rejects stale artifacts and the duplicate
+README inventory has been removed.
+
 ## What not to build yet
 
 - No generative narrative or uncited AI summary.

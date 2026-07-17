@@ -1,6 +1,6 @@
 {
   "name": "uaemcp",
-  "version": "1.68.0",
+  "version": "1.69.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "repository": {
@@ -22,6 +22,7 @@
   "files": [
     "src",
     "docs/*.md",
+    "docs/*.json",
     "examples",
     "templates",
     "sdk/csharp/*.cs",
@@ -48,10 +49,12 @@
     "test:coverage": "bun test --coverage --max-concurrency=1",
     "benchmark": "bun scripts/benchmark.ts",
     "typecheck": "bunx tsc --noEmit",
-    "check": "bun run check:security && bun run typecheck && bun run test && bun run check:sdks && bun run check:package",
+    "check": "bun run check:security && bun run typecheck && bun run test && bun run check:tools && bun run check:sdks && bun run check:package",
     "check:security": "bun audit",
     "generate:sdks": "bun scripts/generate-sdks.ts",
     "check:sdks": "bun scripts/generate-sdks.ts --check",
+    "generate:tools": "bun scripts/generate-tool-catalog.ts",
+    "check:tools": "bun scripts/generate-tool-catalog.ts --check",
     "check:package": "bun scripts/check-package.ts",
     "prepublishOnly": "bun run check && bun run benchmark"
   },

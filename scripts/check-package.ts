@@ -27,7 +27,14 @@ if (report.size > maximumPackedBytes) {
   throw new Error(`Release package is ${report.size} bytes; maximum is ${maximumPackedBytes}`);
 }
 
-const requiredFiles = ["package.json", "README.md", "src/index.ts", "docs/API.md"];
+const requiredFiles = [
+  "package.json",
+  "README.md",
+  "src/index.ts",
+  "docs/API.md",
+  "docs/MCP_TOOLS.md",
+  "docs/mcp-tools.json",
+];
 const packedPaths = new Set(report.files.map(({ path }) => path));
 const missing = requiredFiles.filter((path) => !packedPaths.has(path));
 if (missing.length) throw new Error(`Release package is missing: ${missing.join(", ")}`);

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "1.0",
+  "serverVersion": "1.69.0",
+  "generatedFrom": "runtime_registered_tools",
+  "summary": {
+    "total": 38,
+    "read": 35,
+    "write": 2,
+    "mixed": 1
+  },
+  "tools": [
+    {
+      "name": "uae_ajman_business_evidence",
+      "kind": "read",
+      "description": "Explore three distinct official Ajman business-license dataset samples by activity, area, legal form, license type and published status. Samples are not unique-company counts, market size or investment advice."
+    },
+    {
+      "name": "uae_ajman_parks_footfall",
+      "kind": "read",
+      "description": "Read official Ajman monthly park-visit observations by year and source-native park label. Visit counts are not unique people, resident demand, tourism performance, satisfaction, capacity or park quality."
+    },
+    {
+      "name": "uae_ajman_urban_evidence",
+      "kind": "read",
+      "description": "Read six distinct official Ajman building, certified-rent and road datasets as source-native annual series. Measures remain separate and are not a property index, investment return or growth score."
+    },
+    {
+      "name": "uae_business_setup",
+      "kind": "read",
+      "description": "Route a founder to the competent official UAE business-setup authority by emirate and mainland/free-zone path. Read-only, informational, no intermediaries and no personal data stored."
+    },
+    {
+      "name": "uae_dashboard_summary",
+      "kind": "read",
+      "description": "Concurrent, cached health snapshot across all sources (fast, never stalls)."
+    },
+    {
+      "name": "uae_dataset_schema",
+      "kind": "read",
+      "description": "Inspect a live dataset schema before filtering or aggregation. Returns inferred types, examples, semantic meaning, nullability, uniqueness and sample statistics."
+    },
+    {
+      "name": "uae_dataset_snapshot",
+      "kind": "mixed",
+      "description": "Create, list, or diff historical dataset snapshots. create is a protected write action; list and diff are open reads."
+    },
+    {
+      "name": "uae_education_ledger",
+      "kind": "read",
+      "description": "Read the accredited UAE 2023/2024 national education snapshot and the separate Ministry of Education 2018–2024 resource catalogue. Includes reconciliation checks, source SHA-256, methodology and limitations; it is not a live enrollment feed."
+    },
+    {
+      "name": "uae_entity_resolve",
+      "kind": "read",
+      "description": "Resolve matching entities across two bounded source samples using explicit bilingual-normalized exact field mappings."
+    },
+    {
+      "name": "uae_evidence_dossier",
+      "kind": "read",
+      "description": "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. Keeps periods and units separate, reports unavailable evidence explicitly, and never produces a ranking or composite score."
+    },
+    {
+      "name": "uae_founder_pathway",
+      "kind": "read",
+      "description": "Build one ordered, privacy-bounded UAE founder journey across official business setup, relevant government-backed startup support and entrepreneur Golden Residency readiness. Planning only; no application, eligibility decision or personal data storage."
+    },
+    {
+      "name": "uae_golden_residency",
+      "kind": "read",
+      "description": "Explore current official UAE Golden Residency pathways or assess non-identifying evidence readiness. Informational only: never determines eligibility, submits an application, stores personal data, or guarantees approval."
+    },
+    {
+      "name": "uae_health_facilities_atlas",
+      "kind": "read",
+      "description": "Explore official MOHAP aggregate facility counts for 2015–2024 by emirate, sector, category and type. Rows are not individual facilities; results do not measure beds, capacity, access or quality."
+    },
+    {
+      "name": "uae_health_indicators",
+      "kind": "read",
+      "description": "Search official MOHAP health core indicator rows across published year columns. Values are source-native and not silently normalized; the response states mixed ratio/percentage scale and period limitations."
+    },
+    {
+      "name": "uae_indicator",
+      "kind": "read",
+      "description": "List or calculate a methodology-backed UAE data indicator with evidence, limitations and citations."
+    },
+    {
+      "name": "uae_industry_atlas",
+      "kind": "read",
+      "description": "Build an evidence-backed UAE industrial-establishment atlas from a bounded official MOIAT sample. Counts are never presented as population totals without upstream coverage proof."
+    },
+    {
+      "name": "uae_intelligence_recipe",
+      "kind": "read",
+      "description": "Run an evidence-backed analytical recipe. Results include methodology, evidence, limitations and citations."
+    },
+    {
+      "name": "uae_market_snapshot",
+      "kind": "read",
+      "description": "Build a source-backed market snapshot (counts by emirate/area/product)."
+    },
+    {
+      "name": "uae_national_evidence_brief",
+      "kind": "read",
+      "description": "Read education, health, industry and FTA service activity side by side with source-native units, periods, citations and explicit limitations. No composite score or cross-pillar ranking is produced."
+    },
+    {
+      "name": "uae_observatory",
+      "kind": "read",
+      "description": "Read the UAE Open Data Observatory: national reliability report, derived incidents, or one source reliability profile. Uses stored observations and never triggers hidden upstream work."
+    },
+    {
+      "name": "uae_place_names",
+      "kind": "read",
+      "description": "Search the official FGIC National Gazetteer for bilingual UAE place names and coordinates. Returns a bounded, normalized, source-cited evidence product; points are not an authoritative boundary reference."
+    },
+    {
+      "name": "uae_policy_evidence_watch",
+      "kind": "read",
+      "description": "Read retained checks or run a bounded check across five audited official UAE legislation, tax, labour, residency and Cabinet pages. Detects published-page content changes only; it never determines legal effect, effective date or eligibility."
+    },
+    {
+      "name": "uae_products_list",
+      "kind": "read",
+      "description": "List the public Open Emirates Intelligence applications with bilingual descriptions, routes, official evidence scope and explicit limitations."
+    },
+    {
+      "name": "uae_search",
+      "kind": "read",
+      "description": "Federated bilingual (ar/en) search across the catalog. With deep=true it also searches each portal's live dataset catalogue."
+    },
+    {
+      "name": "uae_source_add",
+      "kind": "write",
+      "description": "[WRITE — requires token] Register a custom source using a built-in or installed connector plugin."
+    },
+    {
+      "name": "uae_source_add_metadata",
+      "kind": "write",
+      "description": "[WRITE — requires token] Add a metadata-only source to the local registry."
+    },
+    {
+      "name": "uae_source_aggregate",
+      "kind": "read",
+      "description": "Group records and reduce with count|sum|avg|min|max. group_by is a comma-separated list of fields (dotted paths allowed). A generalized uae_market_snapshot."
+    },
+    {
+      "name": "uae_source_datasets",
+      "kind": "read",
+      "description": "List the datasets inside a multi-dataset portal (CKAN/OpenDataSoft/ArcGIS). Use a returned id as `dataset` for uae_source_records."
+    },
+    {
+      "name": "uae_source_geo",
+      "kind": "read",
+      "description": "Spatially-filtered records as GeoJSON — powers map apps. bbox='min_lon,min_lat,max_lon,max_lat'; near='lat,lon,radius_km'."
+    },
+    {
+      "name": "uae_source_get",
+      "kind": "read",
+      "description": "Get the full metadata for one source by id."
+    },
+    {
+      "name": "uae_source_health",
+      "kind": "read",
+      "description": "Run a live, timeout-bounded health probe for one source."
+    },
+    {
+      "name": "uae_source_records",
+      "kind": "read",
+      "description": "Fetch up to `limit` live, redacted, source-cited records. For multi-dataset portals pass `dataset` (from uae_source_datasets). Response meta carries provenance + a data-quality block."
+    },
+    {
+      "name": "uae_sources_list",
+      "kind": "read",
+      "description": "List every registered official UAE open-data source with its metadata."
+    },
+    {
+      "name": "uae_spatial_join",
+      "kind": "read",
+      "description": "Join point records from two official sources when they fall within radius_km. Both samples and output are strictly bounded."
+    },
+    {
+      "name": "uae_startup_support",
+      "kind": "read",
+      "description": "Discover current official or government-backed UAE startup support programmes by stage, support need and emirate. Relevance only: never determines eligibility, funding approval or acceptance and stores no personal data."
+    },
+    {
+      "name": "uae_tax_service_activity",
+      "kind": "read",
+      "description": "Read the official FTA 2025 service-activity report with quarterly totals, methodology, limitations and citation. Counts are not tax revenue, taxpayers, companies, or economic growth."
+    },
+    {
+      "name": "uae_tax_service_archive",
+      "kind": "read",
+      "description": "Read the official FTA source-native service workbooks for 2017–2022, 2024 and 2025. Cross-year comparison is deliberately unavailable because scopes and schemas differ and 2023 is missing."
+    },
+    {
+      "name": "uae_trade_flow_radar",
+      "kind": "read",
+      "description": "Analyze bounded official Ajman 2023 certificate-of-origin export and re-export records. Returns destination, transport, HS-code, month and origin rankings with explicit sample coverage. Counts are not trade value or total UAE trade."
+    }
+  ]
+}

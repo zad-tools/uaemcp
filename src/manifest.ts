@@ -35,9 +35,12 @@ export function trustSummary(): {
   writeTools: number;
   totalTools: number;
 } {
-  const readTools = READ_TOOLS.length + 2;
-  const writeTools = WRITE_TOOLS.length;
-  return { version: VERSION, readTools, writeTools, totalTools: readTools + writeTools };
+  const readToolNames = [...READ_TOOLS, "uae_dataset_snapshot"];
+  const writeToolNames = WRITE_TOOLS.map((name) => name.split(":", 1)[0]);
+  const readTools = new Set(readToolNames).size;
+  const writeTools = new Set(writeToolNames).size;
+  const totalTools = new Set([...readToolNames, ...writeToolNames]).size;
+  return { version: VERSION, readTools, writeTools, totalTools };
 }
 
 export function trustManifest(): Record<string, unknown> {

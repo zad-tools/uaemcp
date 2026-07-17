@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.69 — Runtime-generated MCP tool catalogue — complete
+
+- Authoritative Markdown and machine-readable JSON generated from registered runtime tools
+- `uae://tools` MCP resource for agent-side capability discovery
+- Read, write and mixed access-kind classification with deterministic ordering
+- CI release gate that fails when generated catalogue artifacts are stale
+- Manual README tool inventory removed to eliminate documentation drift
+
 ## v1.68 — Ajman Parks Footfall — complete
 
 - Complete official 2017–2023 monthly observation retrieval with pagination

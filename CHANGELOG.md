@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.69.0
+
+- Generate the authoritative MCP tool catalogue directly from runtime registrations.
+- Publish deterministic Markdown and JSON catalogues plus the `uae://tools` MCP resource.
+- Classify read, write and mixed tools and fail CI when generated artifacts become stale.
+- Remove the manually maintained README tool inventory to eliminate documentation drift.
+- Correct Trust Manifest totals so the mixed snapshot tool is counted once rather than as three tools.
+
 ## 1.68.0
 
 - Added Ajman Parks Footfall over the official CC BY 4.0 `parks-visitors-in-ajman` dataset.

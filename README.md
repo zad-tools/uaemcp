@@ -43,7 +43,7 @@ Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
 The server keeps the public `uaemcp` contract and extends it to 38 source-cited
-MCP tools, eleven resources, three prompts, bilingual catalog search, CKAN,
+MCP tools, twelve resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -191,7 +191,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.68.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.69.0` or newer.
 
 MCP client configuration:
 
@@ -232,7 +232,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.68.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.69.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -367,48 +367,27 @@ bun run check:sdks
 The second command fails when an API change has not been propagated to every
 language. It is included in the main release check.
 
-## Tools
+## MCP tools
 
-| Tool | Purpose |
-| --- | --- |
-| `uae_ajman_parks_footfall` | Read official Ajman park-visit observations by year and source-native label without treating visits as unique people, demand or quality |
-| `uae_policy_evidence_watch` | Read retained policy-page evidence or check one to five allowlisted official surfaces without interpreting content changes as legal changes |
-| `uae_evidence_dossier` | Compose two to five official evidence pillars into one bilingual source-cited dossier without ranking, composite scoring or storage |
-| `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
-| `uae_business_setup` | Route founders to the competent official mainland or free-zone starting point without collecting personal data |
-| `uae_startup_support` | Discover relevant official and government-backed startup programmes without claiming eligibility or acceptance |
-| `uae_national_evidence_brief` | Read four national evidence pillars side by side without false aggregation or scoring |
-| `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
-| `uae_health_facilities_atlas` | Explore official 2015–2024 aggregate facility counts by year, emirate, sector, category and type without inferring capacity or quality |
-| `uae_golden_residency` | Explore official Golden Residency pathways or assess non-identifying evidence readiness without determining eligibility |
-| `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |
-| `uae_sources_list` | List the 41 registered official sources |
-| `uae_source_get` | Read source metadata |
-| `uae_source_health` | Probe one source |
-| `uae_source_datasets` | Discover portal datasets |
-| `uae_source_records` | Fetch redacted, cited records |
-| `uae_dataset_schema` | Infer fields, types, examples and semantic meaning |
-| `uae_search` | Search the bilingual catalog |
-| `uae_source_geo` | Return spatially filtered GeoJSON |
-| `uae_spatial_join` | Join two bounded point datasets by radius |
-| `uae_indicator` | List or calculate explainable national-data indicators |
-| `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
-| `uae_observatory` | Read national reliability, incidents and source profiles |
-| `uae_industry_atlas` | Build a bounded industrial evidence slice (`action=atlas`) or read the honest Change Monitor (`action=change`) |
-| `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
-| `uae_tax_service_archive` | Read the source-native FTA 2017–2022, 2024 and 2025 workbooks without unsafe cross-year comparison |
-| `uae_trade_flow_radar` | Analyze bounded Ajman export and re-export certificate records without presenting counts as trade value |
-| `uae_ajman_business_evidence` | Read three bounded Ajman licence-data views while keeping their populations separate |
-| `uae_ajman_urban_evidence` | Read six Ajman building, rent and road series in their original units |
-| `uae_health_indicators` | Search official MOHAP health indicators while preserving the workbook's published values and limits |
-| `uae_place_names` | Search the official bilingual National Gazetteer with source-published coordinates and boundary disclaimers |
-| `uae_source_aggregate` | Group and aggregate records |
-| `uae_market_snapshot` | Build a source-backed market snapshot |
-| `uae_dashboard_summary` | Summarize source health concurrently |
-| `uae_dataset_snapshot` | Create, list and compare historical snapshots |
-| `uae_intelligence_recipe` | Run coverage, freshness, history, emirate-comparison and trend recipes |
-| `uae_source_add_metadata` | Add metadata with a write token |
-| `uae_source_add` | Register a custom source for any installed connector (write token required) |
+<p align="center">
+  <img src="docs/assets/tool-catalog-motion.svg" alt="Runtime-generated MCP tool catalogue flow" width="900">
+</p>
+
+The authoritative tool catalogue is generated directly from the registered
+runtime, so names, descriptions and access kinds cannot silently drift from the
+server:
+
+- [Readable catalogue](docs/MCP_TOOLS.md)
+- [Machine-readable catalogue](docs/mcp-tools.json)
+- MCP resource: `uae://tools`
+
+```bash
+bun run generate:tools
+bun run check:tools
+```
+
+The second command is part of the release gate and fails when either generated
+catalogue is stale.
 
 FTA archive REST mirror: `GET /api/v1/tax-services/archive`. It returns the
 2017–2022 selected-services table, the source-native 2024 monthly table, and the

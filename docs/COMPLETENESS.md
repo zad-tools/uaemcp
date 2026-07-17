@@ -15,7 +15,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Performance | 9/10 | Bounded fan-out, cache, pagination, streaming HTTP, benchmark gate | External latency is controlled by authorities |
 | Developer experience | 9/10 | Doctor, completions, examples, templates, snippets and six SDKs | SDKs are not independently published yet |
 | API design | 9/10 | REST v1, stable envelopes, OpenAPI 3.1, explicit error codes | Some analytical calls have source-specific optional fields |
-| MCP compliance | 9/10 | stdio and Streamable HTTP, 38 tools, eleven static resources, two resource templates and three prompts | Compatibility must be retested on each SDK upgrade |
+| MCP compliance | 9/10 | stdio and Streamable HTTP, 38 tools, twelve static resources, two resource templates and three prompts | Compatibility must be retested on each SDK upgrade |
 | Security | 9/10 | SSRF/DNS classification, redirect validation, budgets, auth, redaction, quotas | Application DNS validation has a documented TOCTOU residual risk |
 | Testing | 9/10 | 306 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
 | Documentation | 10/10 | Architecture, API, deployment, MCP, SDK, recipes, security, connectors, FAQ | Must track contract changes each release |
