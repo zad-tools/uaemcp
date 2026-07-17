@@ -27,7 +27,7 @@ describe("Registry", () => {
   it("registers the bounded official FTA 2025 service-activity workbook", () => {
     expect(REGISTRY.get("fta_service_activity_2025")).toMatchObject({
       owner: "Federal Tax Authority", kind: "xlsx", access_status: "live",
-      connector_config: { sheet: 1, row_limit: 10 },
+      connector_config: { sheet: 1, header_row: 5, data_start_row: 6, row_limit: 10 },
     });
     expect(REGISTRY.get("fta_service_activity_2024")).toMatchObject({
       kind: "xlsx",
