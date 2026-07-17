@@ -28,6 +28,7 @@ import { buildIndustryAtlas } from "./industry-atlas.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
+import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -46,6 +47,20 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_trade_flow_radar",
+    {
+      description: "Analyze bounded official Ajman 2023 certificate-of-origin export and re-export records. Returns destination, transport, HS-code, month and origin rankings with explicit sample coverage. Counts are not trade value or total UAE trade.",
+      inputSchema: { limit: z.number().int().min(1).max(1000).default(500) },
+    },
+    async ({ limit }) => {
+      try {
+        const product = await loadTradeFlowProduct(dependencies.fetchTradeRecords ?? fetchResult, limit);
+        return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_tax_service_activity",

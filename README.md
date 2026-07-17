@@ -33,7 +33,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 22 source-cited
+The server keeps the public `uaemcp` contract and extends it to 23 source-cited
 MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -87,6 +87,7 @@ Endpoints:
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
+- UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
@@ -99,6 +100,13 @@ Endpoints:
 <p align="center">
   <a href="https://uaemcp.zad.tools/industry-atlas"><img src="docs/assets/screenshots/industry-atlas.png" alt="UAE Industry Atlas" width="100%"></a>
 </p>
+
+<table>
+  <tr>
+    <td width="55%"><a href="https://uaemcp.zad.tools/trade-flow"><img src="docs/assets/screenshots/trade-flow-radar.jpg" alt="UAE Trade Flow Radar"></a></td>
+    <td width="45%"><a href="https://uaemcp.zad.tools/trade-flow"><img src="docs/assets/screenshots/trade-flow-data.jpg" alt="UAE Trade Flow Radar data view"></a></td>
+  </tr>
+</table>
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/tax-services"><img src="docs/assets/screenshots/tax-service-activity.png" alt="UAE Tax Service Activity 2025" width="100%"></a>

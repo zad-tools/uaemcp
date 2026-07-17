@@ -7,6 +7,7 @@ impl UaemcpClient {
  pub async fn get_coverage(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/coverage"), params).await }
  pub async fn get_industry_atlas(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/industry-atlas"), params).await }
  pub async fn get_industry_change(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/industry-atlas/change"), params).await }
+ pub async fn get_trade_flow_radar(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/trade-flow"), params).await }
  pub async fn get_tax_service_activity2025(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/tax-services"), params).await }
  pub async fn get_tax_service_archive(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/tax-services/archive"), params).await }
  pub async fn list_sources(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/sources"), params).await }

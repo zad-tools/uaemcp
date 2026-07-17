@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.46.0
+
+- Added `uae_trade_flow_radar` over four official Ajman 2023 certificate-of-origin datasets.
+- Added `/api/v1/trade-flow` with separate export and re-export rankings, per-flow sample coverage, per-dataset license/quality/lineage, citations, methodology and limitations.
+- Added the bilingual `/trade-flow` evidence explorer and real README screenshots.
+- Added a shared configured-TTL product cache so public REST and MCP traffic does not repeat the four-dataset upstream fan-out.
+
 ## 1.43.0
 
 - Added `uae_tax_service_activity` as a first-class MCP tool backed by the same bounded official FTA report as the REST product.

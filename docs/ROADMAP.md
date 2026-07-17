@@ -107,6 +107,13 @@ reusable government core remains v2.0.
 - Additional distributed scheduling options for multi-replica deployments
 - More live public connectors, prioritizing datasets with clear reuse licenses
 
+## v1.46 — Trade evidence product — complete
+
+- Bounded Ajman 2023 export and re-export certificate evidence across four official datasets
+- Separate destination, transport, HS-code, month and origin rankings for each flow
+- Per-flow and overall sample coverage with explicit non-value and non-national limitations
+- Bilingual public Trade Flow Radar backed by the same REST and MCP contract
+
 ## v2.0 — Government intelligence core
 
 - Extract reusable `govmcp-core` contracts
