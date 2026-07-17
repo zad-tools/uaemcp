@@ -14,7 +14,7 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     openapi: "3.1.0",
     info: { title: "Open Emirates Intelligence API", version: VERSION, description: "Source-cited official UAE open data. Unknown or unavailable data is never fabricated.", license: { name: "MIT" } },
     servers: [{ url: origin }],
-    tags: [{ name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Maps" }],
+    tags: [{ name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
     paths: {
       "/api/v1/coverage": { get: { operationId: "getCoverage", tags: ["Catalog"], responses: { "200": response(envelope({ $ref: "#/components/schemas/Coverage" })) } } },
       "/api/v1/sources": { get: { operationId: "listSources", tags: ["Catalog"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Source" } })) } } },
@@ -24,6 +24,9 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
       "/api/v1/intelligence/recipes": { get: { operationId: "listRecipes", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "array", items: { type: "object", additionalProperties: true } })) } } },
       "/api/v1/intelligence/indicators": { get: { operationId: "listIndicators", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "array", items: { type: "object", additionalProperties: true } })) } } },
       "/api/v1/intelligence/indicators/{indicatorId}": { get: { operationId: "getIndicator", tags: ["Intelligence"], parameters: [{ name: "indicatorId", in: "path", required: true, schema: { type: "string" } }, parameter("source_id"), parameter("dataset")], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/observatory": { get: { operationId: "getObservatoryReport", tags: ["Observatory"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/observatory/incidents": { get: { operationId: "listObservatoryIncidents", tags: ["Observatory"], parameters: [parameter("source_id"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 500 })], responses: { "200": response(envelope({ type: "array", items: { type: "object", additionalProperties: true } })) } } },
+      "/api/v1/observatory/sources/{sourceId}": { get: { operationId: "getObservatorySource", tags: ["Observatory"], parameters: [sourceId, parameter("limit", false, { type: "integer", minimum: 1, maximum: 500 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/sources/{sourceId}/tilejson": { get: { operationId: "getTileJson", tags: ["Maps"], parameters: [sourceId, parameter("dataset")], responses: { "200": response({ type: "object", additionalProperties: true }) } } },
       "/api/v1/spatial/join": { get: { operationId: "spatialJoin", tags: ["Maps"], parameters: [parameter("left_source", true), parameter("right_source", true), parameter("radius_km", false, { type: "number", exclusiveMinimum: 0, maximum: 500 })], responses: { "200": response(envelope({ type: "array", items: { type: "object", additionalProperties: true } })) } } },
       "/api/v1/entities/resolve": { get: { operationId: "resolveEntities", tags: ["Intelligence"], parameters: [parameter("left_source", true), parameter("right_source", true), parameter("left_fields", true), parameter("right_fields", true)], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },

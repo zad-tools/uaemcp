@@ -20,6 +20,7 @@ import { encodeVectorTile } from "./vector-tiles.js";
 import { openApiDocument } from "./openapi.js";
 import { resolveEntities } from "./entity-resolution.js";
 import { observatoryPage } from "./observatory-web.js";
+import { healthScanScheduler } from "./health-scheduler.js";
 import { coverageIndicator, healthIndicator, INDICATOR_IDS, industrialDistributionIndicator, listIndicators, stabilityIndicator, type IndicatorId } from "./indicators.js";
 
 type Json = Record<string, unknown>;
@@ -59,6 +60,16 @@ export async function handleRest(request: Request): Promise<Response | null> {
     if (request.method === "GET" && path === "/api/v1/observatory") {
       return json(envelope(reliabilityStore().observatoryReport(REGISTRY.list().map((source) => source.id))));
     }
+    if (request.method === "GET" && path === "/api/v1/observatory/report.md") {
+      const report = reliabilityStore().observatoryReport(REGISTRY.list().map((source) => source.id)) as {
+        generatedAt: string; monitoredSources: number; observedSources: number; overallUptimeRatio: number | null;
+        currentStatus: Record<string, number>; incidents: Record<string, number>; sources: Array<Record<string, unknown>>;
+      };
+      const safe = (value: unknown) => String(value ?? "—").replaceAll("|", "\\|").replaceAll("\n", " ");
+      const rows = report.sources.map((source) => `| ${safe(source.sourceId)} | ${safe(source.status)} | ${safe(source.latencyMs)} | ${safe(source.checkedAt)} |`).join("\n");
+      const markdown = `# Emirates Open Data Observatory Report\n\nGenerated: ${report.generatedAt}\n\n## National reliability summary\n\n- Monitored sources: ${report.monitoredSources}\n- Sources with observations: ${report.observedSources}\n- Healthy now: ${report.currentStatus.ok ?? 0}\n- Degraded now: ${report.currentStatus.partial ?? 0}\n- Down now: ${report.currentStatus.down ?? 0}\n- Unknown: ${report.currentStatus.unknown ?? 0}\n- Observed uptime: ${report.overallUptimeRatio === null ? "unknown" : `${(report.overallUptimeRatio * 100).toFixed(2)}%`}\n- Open incidents: ${report.incidents.open ?? 0}\n\n> Unknown means unmeasured, not healthy. This report is derived only from stored observations.\n\n## Source status\n\n| Source | Status | Latency ms | Last checked |\n| --- | --- | ---: | --- |\n${rows}\n`;
+      return new Response(markdown, { headers: { "content-type": "text/markdown; charset=utf-8", "content-disposition": "inline; filename=emirates-open-data-observatory.md" } });
+    }
     if (request.method === "GET" && path === "/api/v1/observatory/incidents") {
       const limit = Math.max(1, integer(url.searchParams, "limit", 100, 1000));
       return json(envelope(reliabilityStore().incidents(optional(url.searchParams, "source_id"), limit), { limit }));
@@ -75,6 +86,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
       }));
     }
     if (request.method === "GET" && path === "/api/v1/operations/snapshot-scheduler") return json(envelope(snapshotScheduler.status()));
+    if (request.method === "GET" && path === "/api/v1/operations/health-scan-scheduler") return json(envelope(healthScanScheduler.status()));
     if (request.method === "GET" && path === "/api/v1/catalog") {
       return json(envelope(REGISTRY.list().map(portalModel), { coverage: coverageSummary() }));
     }

@@ -12,6 +12,9 @@ impl UaemcpClient {
  pub async fn list_recipes(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/recipes"), params).await }
  pub async fn list_indicators(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/indicators"), params).await }
  pub async fn get_indicator(&self, indicator_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/indicators/{}", urlencoding::encode(indicator_id)), params).await }
+ pub async fn get_observatory_report(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/observatory"), params).await }
+ pub async fn list_observatory_incidents(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/observatory/incidents"), params).await }
+ pub async fn get_observatory_source(&self, source_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/observatory/sources/{}", urlencoding::encode(source_id)), params).await }
  pub async fn get_tile_json(&self, source_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/sources/{}/tilejson", urlencoding::encode(source_id)), params).await }
  pub async fn spatial_join(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/spatial/join"), params).await }
  pub async fn resolve_entities(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/entities/resolve"), params).await }

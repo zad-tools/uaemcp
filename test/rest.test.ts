@@ -109,6 +109,8 @@ describe("REST v1", () => {
   it("exposes safe snapshot scheduler status", async () => {
     const payload = await fetch(`${baseUrl}/api/v1/operations/snapshot-scheduler`).then((response) => response.json());
     expect(payload.data).toMatchObject({ enabled: false, running: false, targets: [] });
+    const health = await fetch(`${baseUrl}/api/v1/operations/health-scan-scheduler`).then((response) => response.json());
+    expect(health.data).toMatchObject({ enabled: false, running: false, intervalMinutes: 0 });
   });
 
   it("publishes the public observatory report, incidents, and source profile", async () => {
@@ -118,5 +120,8 @@ describe("REST v1", () => {
     expect(report.data).toMatchObject({ monitoredSources: 33, currentStatus: expect.any(Object), incidents: expect.any(Object) });
     expect(incidents).toMatchObject({ ok: true, data: expect.any(Array), meta: { limit: 10 } });
     expect(profile.data).toMatchObject({ source: { id: "moiat_industrial_licenses" }, reliability: { sourceId: "moiat_industrial_licenses" }, incidents: expect.any(Array) });
+    const markdown = await fetch(`${baseUrl}/api/v1/observatory/report.md`);
+    expect(markdown.headers.get("content-type")).toContain("text/markdown");
+    expect(await markdown.text()).toContain("# Emirates Open Data Observatory Report");
   });
 });

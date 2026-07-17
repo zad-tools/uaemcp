@@ -43,6 +43,15 @@ class UaemcpClient:
     def get_indicator(self, indicator_id, **params):
         return self._get(f"/api/v1/intelligence/indicators/{quote(str(indicator_id), safe='')}", params)
 
+    def get_observatory_report(self, **params):
+        return self._get(f"/api/v1/observatory", params)
+
+    def list_observatory_incidents(self, **params):
+        return self._get(f"/api/v1/observatory/incidents", params)
+
+    def get_observatory_source(self, source_id, **params):
+        return self._get(f"/api/v1/observatory/sources/{quote(str(source_id), safe='')}", params)
+
     def get_tile_json(self, source_id, **params):
         return self._get(f"/api/v1/sources/{quote(str(source_id), safe='')}/tilejson", params)
 

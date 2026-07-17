@@ -33,8 +33,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 18 source-cited
-MCP tools, six resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 19 source-cited
+MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -85,6 +85,11 @@ Endpoints:
 - Prometheus metrics: `GET /metrics`
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
+- Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/observatory"><img src="docs/assets/screenshots/observatory.png" alt="Emirates Open Data Observatory" width="100%"></a>
+</p>
 
 ## MCP client configuration
 
@@ -143,6 +148,7 @@ language. It is included in the main release check.
 | `uae_spatial_join` | Join two bounded point datasets by radius |
 | `uae_indicator` | List or calculate explainable national-data indicators |
 | `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
+| `uae_observatory` | Read national reliability, incidents and source profiles |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
@@ -189,6 +195,7 @@ Unknown measurements stay explicitly `unknown` until history can prove them.
 | `UAEMCP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client public request limit; `0` disables it |
 | `UAEMCP_DATABASE_PATH` | `data/uaemcp.sqlite` | Durable health-history and snapshot database |
 | `UAEMCP_HEALTH_RETENTION` | `10000` | Maximum stored health checks per source |
+| `UAEMCP_HEALTH_SCAN_INTERVAL_MINUTES` | `0` | Periodic Observatory scan; hosted deployment uses `60` |
 | `UAEMCP_SNAPSHOT_RETENTION` | `30` | Maximum changed snapshots per source/dataset |
 | `UAEMCP_SNAPSHOT_INTERVAL_MINUTES` | `0` | Snapshot schedule; `0` disables it |
 | `UAEMCP_SNAPSHOT_TARGETS` | unset | Comma-separated `source` or `source@dataset` targets |
