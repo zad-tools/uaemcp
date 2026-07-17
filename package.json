@@ -1,6 +1,6 @@
 {
   "name": "uaemcp",
-  "version": "1.36.0",
+  "version": "1.37.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "license": "MIT",
@@ -28,13 +28,17 @@
     "prepublishOnly": "bun run check"
   },
   "dependencies": {
+    "@maplibre/geojson-vt": "6.1.1",
+    "@maplibre/vt-pbf": "4.3.2",
     "@modelcontextprotocol/sdk": "1.29.0",
     "fflate": "0.8.3",
     "ipaddr.js": "2.2.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@mapbox/vector-tile": "3.0.0",
     "@types/bun": "1.3.11",
+    "@types/geojson": "7946.0.16",
     "typescript": "5.9.3"
   },
   "engines": {

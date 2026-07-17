@@ -63,6 +63,13 @@
 - Parallel source retrieval, dual citations and transformation lineage
 - REST and MCP access with strict sample, radius and match limits
 
+## v1.37 — Vector map delivery — complete
+
+- Standards-readable Mapbox Vector Tile encoding
+- Dynamic per-source `{z}/{x}/{y}.pbf` endpoints
+- TileJSON 3.0 metadata for MapLibre and compatible clients
+- Bounded record input, safe property serialization and short public caching
+
 ## v1.40 — Deeper intelligence
 
 - Cross-source entity resolution

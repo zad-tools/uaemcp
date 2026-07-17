@@ -48,6 +48,7 @@ Endpoints:
 - Readiness: `GET /ready` or `/readyz`
 - Prometheus metrics: `GET /metrics`
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
+- Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 
 ## MCP client configuration
 

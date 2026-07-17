@@ -16,6 +16,7 @@ import { reliabilityStore } from "./reliability.js";
 import { listRecipes, runRecipe, type RecipeId, RECIPE_IDS } from "./intelligence.js";
 import { landingPage } from "./web.js";
 import { snapshotScheduler } from "./scheduler.js";
+import { encodeVectorTile } from "./vector-tiles.js";
 
 type Json = Record<string, unknown>;
 
@@ -143,6 +144,28 @@ export async function handleRest(request: Request): Promise<Response | null> {
       }
     }
 
+    const tileJsonMatch = path.match(/^\/api\/v1\/sources\/([^/]+)\/tilejson$/);
+    if (request.method === "GET" && tileJsonMatch) {
+      const source = REGISTRY.get(decodeURIComponent(tileJsonMatch[1]));
+      const dataset = optional(url.searchParams, "dataset");
+      const suffix = dataset ? `?dataset=${encodeURIComponent(dataset)}` : "";
+      return json({ tilejson: "3.0.0", name: source.name_en, attribution: citation(source), minzoom: 0, maxzoom: 22, vector_layers: [{ id: source.id, fields: {} }], tiles: [`${url.origin}/api/v1/sources/${encodeURIComponent(source.id)}/tiles/{z}/{x}/{y}.pbf${suffix}`] });
+    }
+
+    const tileMatch = path.match(/^\/api\/v1\/sources\/([^/]+)\/tiles\/(\d+)\/(\d+)\/(\d+)\.pbf$/);
+    if (request.method === "GET" && tileMatch) {
+      const source = REGISTRY.get(decodeURIComponent(tileMatch[1]));
+      const z = Number(tileMatch[2]); const x = Number(tileMatch[3]); const y = Number(tileMatch[4]);
+      const dataset = optional(url.searchParams, "dataset");
+      const result = await fetchResult(source, { dataset, query: optional(url.searchParams, "query"), limit: Math.max(1, integer(url.searchParams, "limit", 1000, 1000)) });
+      const bytes = encodeVectorTile(geo.toGeoJson(result.records, source, dataset ?? null), z, x, y, source.id);
+      const body = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+      return new Response(body, { headers: {
+        "content-type": "application/vnd.mapbox-vector-tile", "cache-control": "public, max-age=60",
+        "x-uaemcp-source": source.id, "x-uaemcp-citation": encodeURIComponent(citation(source)),
+      } });
+    }
+
     const match = path.match(/^\/api\/v1\/sources\/([^/]+)(?:\/(health|health-history|datasets|records|schema|geo|aggregate|export))?$/);
     if (!match || request.method !== "GET") return null;
     const source = REGISTRY.get(decodeURIComponent(match[1]));
@@ -201,7 +224,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
     }
     return null;
   } catch (error) {
-    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near|polygon|point|join radius/.test(error.message)) return failure(new ValidationError(error.message));
+    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near|polygon|point|join radius|tile coordinates|vector tile/.test(error.message)) return failure(new ValidationError(error.message));
     return failure(error);
   }
 }

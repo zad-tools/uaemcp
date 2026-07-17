@@ -59,10 +59,18 @@ describe("REST v1", () => {
     expect(catalog.data[0].capabilities).toBeDefined();
   });
 
+  it("publishes TileJSON metadata for map clients", async () => {
+    const response = await fetch(`${baseUrl}/api/v1/sources/moiat_industrial_licenses/tilejson`);
+    const tilejson = await response.json();
+    expect(response.status).toBe(200);
+    expect(tilejson).toMatchObject({ tilejson: "3.0.0", minzoom: 0, maxzoom: 22 });
+    expect(tilejson.tiles[0]).toContain("/tiles/{z}/{x}/{y}.pbf");
+  });
+
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.36.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.37.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });
