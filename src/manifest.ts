@@ -7,6 +7,7 @@ const READ_TOOLS = [
   "uae_source_aggregate", "uae_market_snapshot", "uae_dashboard_summary", "uae_intelligence_recipe",
   "uae_spatial_join",
   "uae_indicator", "uae_entity_resolve", "uae_observatory", "uae_industry_atlas",
+  "uae_tax_service_activity",
 ];
 
 export function trustManifest(): Record<string, unknown> {
@@ -14,7 +15,7 @@ export function trustManifest(): Record<string, unknown> {
     schemaVersion: "1.0",
     operator: { name: "Ahmed Morsy", contact: "vacrom414@gmail.com" },
     server: { name: SERVER_NAME, version: VERSION, runtime: "bun", license: "MIT" },
-    endpoints: { mcp: "/mcp", rest: "/api/v1", observatory: "/observatory", industryAtlas: "/industry-atlas", health: "/health", metrics: "/metrics" },
+    endpoints: { mcp: "/mcp", rest: "/api/v1", observatory: "/observatory", industryAtlas: "/industry-atlas", taxServiceActivity: "/tax-services", health: "/health", metrics: "/metrics" },
     tools: {
       read: [...READ_TOOLS, "uae_dataset_snapshot:list", "uae_dataset_snapshot:diff"],
       write: ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"],

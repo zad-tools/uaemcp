@@ -19,6 +19,7 @@ describe("REST v1", () => {
     expect(html).toContain("Open Emirates Intelligence");
     expect(html).toContain('href="/places"');
     expect(html).toContain('href="/tax-services"');
+    expect(html).toContain("<strong>21</strong><span>Focused tools");
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
@@ -74,7 +75,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.42.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.43.0" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -128,7 +129,9 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.42.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.43.0" });
+    expect(manifest.endpoints.taxServiceActivity).toBe("/tax-services");
+    expect(manifest.tools.read).toContain("uae_tax_service_activity");
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });

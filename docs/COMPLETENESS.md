@@ -15,7 +15,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Performance | 9/10 | Bounded fan-out, cache, pagination, streaming HTTP, benchmark gate | External latency is controlled by authorities |
 | Developer experience | 9/10 | Doctor, completions, examples, templates, snippets and six SDKs | SDKs are not independently published yet |
 | API design | 9/10 | REST v1, stable envelopes, OpenAPI 3.1, explicit error codes | Some analytical calls have source-specific optional fields |
-| MCP compliance | 9/10 | stdio and Streamable HTTP, 20 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
+| MCP compliance | 9/10 | stdio and Streamable HTTP, 21 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
 | Security | 9/10 | SSRF/DNS classification, redirect validation, budgets, auth, redaction, quotas | Application DNS validation has a documented TOCTOU residual risk |
 | Testing | 9/10 | 150 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
 | Documentation | 10/10 | Architecture, API, deployment, MCP, SDK, recipes, security, connectors, FAQ | Must track contract changes each release |
@@ -27,7 +27,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Requirement | Status | Authoritative evidence |
 | --- | --- | --- |
 | Bun-only MCP with stdio and Streamable HTTP | Complete | `src/index.ts`, runtime integration tests |
-| Preserve the original tool contract | Complete | 18 additive tools and compatibility assertions in `test/http.test.ts` |
+| Preserve the original tool contract | Complete | 21 additive tools and compatibility assertions in `test/http.test.ts` |
 | Organization, portal, dataset, resource and capability models | Complete | `src/catalog.ts`, `test/catalog.test.ts` |
 | Endpoint, connector, schema, indicator, query, snapshot, transformation, lineage, license and quality concepts | Complete | public catalog/results, connector and intelligence modules |
 | Plugin connectors | Complete | registry plus 13 built-in kinds and plugin tests |
@@ -53,8 +53,8 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 
 ## Known boundaries, not hidden incompleteness
 
-- National coverage cannot be manufactured: the registry currently separates 34
-  indexed official portals from four live record connectors. Key-gated,
+- National coverage cannot be manufactured: the registry currently separates 35
+  indexed official portals from five live record connectors. Key-gated,
   blocked and metadata-only sources remain labeled as such.
 - Administrative geography normalizes every emirate and record-supplied area.
   The project does not ship unofficial boundary polygons and call them official.

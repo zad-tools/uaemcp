@@ -28,6 +28,7 @@ import { buildIndustrialChangeReport } from "./industry-change.js";
 import { placesExplorerPage } from "./places-web.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { taxServicesPage } from "./tax-services-web.js";
+import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
 
@@ -53,14 +54,9 @@ function integer(params: URLSearchParams, key: string, fallback: number, max: nu
 
 const optional = (params: URLSearchParams, key: string): string | undefined => params.get(key) || undefined;
 
-export interface RestDependencies {
-  fetchIndustryRecords: typeof fetchResult;
-  fetchTaxRecords?: typeof fetchResult;
-}
+const REST_DEFAULTS: RuntimeDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult };
 
-const REST_DEFAULTS: RestDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult };
-
-export async function handleRest(request: Request, dependencies: RestDependencies = REST_DEFAULTS): Promise<Response | null> {
+export async function handleRest(request: Request, dependencies: RuntimeDependencies = REST_DEFAULTS): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, "") || "/";
 
@@ -93,7 +89,7 @@ export async function handleRest(request: Request, dependencies: RestDependencie
     if (request.method === "GET" && path === "/api/v1/industry-atlas") {
       const source = REGISTRY.get("moiat_industrial_licenses");
       const requestedLimit = Math.max(1, integer(url.searchParams, "limit", 500, 1000));
-      const result = await dependencies.fetchIndustryRecords(source, { limit: requestedLimit });
+      const result = await (dependencies.fetchIndustryRecords ?? fetchResult)(source, { limit: requestedLimit });
       const data = buildIndustryAtlas(result.records, {
         sourceId: source.id, citation: result.citation, fetchedAt: result.fetched_at,
         upstreamTotal: result.total, qualityScore: result.data_quality.quality_score,

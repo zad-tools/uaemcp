@@ -26,6 +26,8 @@ import { resolveEntities } from "./entity-resolution.js";
 import { coverageIndicator, healthIndicator, industrialDistributionIndicator, listIndicators, stabilityIndicator } from "./indicators.js";
 import { buildIndustryAtlas } from "./industry-atlas.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
+import { buildTaxServiceReport } from "./tax-services.js";
+import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
 
@@ -41,8 +43,24 @@ function text(payload: Json) {
   return { content: [{ type: "text" as const, text: JSON.stringify(payload, null, 2) }] };
 }
 
-export function buildServer(): McpServer {
+export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_tax_service_activity",
+    {
+      description: "Read the official FTA 2025 service-activity report with quarterly totals, methodology, limitations and citation. Counts are not tax revenue, taxpayers, companies, or economic growth.",
+    },
+    async () => {
+      try {
+        const source = REGISTRY.get("fta_service_activity_2025");
+        const result = await (dependencies.fetchTaxRecords ?? fetchResult)(source, { limit: 10 });
+        return text(ok(buildTaxServiceReport(result.records, { citation: result.citation, fetchedAt: result.fetched_at }), {
+          ...metaOf(result), source_id: source.id, returned_records: result.records.length,
+        }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_industry_atlas",

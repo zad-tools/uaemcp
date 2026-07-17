@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.43.0
+
+- Added `uae_tax_service_activity` as a first-class MCP tool backed by the same bounded official FTA report as the REST product.
+- Added an injectable public runtime seam so MCP and REST contract tests remain deterministic without depending on upstream availability.
+- Declared the tax product and MCP tool in the machine-readable trust manifest.
+
 ## 1.42.0
 
 - Added the official FTA 2025 service-activity workbook as a bounded live XLSX source.

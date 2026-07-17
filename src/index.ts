@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { SETTINGS } from "./config.js";
 import { buildServer } from "./server.js";
+import type { RuntimeDependencies } from "./dependencies.js";
 import { REGISTRY } from "./sources.js";
 import { handleRest } from "./rest.js";
 import { checkRateLimit } from "./rate-limit.js";
@@ -54,7 +55,7 @@ function responseHeaders(request: Request, response: Response): Response {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
-export function createFetchHandler(): (request: Request) => Promise<Response> {
+export function createFetchHandler(dependencies: RuntimeDependencies = {}): (request: Request) => Promise<Response> {
   const dispatch = async (request: Request): Promise<Response> => {
     const path = new URL(request.url).pathname.replace(/\/$/, "") || "/";
 
@@ -106,7 +107,7 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
         { headers: { "content-type": "text/plain; version=0.0.4" } },
       ));
     }
-    const restResponse = await handleRest(request);
+    const restResponse = await handleRest(request, dependencies);
     if (restResponse) return responseHeaders(request, restResponse);
     if (path !== "/mcp") return responseHeaders(request, new Response("not found", { status: 404 }));
 
@@ -114,7 +115,7 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
       sessionIdGenerator: undefined,
       enableJsonResponse: request.headers.get("accept")?.includes("application/json") ?? false,
     });
-    const server = buildServer();
+    const server = buildServer(dependencies);
     await server.connect(transport);
 
     try {
@@ -148,8 +149,8 @@ export async function runStdio(): Promise<void> {
   await buildServer().connect(new StdioServerTransport());
 }
 
-export function runHttp(host = SETTINGS.host, port = SETTINGS.port): Bun.Server<unknown> {
-  const server = Bun.serve({ hostname: host, port, fetch: createFetchHandler() });
+export function runHttp(host = SETTINGS.host, port = SETTINGS.port, dependencies: RuntimeDependencies = {}): Bun.Server<unknown> {
+  const server = Bun.serve({ hostname: host, port, fetch: createFetchHandler(dependencies) });
   snapshotScheduler.start();
   healthScanScheduler.start();
   process.stderr.write(`uaemcp http listening on ${server.url}mcp\n`);

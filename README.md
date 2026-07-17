@@ -166,6 +166,7 @@ language. It is included in the main release check.
 | `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
 | `uae_observatory` | Read national reliability, incidents and source profiles |
 | `uae_industry_atlas` | Build a bounded industrial evidence slice (`action=atlas`) or read the honest Change Monitor (`action=change`) |
+| `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
