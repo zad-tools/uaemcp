@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 33 source-cited
-MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 34 source-cited
+MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -54,6 +54,17 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/national-brief"><img src="docs/assets/national-brief-motion.svg" alt="Animated UAE National Evidence Brief showing four separate source-cited pillars" width="100%"></a>
+</p>
+
+The **UAE National Evidence Brief** brings education, health, industry and FTA
+service activity into one evidence surface while keeping each source's original
+period, unit and limitations. It never adds the pillars together, ranks them or
+invents a composite national score. Use the [hosted page](https://uaemcp.zad.tools/national-brief),
+the REST endpoint, or the `uae_national_evidence_brief` MCP tool. See the
+[MCP client setup guide](docs/MCP_CLIENTS.md) for tested connection patterns.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/founder-pathway"><img src="docs/assets/founder-pathway.svg" alt="Animated UAE Founder Pathway from official setup to support and residency readiness" width="100%"></a>
@@ -132,7 +143,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.63.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.64.0` or newer.
 
 MCP client configuration:
 
@@ -173,7 +184,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.63.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.64.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:

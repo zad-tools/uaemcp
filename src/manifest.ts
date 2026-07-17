@@ -20,6 +20,7 @@ const READ_TOOLS = [
   "uae_trade_flow_radar",
   "uae_ajman_business_evidence",
   "uae_ajman_urban_evidence",
+  "uae_national_evidence_brief",
 ];
 
 const WRITE_TOOLS = ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"];
@@ -40,7 +41,7 @@ export function trustManifest(): Record<string, unknown> {
     schemaVersion: "1.0",
     operator: { name: "Ahmed Morsy", contact: "vacrom414@gmail.com" },
     server: { name: SERVER_NAME, version: VERSION, runtime: "bun", license: "MIT" },
-    endpoints: { mcp: "/mcp", rest: "/api/v1", products: "/api/v1/products", placeNames: "/places", placeNamesApi: "/api/v1/places", founderPathway: "/founder-pathway", founderPathwayApi: "/api/v1/founder-pathway", startupSupport: "/startup-support", startupSupportApi: "/api/v1/startup-support", businessSetup: "/business-setup", businessSetupApi: "/api/v1/business-setup", goldenResidency: "/golden-residency", goldenResidencyApi: "/api/v1/golden-residency", educationLedger: "/education", educationLedgerApi: "/api/v1/education", healthIndicators: "/health-indicators", healthIndicatorsApi: "/api/v1/health-indicators", observatory: "/observatory", industryAtlas: "/industry-atlas", tradeFlowRadar: "/trade-flow", tradeFlowApi: "/api/v1/trade-flow", ajmanBusiness: "/ajman-business", ajmanBusinessApi: "/api/v1/ajman-business", ajmanUrban: "/ajman-urban", ajmanUrbanApi: "/api/v1/ajman-urban", taxServiceActivity: "/tax-services", taxServiceArchivePage: "/tax-services/archive", taxServiceArchive: "/api/v1/tax-services/archive", health: "/health", metrics: "/metrics" },
+    endpoints: { mcp: "/mcp", rest: "/api/v1", products: "/api/v1/products", nationalBrief: "/national-brief", nationalBriefApi: "/api/v1/national-brief", placeNames: "/places", placeNamesApi: "/api/v1/places", founderPathway: "/founder-pathway", founderPathwayApi: "/api/v1/founder-pathway", startupSupport: "/startup-support", startupSupportApi: "/api/v1/startup-support", businessSetup: "/business-setup", businessSetupApi: "/api/v1/business-setup", goldenResidency: "/golden-residency", goldenResidencyApi: "/api/v1/golden-residency", educationLedger: "/education", educationLedgerApi: "/api/v1/education", healthIndicators: "/health-indicators", healthIndicatorsApi: "/api/v1/health-indicators", observatory: "/observatory", industryAtlas: "/industry-atlas", tradeFlowRadar: "/trade-flow", tradeFlowApi: "/api/v1/trade-flow", ajmanBusiness: "/ajman-business", ajmanBusinessApi: "/api/v1/ajman-business", ajmanUrban: "/ajman-urban", ajmanUrbanApi: "/api/v1/ajman-urban", taxServiceActivity: "/tax-services", taxServiceArchivePage: "/tax-services/archive", taxServiceArchive: "/api/v1/tax-services/archive", health: "/health", metrics: "/metrics" },
     tools: {
       read: [...READ_TOOLS, "uae_dataset_snapshot:list", "uae_dataset_snapshot:diff"],
       write: [...WRITE_TOOLS],

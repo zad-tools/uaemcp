@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.64.0
+
+- Added the UAE National Evidence Brief across education, health, industry and FTA service activity.
+- Preserved source-native periods, units, citations and limitations; cross-pillar aggregation and composite scoring are explicitly disabled.
+- Added `/national-brief`, `/api/v1/national-brief`, the read-only `uae_national_evidence_brief` MCP tool and `uae://national-brief/methodology` resource.
+- Added a bilingual RTL Dubai Font interface, animated README evidence visual and a practical MCP client setup guide.
+
 ## 1.63.0
 
 - Added Ajman Urban Evidence over six official building, certified-rent, road-length and developed-crossroad datasets.

@@ -26,6 +26,13 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     evidence: { scope: { en: "A composition of the dated official setup, startup-support and Golden Residency evidence catalogues, verified 17 July 2026.", ar: "تركيب من كتالوجات أدلة التأسيس ودعم الشركات الناشئة والإقامة الذهبية الرسمية والمؤرخة، متحقق منها في 17 يوليو 2026." }, limitations: [{ en: "Planning only; it does not license a company, accept a programme application or determine residency eligibility.", ar: "للتخطيط فقط؛ لا يرخص شركة ولا يقبل طلب برنامج ولا يحدد أهلية الإقامة." }] },
   },
   {
+    id: "national_evidence_brief", status: "published", access: "public", category: "NATIONAL / EVIDENCE", categoryAr: "وطني / أدلة",
+    title: { en: "UAE National Evidence Brief", ar: "موجز الأدلة الوطني للإمارات" },
+    description: { en: "Read education, health, industry and tax-service activity side by side with source-native units, periods and limitations.", ar: "اقرأ التعليم والصحة والصناعة ونشاط الخدمات الضريبية جنبًا إلى جنب مع الوحدات والفترات والحدود الأصلية للمصادر." },
+    webPath: "/national-brief", apiPath: "/api/v1/national-brief", sourceIds: ["fcsc_unified_uae_numbers_2025", "mohap_health_core_indicators_2024", "moiat_industrial_licenses", "fta_service_activity_2025"],
+    evidence: { scope: { en: "Four official evidence pillars presented without cross-pillar aggregation or composite scoring.", ar: "أربعة محاور من الأدلة الرسمية معروضة دون جمع بين المحاور أو درجات مركبة." }, limitations: [{ en: "Periods, units and coverage differ; pillars must not be added or ranked together.", ar: "تختلف الفترات والوحدات والتغطية؛ ولا يجوز جمع المحاور أو ترتيبها معًا." }] },
+  },
+  {
     id: "startup_support_navigator", status: "published", access: "public", category: "STARTUPS / SUPPORT", categoryAr: "الشركات الناشئة / الدعم",
     title: { en: "UAE Startup Support Navigator", ar: "دليل دعم الشركات الناشئة في الإمارات" },
     description: { en: "Discover relevant official and government-backed accelerators, incubators, finance and market-access programmes by stage and location.", ar: "اكتشف المسرعات والحاضنات وبرامج التمويل والوصول للسوق الرسمية والمدعومة حكوميًا حسب المرحلة والموقع." },

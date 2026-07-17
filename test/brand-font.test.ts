@@ -15,8 +15,10 @@ import { startupSupportPage } from "../src/startup-support-web.js";
 import { founderPathwayPage } from "../src/founder-pathway-web.js";
 import { ajmanBusinessPage } from "../src/ajman-business-web.js";
 import { ajmanUrbanPage } from "../src/ajman-urban-web.js";
+import { nationalBriefPage } from "../src/national-brief-web.js";
 
 const pages = [
+  ["/national-brief", nationalBriefPage],
   ["/founder-pathway", founderPathwayPage],
   ["/ajman-business", ajmanBusinessPage],
   ["/ajman-urban", ajmanUrbanPage],

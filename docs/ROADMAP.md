@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.64 — National Evidence Brief — complete
+
+- Four official education, health, industry and tax-activity evidence pillars in one national surface
+- Source-native periods and units with explicit independent availability and citations
+- No cross-pillar aggregation, ranking or composite score; unavailable never means zero
+- Bilingual Dubai Font interface, REST, MCP tool, methodology resource and generated SDK support
+
 ## v1.63 — Ajman urban evidence — complete
 
 - Six official building, certified-rent and road datasets exposed as separate source-native series

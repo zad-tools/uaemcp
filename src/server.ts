@@ -39,6 +39,7 @@ import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, bus
 import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSupport, startupSupportCatalogue } from "./startup-support.js";
 import { buildFounderPathway } from "./founder-pathway.js";
 import { buildPlaceNamesProduct } from "./places.js";
+import { loadNationalEvidenceBrief } from "./national-brief-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -230,6 +231,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
       try {
         const product = await loadAjmanUrbanProduct(dependencies.fetchAjmanUrbanRecords ?? fetchResult, limit);
         return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_national_evidence_brief",
+    {
+      description: "Read education, health, industry and FTA service activity side by side with source-native units, periods, citations and explicit limitations. No composite score or cross-pillar ranking is produced.",
+      inputSchema: { healthLimit: z.number().int().min(1).max(50).default(12), industryLimit: z.number().int().min(1).max(100).default(50), emirate: z.enum(BUSINESS_EMIRATES).optional(), query: z.string().trim().max(100).optional() },
+    },
+    async ({ healthLimit, industryLimit, emirate, query }) => {
+      try {
+        const result = await loadNationalEvidenceBrief({ healthLimit, industryLimit, emirate, query }, { fetchHealthRecords: dependencies.fetchHealthRecords, fetchIndustryRecords: dependencies.fetchIndustryRecords, fetchTaxRecords: dependencies.fetchTaxRecords });
+        return text(ok(result.data, result.meta));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -656,6 +671,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "national_evidence_brief_methodology",
+    "uae://national-brief/methodology",
+    { title: "UAE National Evidence Brief methodology", description: "Rules for reading four source-native evidence pillars without false comparison or composite scoring.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ pillars: ["education", "health", "industry", "tax_activity"], crossPillarAggregation: false, compositeScore: false, unavailableMeansZero: false, filters: { emirate: "industry only", query: "health and industry only" } }) }] }),
+  );
 
   server.registerResource(
     "public_products",

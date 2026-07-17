@@ -50,6 +50,8 @@ import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSu
 import { startupSupportPage } from "./startup-support-web.js";
 import { buildFounderPathway, type FounderPathwayInput } from "./founder-pathway.js";
 import { founderPathwayPage } from "./founder-pathway-web.js";
+import { nationalBriefPage } from "./national-brief-web.js";
+import { loadNationalEvidenceBrief } from "./national-brief-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -118,12 +120,31 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/business-setup") return new Response(businessSetupPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/startup-support") return new Response(startupSupportPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/founder-pathway") return new Response(founderPathwayPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/national-brief") return new Response(nationalBriefPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/national-brief") {
+      const positive = (key: string, fallback: number, max: number) => {
+        const raw = url.searchParams.get(key);
+        if (raw === null) return fallback;
+        if (!/^\d+$/.test(raw) || Number(raw) < 1 || Number(raw) > max) throw new ValidationError(`${key} must be an integer from 1 to ${max}`);
+        return Number(raw);
+      };
+      const query = url.searchParams.get("q")?.trim() || undefined;
+      if (query && query.length > 100) throw new ValidationError("q must contain at most 100 characters");
+      const emirate = url.searchParams.get("emirate")?.trim() || undefined;
+      if (emirate && !BUSINESS_EMIRATES.includes(emirate as typeof BUSINESS_EMIRATES[number])) throw new ValidationError("emirate is invalid");
+      const result = await loadNationalEvidenceBrief({ healthLimit: positive("health_limit", 12, 50), industryLimit: positive("industry_limit", 50, 100), emirate, query }, {
+        fetchHealthRecords: dependencies.fetchHealthRecords,
+        fetchIndustryRecords: dependencies.fetchIndustryRecords,
+        fetchTaxRecords: dependencies.fetchTaxRecords,
+      });
+      return json(envelope(result.data, result.meta));
     }
     if (request.method === "GET" && path === "/api/v1/places") {
       const query = url.searchParams.get("q")?.trim() ?? "";
