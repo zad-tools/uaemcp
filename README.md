@@ -59,10 +59,12 @@ RTL composition.
 </p>
 
 The **UAE Founder Pathway** composes three evidence products into one ordered,
-privacy-bounded journey: route to the competent setup authority, discover
+privacy-bounded action dossier: route to the competent setup authority, discover
 relevant government-backed support, then prepare entrepreneur Golden Residency
-evidence. It is planning—not licensing, programme acceptance or an eligibility
-decision.
+evidence. Every task links to its official action, starts honestly as not begun,
+and can be checked in-memory, printed or downloaded as JSON without sending the
+checklist state to the server. It is planning—not licensing, programme acceptance
+or an eligibility decision.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/business-setup"><img src="docs/assets/business-routing.svg" alt="Animated UAE Business Setup Navigator routing across seven emirates" width="100%"></a>
@@ -128,7 +130,7 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
-- UAE Founder Pathway: `GET /founder-pathway` — one privacy-bounded journey across official setup, startup support and entrepreneur residency readiness
+- UAE Founder Pathway: `GET /founder-pathway` — build, track, print and export a privacy-bounded action dossier across official setup, startup support and entrepreneur residency readiness
 - UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
@@ -235,7 +237,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
-| `uae_founder_pathway` | Build one ordered founder journey across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
+| `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
 | `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
 | `uae_golden_residency` | Explore official Golden Residency pathways or assess non-identifying evidence readiness without determining eligibility |
 | `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |

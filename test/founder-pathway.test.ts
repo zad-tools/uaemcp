@@ -31,4 +31,13 @@ describe("UAE Founder Pathway", () => {
     const result = buildFounderPathway({ stage: "mvp", emirate: "ras_al_khaimah", setupType: "mainland", supportType: "incubation" });
     expect(result.steps[1].matches.every((match) => match.scope === "federal")).toBe(true);
   });
+
+  it("produces a source-linked execution dossier without pretending tasks are complete", () => {
+    const result = buildFounderPathway({ stage: "mvp", emirate: "abu_dhabi", setupType: "mainland", supportType: "incubation" });
+    expect(result.executionChecklist.length).toBeGreaterThanOrEqual(8);
+    expect(new Set(result.executionChecklist.map((task) => task.id)).size).toBe(result.executionChecklist.length);
+    expect(result.executionChecklist.every((task) => task.status === "not_started")).toBe(true);
+    expect(result.executionChecklist.every((task) => task.officialUrl.startsWith("https://"))).toBe(true);
+    expect(result.executionChecklist.some((task) => task.phase === "residency_readiness" && task.evidenceId === "incubator_recommendation")).toBe(true);
+  });
 });

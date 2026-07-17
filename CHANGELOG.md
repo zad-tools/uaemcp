@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.60.0
+
+- Expanded the UAE Founder Pathway into a source-linked Action Dossier with ordered setup, support and entrepreneur-residency tasks.
+- Every server-produced task starts as `not_started`; completion checks remain only in browser memory and are never sent back or stored.
+- Added activity-sector routing, live progress, a dedicated print layout and local JSON export with official links and bilingual task evidence.
+- Strengthened the founder interface with output escaping, HTTPS link validation, Dubai Font and responsive Arabic RTL behavior.
+
 ## 1.59.0
 
 - Added the UAE Founder Pathway as an ordered journey across official business setup, relevant government-backed startup support and entrepreneur Golden Residency readiness.

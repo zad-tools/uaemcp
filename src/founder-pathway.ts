@@ -1,5 +1,5 @@
 import { routeBusinessSetup, type BusinessActivitySector, type BusinessEmirate, type BusinessSetupType } from "./business-setup.js";
-import { assessGoldenResidencyReadiness } from "./golden-residency.js";
+import { assessGoldenResidencyReadiness, goldenResidencyCatalogue } from "./golden-residency.js";
 import { matchStartupSupport, type StartupStage, type StartupSupportType } from "./startup-support.js";
 
 export type FounderPathwayInput = Readonly<{
@@ -22,6 +22,32 @@ export function buildFounderPathway(input: FounderPathwayInput) {
     : support.matches;
   const jurisdiction = input.emirate === "dubai" ? "dubai" : input.emirate === "abu_dhabi" ? "abu_dhabi" : "federal";
   const residency = assessGoldenResidencyReadiness({ pathway: "entrepreneur", jurisdiction });
+  const entrepreneurRequirements = goldenResidencyCatalogue().pathways.find((pathway) => pathway.id === "entrepreneurs")?.requirements ?? [];
+  const setupTasks = setup.checklist.map((item, index) => ({
+    id: `establish_${String(index + 1).padStart(2, "0")}`,
+    phase: "establish" as const,
+    status: "not_started" as const,
+    title: { ...item },
+    detail: { en: "Confirm this item with the issuing authority before paying or submitting documents.", ar: "تحقق من هذا البند لدى جهة الإصدار قبل الدفع أو تقديم المستندات." },
+    officialUrl: setup.primaryRoute.url,
+  }));
+  const supportTasks = supportMatches.slice(0, 3).map((match) => ({
+    id: `support_${match.programId}`,
+    phase: "support" as const,
+    status: "not_started" as const,
+    title: { en: `Review ${match.name.en}`, ar: `راجع ${match.name.ar}` },
+    detail: { ...match.summary },
+    officialUrl: match.officialUrl,
+  }));
+  const residencyTasks = entrepreneurRequirements.map((item) => ({
+    id: `residency_${item.id}`,
+    phase: "residency_readiness" as const,
+    status: "not_started" as const,
+    evidenceId: item.id,
+    title: { ...item.label },
+    detail: { ...item.evidence },
+    officialUrl: residency.nextStep.url,
+  }));
 
   return {
     kind: "uae_founder_pathway" as const,
@@ -56,6 +82,7 @@ export function buildFounderPathway(input: FounderPathwayInput) {
         officialAction: { label: { ...residency.nextStep.label }, url: residency.nextStep.url, categorySpecific: residency.nextStep.categorySpecific },
       },
     ] as const,
+    executionChecklist: [...setupTasks, ...supportTasks, ...residencyTasks],
     caveats: [
       { en: "This journey orders official starting points; it does not create a company, submit an application or determine eligibility.", ar: "يرتب هذا المسار نقاط البداية الرسمية؛ ولا يؤسس شركة أو يقدم طلبًا أو يحدد الأهلية." },
       { en: "Programme availability, licensing rules and residency requirements can change. Verify every linked authority before acting.", ar: "قد تتغير البرامج وقواعد الترخيص ومتطلبات الإقامة. تحقق من كل جهة مرتبطة قبل اتخاذ إجراء." },

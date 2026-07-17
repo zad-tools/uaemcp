@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.60 — Founder Action Dossier — complete
+
+- Source-linked execution checklist across setup, support and entrepreneur residency readiness
+- Honest `not_started` status for every server-produced task
+- Session-only progress, print layout and local JSON export without server storage
+- Activity-sector signal and full bilingual Dubai Font interaction
+
 ## v1.59 — Founder journey orchestration — complete
 
 - One ordered founder route across competent business setup, relevant startup support and entrepreneur residency readiness

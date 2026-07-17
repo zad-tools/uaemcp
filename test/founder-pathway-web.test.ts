@@ -6,7 +6,14 @@ describe("Founder Pathway web product", () => {
     const html = founderPathwayPage();
     expect(html).toContain("/api/v1/founder-pathway");
     expect(html).toContain("Dubai-Regular.woff");
-    expect(html).toContain("مسار المؤسس");
+    expect(html).toContain("ملف تنفيذ المؤسس");
     expect(html).toContain("dir=\"ltr\"");
+    expect(html).toContain("downloadDossier");
+    expect(html).toContain("printDossier");
+    expect(html).toContain("action-progress");
+    expect(html).toContain("session only");
+    const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
+    expect(script).toBeDefined();
+    expect(() => new Function(script ?? "")).not.toThrow();
   });
 });

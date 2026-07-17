@@ -21,7 +21,7 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
     id: "founder_pathway", status: "published", access: "public", category: "FOUNDER / JOURNEY", categoryAr: "المؤسس / الرحلة",
     title: { en: "UAE Founder Pathway", ar: "مسار المؤسس في الإمارات" },
-    description: { en: "Build one ordered route across official business setup, relevant startup support and entrepreneur residency readiness.", ar: "ابنِ مسارًا واحدًا مرتبًا عبر التأسيس الرسمي ودعم الشركات الناشئة المناسب وجاهزية إقامة رائد الأعمال." },
+    description: { en: "Build, track, print and export one source-linked action dossier across official setup, startup support and entrepreneur residency readiness.", ar: "ابنِ وتابع واطبع وصدّر ملف تنفيذ واحدًا مرتبطًا بالمصادر عبر التأسيس الرسمي ودعم الشركات الناشئة وجاهزية إقامة رائد الأعمال." },
     webPath: "/founder-pathway", apiPath: "/api/v1/founder-pathway", sourceIds: ["icp_golden_residency"],
     evidence: { scope: { en: "A composition of the dated official setup, startup-support and Golden Residency evidence catalogues, verified 17 July 2026.", ar: "تركيب من كتالوجات أدلة التأسيس ودعم الشركات الناشئة والإقامة الذهبية الرسمية والمؤرخة، متحقق منها في 17 يوليو 2026." }, limitations: [{ en: "Planning only; it does not license a company, accept a programme application or determine residency eligibility.", ar: "للتخطيط فقط؛ لا يرخص شركة ولا يقبل طلب برنامج ولا يحدد أهلية الإقامة." }] },
   },
