@@ -54,7 +54,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 ## Known boundaries, not hidden incompleteness
 
 - National coverage cannot be manufactured: the registry currently separates 38
-  indexed official portals from seven live record connectors. Key-gated,
+  indexed official portals from eight live record connectors. Key-gated,
   blocked and metadata-only sources remain labeled as such.
 - Administrative geography normalizes every emirate and record-supplied area.
   The project does not ship unofficial boundary polygons and call them official.
