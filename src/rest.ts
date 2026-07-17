@@ -75,11 +75,23 @@ import { healthFacilitiesMapPage } from "./health-facilities-map-web.js";
 import { loadTourismPulse, type TourismMetric } from "./tourism-pulse.js";
 import { tourismPulsePage } from "./tourism-pulse-web.js";
 import { loadEmploymentGender, type EmploymentGender } from "./employment-gender.js";
+import { employmentGenderPage } from "./employment-gender-web.js";
+import { applyPublicVisualSystem } from "./public-visual-system.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
 
 const envelope = (data: unknown, meta: Json = {}): Json => ({ ok: true, data, error: null, meta });
+
+function publicHtml(html: string, allowDataImages = false): Response {
+  const imagePolicy = allowDataImages ? " img-src 'self' data:;" : "";
+  return new Response(applyPublicVisualSystem(html), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "content-security-policy": `default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self';${imagePolicy} object-src 'none'; base-uri 'none'; frame-ancestors 'none'`,
+    },
+  });
+}
 
 function json(payload: unknown, status = 200): Response {
   return Response.json(payload, { status, headers: { "cache-control": "no-store" } });
@@ -158,31 +170,32 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
 
   try {
     if ((request.method === "GET" || request.method === "HEAD") && DUBAI_FONT_FILES.has(path)) return await dubaiFont(path, request.method);
-    if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/tools") return new Response(toolExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/connectivity") return new Response(connectivityPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/tourism-pulse") return new Response(tourismPulsePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/aeronautical-publications") return new Response(aeronauticalPublicationsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/tax-services/archive") return new Response(taxArchivePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/ajman-business") return new Response(ajmanBusinessPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/ajman-urban") return new Response(ajmanUrbanPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/ajman-parks") return new Response(ajmanParksPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/health-facilities") return new Response(healthFacilitiesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/health-facilities-map") return new Response(healthFacilitiesMapPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/business-setup") return new Response(businessSetupPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/startup-support") return new Response(startupSupportPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/founder-pathway") return new Response(founderPathwayPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/national-brief") return new Response(nationalBriefPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/evidence-studio") return new Response(evidenceStudioPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/policy-watch") return new Response(policyWatchPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/") return publicHtml(landingPage());
+    if (request.method === "GET" && path === "/tools") return publicHtml(toolExplorerPage());
+    if (request.method === "GET" && path === "/connectivity") return publicHtml(connectivityPage());
+    if (request.method === "GET" && path === "/tourism-pulse") return publicHtml(tourismPulsePage());
+    if (request.method === "GET" && path === "/aeronautical-publications") return publicHtml(aeronauticalPublicationsPage());
+    if (request.method === "GET" && path === "/observatory") return publicHtml(observatoryPage());
+    if (request.method === "GET" && path === "/industry-atlas") return publicHtml(industryAtlasPage(), true);
+    if (request.method === "GET" && path === "/places") return publicHtml(placesExplorerPage(), true);
+    if (request.method === "GET" && path === "/tax-services") return publicHtml(taxServicesPage());
+    if (request.method === "GET" && path === "/tax-services/archive") return publicHtml(taxArchivePage());
+    if (request.method === "GET" && path === "/trade-flow") return publicHtml(tradeFlowPage());
+    if (request.method === "GET" && path === "/ajman-business") return publicHtml(ajmanBusinessPage());
+    if (request.method === "GET" && path === "/ajman-urban") return publicHtml(ajmanUrbanPage());
+    if (request.method === "GET" && path === "/ajman-parks") return publicHtml(ajmanParksPage());
+    if (request.method === "GET" && path === "/health-indicators") return publicHtml(healthIndicatorsPage());
+    if (request.method === "GET" && path === "/health-facilities") return publicHtml(healthFacilitiesPage());
+    if (request.method === "GET" && path === "/health-facilities-map") return publicHtml(healthFacilitiesMapPage(), true);
+    if (request.method === "GET" && path === "/education") return publicHtml(educationLedgerPage());
+    if (request.method === "GET" && path === "/employment-gender") return publicHtml(employmentGenderPage());
+    if (request.method === "GET" && path === "/golden-residency") return publicHtml(goldenResidencyPage());
+    if (request.method === "GET" && path === "/business-setup") return publicHtml(businessSetupPage());
+    if (request.method === "GET" && path === "/startup-support") return publicHtml(startupSupportPage());
+    if (request.method === "GET" && path === "/founder-pathway") return publicHtml(founderPathwayPage());
+    if (request.method === "GET" && path === "/national-brief") return publicHtml(nationalBriefPage());
+    if (request.method === "GET" && path === "/evidence-studio") return publicHtml(evidenceStudioPage());
+    if (request.method === "GET" && path === "/policy-watch") return publicHtml(policyWatchPage());
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
@@ -203,7 +216,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series: series as ConnectivitySeriesId | undefined, from, to });
       return json(envelope(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
     }
-    if (request.method === "GET" && (path === "/employment-gender" || path === "/api/v1/employment-gender")) {
+    if (request.method === "GET" && path === "/api/v1/employment-gender") {
       const gender = optional(url.searchParams, "gender");
       if (gender && gender !== "male" && gender !== "female") throw new ValidationError("gender must be male or female");
       const parseYear = (name: string): number | undefined => {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.77.0 - 2026-07-18
+
+- Unified all 26 public interfaces under one Dubai Font visual system with consistent typography, focus states and touch targets.
+- Rebalanced oversized hero typography and responsive spacing across desktop and mobile without flattening each product's distinct information design.
+- Added global reduced-motion behavior, text wrapping safeguards and overflow protection.
+- Restored `/employment-gender` as the intended bilingual public interface while preserving its JSON API at `/api/v1/employment-gender`.
+
 ## 1.76.0 - 2026-07-18
 
 - Added a live Canvas site atlas that maps all public applications around the Open Emirates platform core.

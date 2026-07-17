@@ -85,6 +85,7 @@ describe("Dubai Font public brand contract", () => {
       expect(response?.headers.get("content-security-policy")).toContain("font-src 'self'");
       expect(response?.headers.get("content-security-policy")).not.toContain("https://dubaihumanitarian.ae");
       expect(response?.headers.get("content-security-policy")).not.toContain("fonts.gstatic.com");
+      expect(await response?.text()).toContain("data-oei-visual-system");
     }
   });
 
