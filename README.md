@@ -1,6 +1,34 @@
-# Open Emirates Intelligence
+<p align="center">
+  <img src="docs/assets/readme-hero.svg" alt="Open Emirates Intelligence — animated federation data map" width="100%">
+</p>
 
-Official UAE open data over the Model Context Protocol, running on Bun.
+<h1 align="center">Open Emirates Intelligence</h1>
+
+<p align="center"><strong>The Emirates, queryable.</strong></p>
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools"><img src="https://img.shields.io/badge/LIVE-uaemcp.zad.tools-087443?style=flat-square" alt="Live instance"></a>
+  <a href="https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ahmedvnabil/Open-Emirates-Intelligence-MCP/ci.yml?style=flat-square&label=CI" alt="CI status"></a>
+  <img src="https://img.shields.io/badge/runtime-Bun-f1eddf?style=flat-square&logo=bun&logoColor=13251d" alt="Bun runtime">
+  <img src="https://img.shields.io/badge/license-MIT-c34032?style=flat-square" alt="MIT license">
+</p>
+
+<p align="center">Official UAE open data for agents, researchers and builders—over MCP, REST, vector maps and six SDKs.</p>
+
+<p align="center">
+  <img src="docs/assets/oei-motion.gif" alt="Animated Open Emirates Intelligence product preview" width="760">
+</p>
+
+<p align="center">
+  <img src="docs/assets/brand-system.svg" alt="Open Emirates Intelligence brand identity system" width="100%">
+</p>
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/assets/screenshots/landing-desktop.png" alt="Desktop landing page"></td>
+    <td width="32%"><img src="docs/assets/screenshots/landing-mobile.png" alt="Mobile landing page"></td>
+  </tr>
+</table>
 
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
