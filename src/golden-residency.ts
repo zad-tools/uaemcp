@@ -99,6 +99,8 @@ export function goldenResidencyCatalogue() {
     sources: [
       { publisher: "Federal Authority for Identity, Citizenship, Customs & Port Security", url: GOLDEN_RESIDENCY_ICP_URL },
       { publisher: "The Official Platform of the UAE Government", url: GOLDEN_RESIDENCY_UAE_URL },
+      { publisher: "General Directorate of Identity and Foreigners Affairs — Dubai", url: GOLDEN_RESIDENCY_DUBAI_URL },
+      { publisher: "Abu Dhabi Residents Office", url: GOLDEN_RESIDENCY_ABU_DHABI_URL },
     ],
     disclaimer: {
       en: "This is an informational readiness navigator, not an eligibility decision, legal advice, application or approval guarantee. The competent government authority makes the final decision.",
@@ -182,6 +184,16 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     dubai: { authority: "gdrfa_dubai", label: { en: "Open GDRFA Dubai Golden Residency", ar: "افتح الإقامة الذهبية لدى إقامة دبي" }, url: GOLDEN_RESIDENCY_DUBAI_URL },
     abu_dhabi: { authority: "adro_abu_dhabi", label: { en: "Open Abu Dhabi Residents Office", ar: "افتح مكتب أبوظبي للمقيمين" }, url: GOLDEN_RESIDENCY_ABU_DHABI_URL },
   } as const;
+  const localCriteriaNotEvaluated = jurisdiction !== "federal";
+  const routingNotice = localCriteriaNotEvaluated
+    ? {
+        en: "This dossier compares the UAE federal baseline only. Dubai and Abu Dhabi may publish local category criteria or nomination steps; verify them on the selected official portal before applying.",
+        ar: "يقارن هذا الملف خط الأساس الاتحادي فقط. قد تنشر دبي وأبوظبي متطلبات محلية أو خطوات ترشيح خاصة بالفئة؛ راجعها في البوابة الرسمية المختارة قبل التقديم.",
+      }
+    : {
+        en: "Verify the current category evidence on ICP before applying; the competent authority makes the final decision.",
+        ar: "راجع أدلة الفئة الحالية عبر الهيئة الاتحادية قبل التقديم؛ القرار النهائي للجهة المختصة.",
+      };
   const evidenceCount = matched.length + missing.length;
   return {
     kind: "uae_golden_residency_readiness" as const,
@@ -199,7 +211,8 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
       storesPersonalData: false as const,
     },
     decision: "informational_only" as const,
-    nextStep: { jurisdiction, ...nextSteps[jurisdiction] },
+    criteria: { scope: "federal_baseline" as const, localCriteriaNotEvaluated },
+    nextStep: { jurisdiction, ...nextSteps[jurisdiction], notice: routingNotice },
     disclaimer: goldenResidencyCatalogue().disclaimer,
   };
 }

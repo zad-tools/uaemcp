@@ -106,7 +106,7 @@ Endpoints:
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
 - UAE Education Ledger: `GET /education` — FCSC-accredited 2023/2024 national totals, reconciliation checks and the separate seven-resource Ministry of Education catalogue
-- UAE Golden Residency Navigator: `GET /golden-residency` — 14 official routes, authority-specific evidence, jurisdiction-aware ICP/GDRFA/ADRO routing and a printable non-identifying readiness dossier
+- UAE Golden Residency Navigator: `GET /golden-residency` — 14 official routes, jurisdiction-aware ICP/GDRFA/ADRO routing, explicit federal-vs-local criteria warnings and a printable non-identifying readiness dossier
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/golden-residency"><img src="docs/assets/golden-routing.svg" alt="Animated privacy-first Golden Residency routing to ICP, GDRFA Dubai and Abu Dhabi Residents Office" width="920"></a>

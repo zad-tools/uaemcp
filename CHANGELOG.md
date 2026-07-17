@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.55.0
+
+- Distinguishes the federal baseline assessment from Dubai and Abu Dhabi local category criteria instead of implying that one threshold set is universal.
+- Adds a bilingual local-criteria warning directly inside every routed Evidence Dossier.
+- Adds GDRFA Dubai and Abu Dhabi Residents Office pages to the dated official evidence catalogue.
+- Locks the readiness action until the catalogue has loaded, preventing late network responses from clearing user-entered evidence.
+
 ## 1.54.0
 
 - Added a non-identifying application-jurisdiction choice to Golden Residency assessments.

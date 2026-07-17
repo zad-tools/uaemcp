@@ -11,8 +11,10 @@ describe("Golden Residency interface", () => {
     expect(html).toContain("not an eligibility decision");
     expect(html).toContain("jurisdictionSelect.id='jurisdiction'");
     expect(html).toContain("WHERE WILL YOU APPLY?");
+    expect(html).toContain("LOCAL CRITERIA CHECK");
+    expect(html).toContain("MutationObserver");
     const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
-    expect(scripts).toHaveLength(2);
+    expect(scripts).toHaveLength(3);
     for (const script of scripts) expect(() => new Function(script)).not.toThrow();
   });
 });

@@ -6,7 +6,7 @@ describe("Golden Residency readiness navigator", () => {
     const catalogue = goldenResidencyCatalogue();
     expect(catalogue.pathways).toHaveLength(5);
     expect(catalogue.verifiedAt).toBe("2026-07-17");
-    expect(catalogue.sources.every((source) => source.url.includes("icp.gov.ae") || source.url.includes("u.ae"))).toBe(true);
+    expect(catalogue.sources.every((source) => ["icp.gov.ae", "u.ae", "gdrfad.gov.ae", "adro.gov.ae"].some((domain) => source.url.includes(domain)))).toBe(true);
     expect(catalogue.disclaimer.en).toContain("not an eligibility decision");
     expect(catalogue.disclaimer.ar).toContain("ليس قرار أهلية");
   });
@@ -59,9 +59,20 @@ describe("Golden Residency readiness navigator", () => {
 
     expect(dubai.nextStep.authority).toBe("gdrfa_dubai");
     expect(dubai.nextStep.url).toContain("gdrfad.gov.ae");
+    expect(dubai.criteria).toMatchObject({ scope: "federal_baseline", localCriteriaNotEvaluated: true });
+    expect(dubai.nextStep.notice.ar).toContain("متطلبات محلية");
     expect(abuDhabi.nextStep.authority).toBe("adro_abu_dhabi");
     expect(abuDhabi.nextStep.url).toContain("adro.gov.ae");
+    expect(abuDhabi.criteria.localCriteriaNotEvaluated).toBe(true);
     expect(federal.nextStep.authority).toBe("icp");
     expect(federal.nextStep.url).toContain("icp.gov.ae");
+    expect(federal.criteria.localCriteriaNotEvaluated).toBe(false);
+  });
+
+  it("publishes every official authority used by the routing result as evidence", () => {
+    const sources = goldenResidencyCatalogue().sources.map((source) => source.url);
+    expect(sources.some((url) => url.includes("icp.gov.ae"))).toBe(true);
+    expect(sources.some((url) => url.includes("gdrfad.gov.ae"))).toBe(true);
+    expect(sources.some((url) => url.includes("adro.gov.ae"))).toBe(true);
   });
 });
