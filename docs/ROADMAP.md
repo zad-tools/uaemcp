@@ -114,6 +114,13 @@ reusable government core remains v2.0.
 - Per-flow and overall sample coverage with explicit non-value and non-national limitations
 - Bilingual public Trade Flow Radar backed by the same REST and MCP contract
 
+## v1.47 — Public product discovery — complete
+
+- One bilingual registry for every published evidence product, route and limitation
+- Public product ledger on the homepage driven by the live registry contract
+- Product discovery through REST, OpenAPI, MCP tool and MCP resource
+- Trade Flow Radar and FTA Archive promoted from hidden routes to first-class products
+
 ## v2.0 — Government intelligence core
 
 - Extract reusable `govmcp-core` contracts

@@ -29,6 +29,7 @@ import { buildIndustrialChangeReport } from "./industry-change.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
+import { listProducts } from "./products.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -47,6 +48,17 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_products_list",
+    {
+      description: "List the public Open Emirates Intelligence applications with bilingual descriptions, routes, official evidence scope and explicit limitations.",
+    },
+    async () => {
+      const products = listProducts();
+      return text(ok(products, { total: products.length, published: products.length }));
+    },
+  );
 
   server.registerTool(
     "uae_trade_flow_radar",
@@ -484,6 +496,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "public_products",
+    "uae://products",
+    { title: "Open Emirates public products", description: "Published bilingual applications with routes, evidence scope and limitations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ total: listProducts().length, products: listProducts() }) }] }),
+  );
 
   server.registerResource(
     "industry_atlas_methodology",

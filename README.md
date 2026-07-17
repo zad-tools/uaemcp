@@ -25,16 +25,20 @@
 
 <table>
   <tr>
-    <td width="68%"><img src="docs/assets/screenshots/landing-desktop.png" alt="Desktop landing page"></td>
+    <td width="68%"><img src="docs/assets/screenshots/landing-desktop.jpg" alt="Desktop landing page"></td>
     <td width="32%"><img src="docs/assets/screenshots/landing-mobile.png" alt="Mobile landing page"></td>
   </tr>
 </table>
 
+<p align="center">
+  <img src="docs/assets/screenshots/product-registry.jpg" alt="Bilingual public product registry with evidence scope and limitations" width="100%">
+</p>
+
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 23 source-cited
-MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 24 source-cited
+MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -169,6 +173,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |
 | `uae_sources_list` | List the 37 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
@@ -184,6 +189,7 @@ language. It is included in the main release check.
 | `uae_industry_atlas` | Build a bounded industrial evidence slice (`action=atlas`) or read the honest Change Monitor (`action=change`) |
 | `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
 | `uae_tax_service_archive` | Read the source-native FTA 2017–2022, 2024 and 2025 workbooks without unsafe cross-year comparison |
+| `uae_trade_flow_radar` | Analyze bounded Ajman export and re-export certificate records without presenting counts as trade value |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |

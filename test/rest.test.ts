@@ -17,9 +17,12 @@ describe("REST v1", () => {
     const html = await response.text();
     expect(response.status).toBe(200);
     expect(html).toContain("Open Emirates Intelligence");
-    expect(html).toContain('href="/places"');
-    expect(html).toContain('href="/tax-services"');
-    expect(html).toContain("<strong>23</strong><span>Focused tools");
+    expect(html).toContain('id="productLedger"');
+    expect(html).toContain("/api/v1/products");
+    expect(html).toContain("<strong>24</strong><span>Focused tools");
+    const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
+    expect(script).toBeDefined();
+    expect(() => new Function(script ?? "")).not.toThrow();
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
@@ -95,7 +98,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.46.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.47.0" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -149,8 +152,10 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.46.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.47.0" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
+    expect(manifest.endpoints.products).toBe("/api/v1/products");
+    expect(manifest.tools.read).toContain("uae_products_list");
     expect(manifest.endpoints.tradeFlowApi).toBe("/api/v1/trade-flow");
     expect(manifest.tools.read).toContain("uae_trade_flow_radar");
     expect(manifest.endpoints.taxServiceActivity).toBe("/tax-services");

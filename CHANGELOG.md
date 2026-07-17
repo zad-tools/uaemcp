@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.47.0
+
+- Added a public bilingual registry for all six evidence products with explicit scope and limitations.
+- Added `GET /api/v1/products`, `uae_products_list`, `uae://products` and the generated OpenAPI contract.
+- Turned the homepage into a product gateway with a live editorial product ledger and direct Trade Flow Radar discovery.
+
 ## 1.46.0
 
 - Added `uae_trade_flow_radar` over four official Ajman 2023 certificate-of-origin datasets.

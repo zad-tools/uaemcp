@@ -32,6 +32,7 @@ import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-a
 import { taxArchivePage } from "./tax-archive-web.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { tradeFlowPage } from "./trade-flow-web.js";
+import { listProducts } from "./products.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -75,6 +76,10 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/products") {
+      const products = listProducts();
+      return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
     if (request.method === "GET" && path === "/api/v1/tax-services") {
       const source = REGISTRY.get("fta_service_activity_2025");
       const result = await (dependencies.fetchTaxRecords ?? fetchResult)(source, { limit: 10 });

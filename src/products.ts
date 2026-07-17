@@ -1,0 +1,163 @@
+type LocalizedText = Readonly<{ en: string; ar: string }>;
+
+export type PublicProduct = Readonly<{
+  id: string;
+  status: "published";
+  access: "public";
+  category: string;
+  categoryAr: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  webPath: string;
+  apiPath: string;
+  sourceIds: readonly string[];
+  evidence: Readonly<{
+    scope: LocalizedText;
+    limitations: readonly LocalizedText[];
+  }>;
+}>;
+
+const PRODUCTS: readonly PublicProduct[] = Object.freeze([
+  {
+    id: "trade_flow_radar",
+    status: "published",
+    access: "public",
+    category: "TRADE / FLOW",
+    categoryAr: "التجارة / التدفقات",
+    title: { en: "UAE Trade Flow Radar", ar: "رادار تدفقات التجارة" },
+    description: {
+      en: "Explore official Ajman export and re-export certificate records by destination, transport, product, month and origin.",
+      ar: "استكشف سجلات شهادات المنشأ الرسمية في عجمان للتصدير وإعادة التصدير حسب الوجهة والنقل والمنتج والشهر والمنشأ.",
+    },
+    webPath: "/trade-flow",
+    apiPath: "/api/v1/trade-flow",
+    sourceIds: ["ajman_data_portal"],
+    evidence: {
+      scope: {
+        en: "Bounded samples from four official Ajman 2023 certificate-of-origin datasets.",
+        ar: "عينات محدودة من أربع مجموعات بيانات رسمية لشهادات المنشأ في عجمان لعام 2023.",
+      },
+      limitations: [
+        { en: "Record counts are not trade value, weight, shipments, companies or total UAE trade.", ar: "عدد السجلات لا يمثل القيمة أو الوزن أو الشحنات أو عدد الشركات أو إجمالي تجارة الإمارات." },
+      ],
+    },
+  },
+  {
+    id: "industry_atlas",
+    status: "published",
+    access: "public",
+    category: "INDUSTRY / MAP",
+    categoryAr: "الصناعة / الخريطة",
+    title: { en: "Industry Atlas", ar: "أطلس الصناعة" },
+    description: {
+      en: "Inspect the geographic and sector distribution of official industrial-establishment records.",
+      ar: "افحص التوزيع الجغرافي والقطاعي لسجلات المنشآت الصناعية الرسمية.",
+    },
+    webPath: "/industry-atlas",
+    apiPath: "/api/v1/industry-atlas",
+    sourceIds: ["moiat_industrial_licenses"],
+    evidence: {
+      scope: { en: "A bounded sample of official MOIAT industrial-license records.", ar: "عينة محدودة من سجلات التراخيص الصناعية الرسمية لوزارة الصناعة والتكنولوجيا المتقدمة." },
+      limitations: [
+        { en: "The sample is not a national establishment population or proof of current operation.", ar: "العينة ليست تعدادًا وطنيًا للمنشآت ولا دليلًا على استمرار التشغيل حاليًا." },
+      ],
+    },
+  },
+  {
+    id: "tax_service_activity",
+    status: "published",
+    access: "public",
+    category: "TAX / ACTIVITY",
+    categoryAr: "الضرائب / النشاط",
+    title: { en: "Tax Service Activity", ar: "نشاط الخدمات الضريبية" },
+    description: {
+      en: "Read the Federal Tax Authority's published 2025 service-activity counts with source-native context.",
+      ar: "اقرأ أعداد نشاط خدمات الهيئة الاتحادية للضرائب المنشورة لعام 2025 مع سياقها الأصلي.",
+    },
+    webPath: "/tax-services",
+    apiPath: "/api/v1/tax-services",
+    sourceIds: ["fta_service_activity_2025"],
+    evidence: {
+      scope: { en: "Published 2025 quarterly service-activity records from the FTA workbook.", ar: "سجلات نشاط الخدمات الفصلية المنشورة لعام 2025 من ملف الهيئة الاتحادية للضرائب." },
+      limitations: [
+        { en: "Activity counts are not revenue, taxpayers, companies or economic growth.", ar: "أعداد النشاط لا تمثل الإيرادات أو دافعي الضرائب أو الشركات أو النمو الاقتصادي." },
+      ],
+    },
+  },
+  {
+    id: "fta_archive",
+    status: "published",
+    access: "public",
+    category: "TAX / ARCHIVE",
+    categoryAr: "الضرائب / الأرشيف",
+    title: { en: "FTA Archive Explorer", ar: "مستكشف أرشيف الضرائب" },
+    description: {
+      en: "Inspect three official FTA workbooks without forcing incompatible periods into one trend.",
+      ar: "افحص ثلاثة ملفات رسمية للهيئة دون دمج فترات غير متوافقة في اتجاه واحد.",
+    },
+    webPath: "/tax-services/archive",
+    apiPath: "/api/v1/tax-services/archive",
+    sourceIds: ["fta_selected_services_2017_2022", "fta_service_activity_2024", "fta_service_activity_2025"],
+    evidence: {
+      scope: { en: "Source-native views for 2017–2022, 2024 and 2025.", ar: "عروض تحافظ على الشكل الأصلي لفترات 2017–2022 و2024 و2025." },
+      limitations: [
+        { en: "Scopes differ, 2023 is missing and cross-period comparison is disabled.", ar: "النطاقات مختلفة وبيانات 2023 مفقودة والمقارنة بين الفترات متوقفة." },
+      ],
+    },
+  },
+  {
+    id: "place_names",
+    status: "published",
+    access: "public",
+    category: "GEOGRAPHY / NAMES",
+    categoryAr: "الجغرافيا / الأسماء",
+    title: { en: "National Place Names", ar: "أسماء الأماكن الوطنية" },
+    description: {
+      en: "Search and inspect official UAE geographic names with bilingual labels and coordinates.",
+      ar: "ابحث في الأسماء الجغرافية الرسمية في الإمارات مع التسميات الثنائية والإحداثيات.",
+    },
+    webPath: "/places",
+    apiPath: "/api/v1/sources/fgic_national_gazetteer/records",
+    sourceIds: ["fgic_national_gazetteer"],
+    evidence: {
+      scope: { en: "Bounded records from the official national gazetteer source.", ar: "سجلات محدودة من المصدر الرسمي للمعجم الجغرافي الوطني." },
+      limitations: [
+        { en: "Place points are not an authoritative administrative-boundary reference.", ar: "نقاط الأماكن ليست مرجعًا معتمدًا للحدود الإدارية." },
+      ],
+    },
+  },
+  {
+    id: "open_data_observatory",
+    status: "published",
+    access: "public",
+    category: "RELIABILITY / STATUS",
+    categoryAr: "الموثوقية / الحالة",
+    title: { en: "Open Data Observatory", ar: "مرصد البيانات المفتوحة" },
+    description: {
+      en: "Monitor stored source checks, incidents, latency and measured availability across the registry.",
+      ar: "راقب فحوصات المصادر المخزنة والحوادث وزمن الاستجابة والتوافر المقاس عبر السجل.",
+    },
+    webPath: "/observatory",
+    apiPath: "/api/v1/observatory",
+    sourceIds: [],
+    evidence: {
+      scope: { en: "Stored health observations generated by the running platform.", ar: "ملاحظات صحة مخزنة أنشأتها المنصة أثناء التشغيل." },
+      limitations: [
+        { en: "Unknown means unmeasured, not healthy; the report is not continuous external monitoring.", ar: "غير معروف تعني غير مقاس وليست سليمًا؛ والتقرير ليس مراقبة خارجية مستمرة." },
+      ],
+    },
+  },
+]);
+
+export function listProducts(): PublicProduct[] {
+  return PRODUCTS.map((product) => ({
+    ...product,
+    title: { ...product.title },
+    description: { ...product.description },
+    sourceIds: [...product.sourceIds],
+    evidence: {
+      scope: { ...product.evidence.scope },
+      limitations: product.evidence.limitations.map((item) => ({ ...item })),
+    },
+  }));
+}

@@ -14,8 +14,9 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     openapi: "3.1.0",
     info: { title: "Open Emirates Intelligence API", version: VERSION, description: "Source-cited official UAE open data. Unknown or unavailable data is never fabricated.", license: { name: "MIT" } },
     servers: [{ url: origin }],
-    tags: [{ name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
+    tags: [{ name: "Products" }, { name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
     paths: {
+      "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
       "/api/v1/coverage": { get: { operationId: "getCoverage", tags: ["Catalog"], responses: { "200": response(envelope({ $ref: "#/components/schemas/Coverage" })) } } },
       "/api/v1/industry-atlas": { get: { operationId: "getIndustryAtlas", tags: ["Intelligence"], parameters: [parameter("emirate"), parameter("q"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 1000 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/industry-atlas/change": { get: { operationId: "getIndustryChange", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
@@ -39,6 +40,7 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     components: { schemas: {
       Coverage: { type: "object", required: ["officialPortalsIndexed", "liveRecordConnectors"], properties: { officialPortalsIndexed: { type: "integer" }, liveRecordConnectors: { type: "integer" }, blockedConnectors: { type: "integer" }, keyRequiredPortals: { type: "integer" }, metadataOnlyPortals: { type: "integer" }, queryableDatasetsKnownMinimum: { type: "integer" } } },
       Source: { type: "object", required: ["id", "name_en", "name_ar", "kind", "access_status"], properties: { id: { type: "string" }, name_en: { type: "string" }, name_ar: { type: "string" }, owner: { type: "string" }, kind: { type: "string" }, access_status: { enum: ["live", "blocked", "key_required", "metadata_only"] }, base_url: { type: "string", format: "uri" } } },
+      Product: { type: "object", required: ["id", "status", "access", "title", "description", "webPath", "apiPath", "sourceIds", "evidence"], properties: { id: { type: "string" }, status: { const: "published" }, access: { const: "public" }, category: { type: "string" }, title: { type: "object", additionalProperties: { type: "string" } }, description: { type: "object", additionalProperties: { type: "string" } }, webPath: { type: "string" }, apiPath: { type: "string" }, sourceIds: { type: "array", items: { type: "string" } }, evidence: { type: "object", additionalProperties: true } } },
     } },
   };
 }

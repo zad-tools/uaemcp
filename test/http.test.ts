@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.46.0",
+      version: "1.47.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -75,6 +75,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(response.status).toBe(200);
     expect(names.sort()).toEqual([
+      "uae_products_list",
       "uae_sources_list",
       "uae_source_get",
       "uae_source_health",
@@ -98,6 +99,28 @@ describe("Bun HTTP runtime", () => {
       "uae_tax_service_archive",
       "uae_trade_flow_radar",
     ].sort());
+  });
+
+  it("publishes the public product registry through MCP", async () => {
+    const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
+    const body = JSON.parse(payload.result.content[0].text);
+    expect(body.ok).toBe(true);
+    expect(body.meta).toEqual({ total: 6, published: 6 });
+    expect(body.data.map((product: { id: string }) => product.id)).toEqual([
+      "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+    ]);
+  });
+
+  it("publishes the product registry as addressable MCP context", async () => {
+    const listed = await rpc("resources/list");
+    const templates = await rpc("resources/templates/list");
+    expect(listed.payload.result.resources).toHaveLength(7);
+    expect(templates.payload.result.resourceTemplates).toHaveLength(2);
+    expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
+    const { payload } = await rpc("resources/read", { uri: "uae://products" });
+    const body = JSON.parse(payload.result.contents[0].text);
+    expect(body.total).toBe(6);
+    expect(body.products[0].id).toBe("trade_flow_radar");
   });
 
   it("exposes the observatory through MCP without triggering upstream probes", async () => {
