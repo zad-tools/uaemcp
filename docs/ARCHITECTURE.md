@@ -16,6 +16,18 @@ Clients -> Bun.serve -> MCP transport / REST router
 Every data result carries provenance. Public contracts are additive: tool names,
 resource URIs, response envelopes, and REST v1 fields are compatibility surfaces.
 
+## Unified catalog
+
+The compatibility `Source` remains public, while the v0.3 catalog exposes the
+clearer hierarchy `Organization -> Portal -> Dataset -> Resource`. Portal models
+declare connector type, access status, capabilities, license verification status,
+and official links. Dataset/resource objects are discovered lazily from upstream
+catalogs so the registry never fabricates assets.
+
+Schema discovery samples bounded live records and returns inferred field types,
+nullability, uniqueness within the sample, examples, statistics, bilingual
+semantic concepts, provenance, and inference lineage.
+
 ## Trust boundaries
 
 - CLI arguments and environment variables are validated at startup.

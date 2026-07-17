@@ -1,5 +1,5 @@
 /**
- * The MCP server: 11 tools + resources + prompt templates over the official SDK.
+ * The MCP server: 12 tools + resources + prompt templates over the official SDK.
  *
  * Every data-returning tool wraps results in { ok, data, error, meta } with full
  * provenance. Read tools are open; the write tool requires a token.
@@ -16,6 +16,9 @@ import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
 import { citation, REGISTRY } from "./sources.js";
+import { inferSchema } from "./schema.js";
+import { capabilitiesFor, coverageSummary, portalModel } from "./catalog.js";
+import { SERVER_NAME, VERSION } from "./version.js";
 
 type Json = Record<string, unknown>;
 
@@ -32,7 +35,7 @@ function text(payload: Json) {
 }
 
 export function buildServer(): McpServer {
-  const server = new McpServer({ name: "open-emirates-intelligence", version: "1.28.1" });
+  const server = new McpServer({ name: SERVER_NAME, version: VERSION });
 
   server.registerTool(
     "uae_sources_list",
@@ -93,6 +96,30 @@ export function buildServer(): McpServer {
         const s = REGISTRY.get(source_id);
         const r = await fetchResult(s, { dataset, query, limit, offset });
         return text(ok(r.records, metaOf(r)));
+      } catch (e) {
+        return text(fail(e));
+      }
+    },
+  );
+
+  server.registerTool(
+    "uae_dataset_schema",
+    {
+      description: "Inspect a live dataset schema before filtering or aggregation. Returns inferred types, examples, semantic meaning, nullability, uniqueness and sample statistics.",
+      inputSchema: { source_id: z.string(), dataset: z.string().optional(), sample_size: z.number().int().min(1).max(100).default(50) },
+    },
+    async ({ source_id, dataset, sample_size }) => {
+      try {
+        const source = REGISTRY.get(source_id);
+        const result = await fetchResult(source, { dataset, limit: sample_size });
+        return text(ok(inferSchema(result.records), {
+          source_id: source.id,
+          dataset: dataset ?? null,
+          citation: citation(source),
+          fetched_at: result.fetched_at,
+          capabilities: capabilitiesFor(source),
+          lineage: [{ operation: "fetch_sample", connector: source.kind }, { operation: "infer_schema", version: VERSION }],
+        }));
       } catch (e) {
         return text(fail(e));
       }
@@ -201,6 +228,13 @@ export function buildServer(): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "catalog_summary",
+    "uae://catalog",
+    { title: "UAE unified open-data catalog", description: "Explicit portal models, capabilities, licensing status and conservative coverage.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ coverage: coverageSummary(), portals: REGISTRY.list().map(portalModel) }) }] }),
+  );
 
   server.registerResource(
     "sources_catalog",

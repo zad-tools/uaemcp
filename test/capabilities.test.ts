@@ -10,7 +10,7 @@ function mkSource(p: Partial<Source>): Source {
     id: "s", name_en: "n", name_ar: "n", owner: "o", category: "c", kind: "http_json",
     base_url: "https://x/", endpoint: "", docs_url: "", license: "L", default_params: {},
     row_path: [], max_page_size: null, notes: "", origin: "built_in",
-    connector_config: {}, requires_api_key: false, api_docs: "", ...p,
+    connector_config: {}, requires_api_key: false, api_docs: "", access_status: "live", ...p,
   };
 }
 

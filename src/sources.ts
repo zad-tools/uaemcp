@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import { SourceNotFound, ValidationError } from "./errors.js";
 
 export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "metadata";
+export type AccessStatus = "live" | "blocked" | "key_required" | "metadata_only";
 
 export interface Source {
   id: string;
@@ -35,6 +36,7 @@ export interface Source {
   requires_api_key: boolean;
   /** Provider developer portal, when key-gated. */
   api_docs: string;
+  access_status: AccessStatus;
 }
 
 const LICENSE =
@@ -53,6 +55,7 @@ function src(p: Partial<Source> & Pick<Source, "id" | "name_en" | "name_ar" | "o
     connector_config: {},
     requires_api_key: false,
     api_docs: "",
+    access_status: p.kind === "metadata" ? "metadata_only" : "live",
     ...p,
   };
 }
@@ -69,10 +72,10 @@ export function citation(s: Source): string {
 
 const BUILT_IN: Source[] = [
   src({ id: "moiat_industrial_licenses", name_en: "UAE Industrial Licenses", name_ar: "الرخص الصناعية في الإمارات", owner: "Ministry of Industry and Advanced Technology", category: "industry", kind: "http_json", base_url: "https://api.moiat.gov.ae/", endpoint: "/api/OpenDataAPI/GetIndustrialLicensesList", docs_url: "https://moiat.gov.ae/en/open-data", default_params: { LanguageId: 2, PageNumber: 1, PageSize: 10 }, row_path: ["result", "Factories"], max_page_size: 10, notes: "Live official API. Direct phone/email fields are redacted by default.", connector_config: { geo: { lat_field: "Latitude", lon_field: "Longitude" } } }),
-  src({ id: "uae_federal_open_data", name_en: "UAE Federal Open Data Catalogue", name_ar: "فهرس البيانات المفتوحة الاتحادي", owner: "Federal Competitiveness and Statistics Centre", category: "catalogue", kind: "ckan", base_url: "https://opendata.fcsc.gov.ae/", endpoint: "/api/3/action/package_search", docs_url: "https://opendata.fcsc.gov.ae/", default_params: { rows: 10 }, row_path: ["result", "results"], notes: "CKAN portal (package_search + datastore_search). NOTE: currently returns HTTP 403 to server-side clients (WAF / bot mitigation) from most networks — records surface an honest 'source unavailable', never faked." }),
-  src({ id: "dubai_land_department", name_en: "Dubai Land Department Open Data", name_ar: "بيانات دائرة الأراضي والأملاك في دبي", owner: "Dubai Land Department", category: "real_estate", kind: "metadata", base_url: "https://dubailand.gov.ae/", docs_url: "https://dubailand.gov.ae/en/open-data/", requires_api_key: true, api_docs: "https://www.dubaipulse.gov.ae/organisation/dld", notes: "Transaction-level records (sales, rents, valuations) are published through Dubai Pulse as 'dld_transactions' via its key-gated API — see dubai_pulse_catalogue." }),
-  src({ id: "dubai_pulse_catalogue", name_en: "Dubai Pulse Open Data", name_ar: "بيانات دبي المفتوحة", owner: "Digital Dubai", category: "catalogue", kind: "metadata", base_url: "https://www.dubaipulse.gov.ae/", docs_url: "https://www.digitaldubai.ae/apps-services/details/data.dubai", requires_api_key: true, api_docs: "https://www.dubaipulse.gov.ae/", notes: "Official Dubai data platform. Machine API is OAuth2 client-credentials at api.dubaipulse.gov.ae; hosts DLD real-estate transactions, DEWA and RTA. Records require a registered API key+secret." }),
-  src({ id: "abu_dhabi_open_data", name_en: "Abu Dhabi Open Data", name_ar: "بيانات أبوظبي المفتوحة", owner: "Abu Dhabi Government", category: "catalogue", kind: "metadata", base_url: "https://data.abudhabi/", docs_url: "https://data.abudhabi/opendata/", requires_api_key: true, api_docs: "https://data.abudhabi/developers", notes: "Official Abu Dhabi open-data platform with a registered-developer REST API; records require a free developer key." }),
+  src({ id: "uae_federal_open_data", name_en: "UAE Federal Open Data Catalogue", name_ar: "فهرس البيانات المفتوحة الاتحادي", owner: "Federal Competitiveness and Statistics Centre", category: "catalogue", kind: "ckan", base_url: "https://opendata.fcsc.gov.ae/", endpoint: "/api/3/action/package_search", docs_url: "https://opendata.fcsc.gov.ae/", default_params: { rows: 10 }, row_path: ["result", "results"], access_status: "blocked", notes: "CKAN portal (package_search + datastore_search). NOTE: currently returns HTTP 403 to server-side clients (WAF / bot mitigation) from most networks — records surface an honest 'source unavailable', never faked." }),
+  src({ id: "dubai_land_department", name_en: "Dubai Land Department Open Data", name_ar: "بيانات دائرة الأراضي والأملاك في دبي", owner: "Dubai Land Department", category: "real_estate", kind: "metadata", base_url: "https://dubailand.gov.ae/", docs_url: "https://dubailand.gov.ae/en/open-data/", requires_api_key: true, access_status: "key_required", api_docs: "https://www.dubaipulse.gov.ae/organisation/dld", notes: "Transaction-level records (sales, rents, valuations) are published through Dubai Pulse as 'dld_transactions' via its key-gated API — see dubai_pulse_catalogue." }),
+  src({ id: "dubai_pulse_catalogue", name_en: "Dubai Pulse Open Data", name_ar: "بيانات دبي المفتوحة", owner: "Digital Dubai", category: "catalogue", kind: "metadata", base_url: "https://www.dubaipulse.gov.ae/", docs_url: "https://www.digitaldubai.ae/apps-services/details/data.dubai", requires_api_key: true, access_status: "key_required", api_docs: "https://www.dubaipulse.gov.ae/", notes: "Official Dubai data platform. Machine API is OAuth2 client-credentials at api.dubaipulse.gov.ae; hosts DLD real-estate transactions, DEWA and RTA. Records require a registered API key+secret." }),
+  src({ id: "abu_dhabi_open_data", name_en: "Abu Dhabi Open Data", name_ar: "بيانات أبوظبي المفتوحة", owner: "Abu Dhabi Government", category: "catalogue", kind: "metadata", base_url: "https://data.abudhabi/", docs_url: "https://data.abudhabi/opendata/", requires_api_key: true, access_status: "key_required", api_docs: "https://data.abudhabi/developers", notes: "Official Abu Dhabi open-data platform with a registered-developer REST API; records require a free developer key." }),
   src({ id: "bayanat_uae_open_data", name_en: "Bayanat UAE Open Data Portal", name_ar: "بوابة بيانات الإمارات المفتوحة", owner: "UAE Government", category: "national_catalogue", kind: "metadata", base_url: "https://bayanat.ae/", docs_url: "https://bayanat.ae/", notes: "National open-data portal for dataset discovery." }),
   src({ id: "mof_open_data", name_en: "Ministry of Finance Open Data", name_ar: "البيانات المفتوحة لوزارة المالية", owner: "Ministry of Finance", category: "finance", kind: "metadata", base_url: "https://mof.gov.ae/", docs_url: "https://mof.gov.ae/en/open-data/", notes: "Statistical reports, dashboards, and publication plan." }),
   src({ id: "moet_open_data", name_en: "Ministry of Economy and Tourism Open Data", name_ar: "البيانات المفتوحة لوزارة الاقتصاد والسياحة", owner: "Ministry of Economy and Tourism", category: "economy", kind: "metadata", base_url: "https://www.moet.gov.ae/", docs_url: "https://www.moet.gov.ae/en/open-data", notes: "Economic indicators, trade and investment open-data surfaces." }),
@@ -128,6 +131,7 @@ export class Registry {
               connector_config: {},
               requires_api_key: false,
               api_docs: "",
+              access_status: "metadata_only",
               ...item,
               origin: "custom",
             } as Source,

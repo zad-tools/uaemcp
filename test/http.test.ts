@@ -60,14 +60,14 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.28.1",
+      version: "1.29.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
     expect(payload.result.capabilities.prompts).toBeDefined();
   });
 
-  it("exposes the same 11 public tools as production", async () => {
+  it("preserves the original tools and adds schema discovery", async () => {
     const { response, payload } = await rpc("tools/list");
     const names = payload.result.tools.map((tool: { name: string }) => tool.name);
 
@@ -78,6 +78,7 @@ describe("Bun HTTP runtime", () => {
       "uae_source_health",
       "uae_source_datasets",
       "uae_source_records",
+      "uae_dataset_schema",
       "uae_search",
       "uae_source_geo",
       "uae_source_aggregate",

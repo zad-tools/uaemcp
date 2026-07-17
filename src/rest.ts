@@ -8,6 +8,10 @@ import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
 import { citation, REGISTRY } from "./sources.js";
+import { coverageSummary, portalModel } from "./catalog.js";
+import { inferSchema } from "./schema.js";
+import { trustManifest } from "./manifest.js";
+import { VERSION } from "./version.js";
 
 type Json = Record<string, unknown>;
 
@@ -40,6 +44,13 @@ export async function handleRest(request: Request): Promise<Response | null> {
 
   try {
     if (request.method === "GET" && path === "/") return new Response(landing, { headers: { "content-type": "text/html; charset=utf-8" } });
+    if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
+    if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/catalog") {
+      return json(envelope(REGISTRY.list().map(portalModel), { coverage: coverageSummary() }));
+    }
+    const portalMatch = path.match(/^\/api\/v1\/catalog\/portals\/([^/]+)$/);
+    if (request.method === "GET" && portalMatch) return json(envelope(portalModel(REGISTRY.get(decodeURIComponent(portalMatch[1])))));
 
     if (path === "/api/v1/sources" && request.method === "GET") {
       const sources = REGISTRY.list();
@@ -64,7 +75,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
       return json(envelope(await buildMarketSnapshot(url.searchParams.get("topic") || "industry", Math.max(1, integer(url.searchParams, "limit", 100, 200)))));
     }
 
-    const match = path.match(/^\/api\/v1\/sources\/([^/]+)(?:\/(health|datasets|records|geo|aggregate|export))?$/);
+    const match = path.match(/^\/api\/v1\/sources\/([^/]+)(?:\/(health|datasets|records|schema|geo|aggregate|export))?$/);
     if (!match || request.method !== "GET") return null;
     const source = REGISTRY.get(decodeURIComponent(match[1]));
     const action = match[2];
@@ -80,9 +91,18 @@ export async function handleRest(request: Request): Promise<Response | null> {
       return json(envelope(data, { source_id: source.id, kind: source.kind, citation: citation(source), count: data.length, limit, offset }));
     }
 
-    const limit = Math.max(1, integer(url.searchParams, "limit", action === "records" ? 10 : 500, action === "records" ? 100 : 1000));
+    const defaultLimit = action === "records" ? 10 : action === "schema" ? 50 : 500;
+    const maximumLimit = action === "records" || action === "schema" ? 100 : 1000;
+    const limit = Math.max(1, integer(url.searchParams, "limit", defaultLimit, maximumLimit));
     const result = await fetchResult(source, { query, dataset, limit, offset });
     if (action === "records") return json(envelope(result.records, { ...metaOf(result), limit, offset }));
+    if (action === "schema") return json(envelope(inferSchema(result.records), {
+      source_id: source.id,
+      dataset: dataset ?? null,
+      citation: citation(source),
+      fetched_at: result.fetched_at,
+      lineage: [{ operation: "fetch_sample", connector: source.kind }, { operation: "infer_schema", version: VERSION }],
+    }));
     if (action === "geo") {
       const bbox = optional(url.searchParams, "bbox");
       const near = optional(url.searchParams, "near");

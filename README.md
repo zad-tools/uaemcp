@@ -5,7 +5,7 @@ Official UAE open data over the Model Context Protocol, running on Bun.
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract: 11 source-cited MCP tools, three
+The server keeps the public `uaemcp` contract: 12 source-cited MCP tools, four
 resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
 connectors, geo queries, aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints.
@@ -68,12 +68,26 @@ Endpoints:
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
 | `uae_source_records` | Fetch redacted, cited records |
+| `uae_dataset_schema` | Infer fields, types, examples and semantic meaning |
 | `uae_search` | Search the bilingual catalog |
 | `uae_source_geo` | Return spatially filtered GeoJSON |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
 | `uae_source_add_metadata` | Add metadata with a write token |
+
+## Unified catalog and coverage
+
+The project does not present every indexed portal as live data. Use:
+
+- `GET /api/v1/coverage` for live, blocked, key-required and metadata-only totals.
+- `GET /api/v1/catalog` for explicit portal, organization, connector, license and capability models.
+- `GET /.well-known/uaemcp.json` for the operator and trust manifest.
+- `GET /api/v1/sources/{sourceId}/schema` or `uae_dataset_schema` before aggregation.
+
+Current conservative coverage is 32 official portals indexed, 2 live record
+connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
+that metadata-only portals are queryable.
 
 Tool results use `{ ok, data, error, meta }`. Data responses include source,
 license, citation, fetch time, and quality metadata.

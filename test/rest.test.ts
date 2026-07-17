@@ -49,4 +49,20 @@ describe("REST v1", () => {
     });
     expect(response.status).toBe(401);
   });
+
+  it("publishes conservative coverage and unified catalog models", async () => {
+    const coverage = await fetch(`${baseUrl}/api/v1/coverage`).then((response) => response.json());
+    const catalog = await fetch(`${baseUrl}/api/v1/catalog`).then((response) => response.json());
+    expect(coverage.data.liveRecordConnectors).toBe(2);
+    expect(catalog.data[0].type).toBe("portal");
+    expect(catalog.data[0].capabilities).toBeDefined();
+  });
+
+  it("publishes a machine-readable trust manifest", async () => {
+    const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
+    const manifest = await response.json();
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.29.0" });
+    expect(manifest.tools.write).toEqual(["uae_source_add_metadata"]);
+    expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
+  });
 });

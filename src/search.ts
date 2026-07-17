@@ -6,21 +6,24 @@
 
 import { listDatasets } from "./connectors.js";
 import { citation, REGISTRY, type Source } from "./sources.js";
+import { expandQuery, normalizeText } from "./glossary.js";
 
 type Rec = Record<string, unknown>;
 
 function score(source: Source, q: string): number {
-  const ql = q.toLowerCase().trim();
-  if (!ql) return 0;
-  const strong = `${source.id} ${source.name_en} ${source.name_ar}`.toLowerCase();
-  const weak = `${source.owner} ${source.category} ${source.notes}`.toLowerCase();
+  const terms = expandQuery(q);
+  if (!terms.length || !terms[0]) return 0;
+  const strong = normalizeText(`${source.id} ${source.name_en} ${source.name_ar}`);
+  const weak = normalizeText(`${source.owner} ${source.category} ${source.notes}`);
   let s = 0;
-  if (ql === source.id.toLowerCase()) s += 100;
-  if (source.id.toLowerCase().includes(ql)) s += 20;
-  if (source.name_en.toLowerCase().includes(ql) || source.name_ar.toLowerCase().includes(ql)) s += 15;
-  const tokens = ql.split(/\s+/).filter(Boolean);
-  s += 5 * tokens.filter((t) => strong.includes(t)).length;
-  s += 2 * tokens.filter((t) => weak.includes(t)).length;
+  for (const term of terms) {
+    if (term === normalizeText(source.id)) s = Math.max(s, 100);
+    if (normalizeText(source.id).includes(term)) s = Math.max(s, 20);
+    if (strong.includes(term)) s = Math.max(s, 15);
+    const tokens = term.split(/\s+/).filter(Boolean);
+    s += 3 * tokens.filter((token) => strong.includes(token)).length;
+    s += tokens.filter((token) => weak.includes(token)).length;
+  }
   return s;
 }
 
