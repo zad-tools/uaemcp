@@ -24,6 +24,14 @@ _Avoid_: Company, factory
 A filtered view derived from an Observed Sample, retaining its source, methodology, limitations, and citation.
 _Avoid_: Insight, recommendation
 
+**Change Point**:
+A retained snapshot whose content differs from every previously retained snapshot for the same source and dataset. Repeated unchanged checks do not create new Change Points.
+_Avoid_: Daily snapshot, observation
+
+**Industrial Change Report**:
+A comparison between the two most recent Change Points in the industrial-license sample. It describes sampled record and schema differences, not economic growth.
+_Avoid_: Growth report, market trend
+
 **Open Data Incident**:
 A measured transition from a reachable official source to an unreachable state, bounded by stored observations.
 _Avoid_: Outage claim
