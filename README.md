@@ -87,6 +87,7 @@ Endpoints:
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
+- UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
 
 <p align="center">
@@ -95,6 +96,10 @@ Endpoints:
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/industry-atlas"><img src="docs/assets/screenshots/industry-atlas.png" alt="UAE Industry Atlas" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/places"><img src="docs/assets/screenshots/place-names.png" alt="UAE Place Names Explorer" width="100%"></a>
 </p>
 
 ## MCP client configuration

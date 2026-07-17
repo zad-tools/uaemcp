@@ -7,6 +7,8 @@
   source-published names, Arabic descriptions, categories and coordinates.
 - Increase conservative coverage to 34 indexed official sources and four live
   record connectors without treating metadata-only portals as queryable.
+- Add the responsive bilingual UAE Place Names Explorer at `/places` with live
+  search, mapped results, citations and explicit FGIC limitations.
 
 ## 1.40.0
 

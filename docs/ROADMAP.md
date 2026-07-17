@@ -102,6 +102,7 @@ reusable government core remains v2.0.
 ## v1.41 — Deeper intelligence — in progress
 
 - Official FGIC National Gazetteer as a live bilingual geospatial connector
+- Public bilingual Place Names Explorer built on the cited FGIC source
 - Additional sector-specific indicators as queryable sources expand
 - Additional distributed scheduling options for multi-replica deployments
 - More live public connectors, prioritizing datasets with clear reuse licenses

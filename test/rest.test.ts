@@ -14,8 +14,10 @@ afterAll(() => server.stop(true));
 describe("REST v1", () => {
   it("serves a useful landing page", async () => {
     const response = await fetch(`${baseUrl}/`);
+    const html = await response.text();
     expect(response.status).toBe(200);
-    expect(await response.text()).toContain("Open Emirates Intelligence");
+    expect(html).toContain("Open Emirates Intelligence");
+    expect(html).toContain('href="/places"');
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
@@ -37,6 +39,16 @@ describe("REST v1", () => {
     expect(html).toContain("/api/v1/industry-atlas/change");
     expect(html).toContain("Industrial Change Monitor");
     expect(html).toContain("مراقب التغير الصناعي");
+  });
+
+  it("serves the bilingual official UAE Place Names Explorer", async () => {
+    const response = await fetch(`${baseUrl}/places`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(html).toContain("UAE Place Names Explorer");
+    expect(html).toContain("مستكشف أسماء الأماكن في الإمارات");
+    expect(html).toContain("/api/v1/sources/fgic_national_gazetteer/records");
+    expect(html).toContain("Federal Geographic Information Center");
   });
 
   it("publishes an honest industrial change-monitor state", async () => {

@@ -25,6 +25,7 @@ import { coverageIndicator, healthIndicator, INDICATOR_IDS, industrialDistributi
 import { buildIndustryAtlas } from "./industry-atlas.js";
 import { industryAtlasPage } from "./industry-atlas-web.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
+import { placesExplorerPage } from "./places-web.js";
 
 type Json = Record<string, unknown>;
 
@@ -64,6 +65,7 @@ export async function handleRest(request: Request, dependencies: RestDependencie
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
