@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.68.0
+
+- Added Ajman Parks Footfall over the official CC BY 4.0 `parks-visitors-in-ajman` dataset.
+- Added `/ajman-parks`, `/api/v1/ajman-parks` and `uae_ajman_parks_footfall` with full OpenAPI and generated SDK discovery.
+- Aggregated valid monthly observations by year and source-native park label while exposing excluded malformed values.
+- Added a SHA-256-identified aggregate snapshot fallback so an upstream failure never becomes a false zero.
+- Explicitly separated published visits from unique people, demand, tourism performance, satisfaction, capacity and park quality.
+- Added a bilingual RTL Dubai Font interface and animated README evidence visual.
+
 ## 1.67.0
 
 - Added UAE Policy Evidence Watch across five audited official legislation, resolution and announcement surfaces.

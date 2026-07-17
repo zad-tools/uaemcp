@@ -27,6 +27,7 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> GetTradeFlowRadar(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/trade-flow",parameters,cancellationToken);
  public Task<JsonDocument> GetAjmanBusinessEvidence(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/ajman-business",parameters,cancellationToken);
  public Task<JsonDocument> GetAjmanUrbanEvidence(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/ajman-urban",parameters,cancellationToken);
+ public Task<JsonDocument> GetAjmanParksFootfall(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/ajman-parks",parameters,cancellationToken);
  public Task<JsonDocument> GetTaxServiceActivity2025(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/tax-services",parameters,cancellationToken);
  public Task<JsonDocument> GetTaxServiceArchive(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/tax-services/archive",parameters,cancellationToken);
  public Task<JsonDocument> ListSources(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources",parameters,cancellationToken);

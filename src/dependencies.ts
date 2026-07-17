@@ -8,6 +8,7 @@ export interface RuntimeDependencies {
   fetchTradeRecords?: typeof fetchResult;
   fetchAjmanBusinessRecords?: typeof fetchResult;
   fetchAjmanUrbanRecords?: typeof fetchResult;
+  fetchAjmanParksRecords?: typeof fetchResult;
   fetchHealthRecords?: typeof fetchResult;
   fetchHealthFacilitiesRecords?: typeof fetchResult;
   fetchPlaceRecords?: typeof fetchResult;

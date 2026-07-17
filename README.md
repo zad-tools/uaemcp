@@ -42,7 +42,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 37 source-cited
+The server keeps the public `uaemcp` contract and extends it to 38 source-cited
 MCP tools, eleven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -54,6 +54,18 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/ajman-parks"><img src="docs/assets/ajman-parks-motion.svg" alt="Animated Ajman Parks Footfall annual evidence with visits-not-unique-people boundary" width="100%"></a>
+</p>
+
+The **Ajman Parks Footfall** product reads the complete official 2017–2023
+monthly observation dataset, groups valid published visits by year and
+source-native park label, and exposes malformed exclusions. Visits are never
+presented as unique people, resident demand, tourism performance, satisfaction,
+capacity or park quality. Use the
+[hosted explorer](https://uaemcp.zad.tools/ajman-parks), REST, or the
+`uae_ajman_parks_footfall` MCP tool.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/policy-watch"><img src="docs/assets/policy-watch-motion.svg" alt="Animated UAE Policy Evidence Watch from five official sources to hashes and an evidence change ledger" width="100%"></a>
@@ -179,7 +191,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.67.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.68.0` or newer.
 
 MCP client configuration:
 
@@ -220,7 +232,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.67.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.68.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -254,6 +266,7 @@ Endpoints:
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
 - Ajman Business Evidence: `GET /ajman-business` — three separately ranked official licence-data views with bounded sampling, citations and explicit non-market limitations
 - Ajman Urban Evidence: `GET /ajman-urban` — six separate building, certified-rent and road series in source-native units with no composite score
+- Ajman Parks Footfall: `GET /ajman-parks` — official 2017–2023 monthly park-visit observations with complete pagination and a visits-not-people boundary; API at `GET /api/v1/ajman-parks`
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — normalized bilingual official place-name search and mapped FGIC evidence; API at `GET /api/v1/places`
@@ -358,6 +371,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_ajman_parks_footfall` | Read official Ajman park-visit observations by year and source-native label without treating visits as unique people, demand or quality |
 | `uae_policy_evidence_watch` | Read retained policy-page evidence or check one to five allowlisted official surfaces without interpreting content changes as legal changes |
 | `uae_evidence_dossier` | Compose two to five official evidence pillars into one bilingual source-cited dossier without ranking, composite scoring or storage |
 | `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |

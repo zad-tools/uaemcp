@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.68 — Ajman Parks Footfall — complete
+
+- Complete official 2017–2023 monthly observation retrieval with pagination
+- Honest annual and source-native park-label aggregation
+- Verified aggregate snapshot fallback with excluded-value accounting
+- Bilingual Dubai Font product across web, REST, MCP and OpenAPI
+- Published visits explicitly separated from unique people, demand and quality
+
 ## v1.67 — UAE Policy Evidence Watch — complete
 
 - Five allowlisted official policy and legislation surfaces

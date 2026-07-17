@@ -29,6 +29,8 @@ effort - technical risk - dependency complexity.
 
 ### Sprint 3 — Civic live-data breadth
 
+**Status: complete in v1.68.0.** Ajman Parks Footfall is live with full pagination, a verified aggregate snapshot fallback, explicit malformed-value accounting and a strict visits-not-people evidence boundary.
+
 - Add the audited Ajman parks footfall product with snapshot fallback.
 - Preserve visits as published observations, not unique people or demand.
 

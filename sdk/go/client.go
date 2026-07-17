@@ -31,6 +31,7 @@ func (c *Client) GetIndustryChange(ctx context.Context, params url.Values) (map[
 func (c *Client) GetTradeFlowRadar(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/trade-flow", params) }
 func (c *Client) GetAjmanBusinessEvidence(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/ajman-business", params) }
 func (c *Client) GetAjmanUrbanEvidence(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/ajman-urban", params) }
+func (c *Client) GetAjmanParksFootfall(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/ajman-parks", params) }
 func (c *Client) GetTaxServiceActivity2025(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tax-services", params) }
 func (c *Client) GetTaxServiceArchive(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tax-services/archive", params) }
 func (c *Client) ListSources(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources", params) }

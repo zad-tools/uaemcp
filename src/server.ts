@@ -31,6 +31,7 @@ import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-a
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
 import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
+import { loadAjmanParksProduct } from "./ajman-parks-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { loadHealthFacilitiesAtlas } from "./health-facilities-service.js";
@@ -235,6 +236,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     async ({ limit }) => {
       try {
         const product = await loadAjmanUrbanProduct(dependencies.fetchAjmanUrbanRecords ?? fetchResult, limit);
+        return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_ajman_parks_footfall",
+    {
+      description: "Read official Ajman monthly park-visit observations by year and source-native park label. Visit counts are not unique people, resident demand, tourism performance, satisfaction, capacity or park quality.",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        const product = await loadAjmanParksProduct(dependencies.fetchAjmanParksRecords ?? fetchResult);
         return text(ok(product.data, product.meta));
       } catch (error) { return text(fail(error)); }
     },

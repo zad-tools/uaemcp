@@ -37,6 +37,8 @@ import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
 import { ajmanBusinessPage } from "./ajman-business-web.js";
 import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
 import { ajmanUrbanPage } from "./ajman-urban-web.js";
+import { loadAjmanParksProduct } from "./ajman-parks-service.js";
+import { ajmanParksPage } from "./ajman-parks-web.js";
 import { listProducts } from "./products.js";
 import { healthIndicatorsPage } from "./health-indicators-web.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
@@ -123,6 +125,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/ajman-business") return new Response(ajmanBusinessPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/ajman-urban") return new Response(ajmanUrbanPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/ajman-parks") return new Response(ajmanParksPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-facilities") return new Response(healthFacilitiesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -338,6 +341,10 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       const requestedLimit = integer(url.searchParams, "limit", 100, 100);
       if (requestedLimit < 1) throw new ValidationError("limit must be at least 1");
       const product = await loadAjmanUrbanProduct(dependencies.fetchAjmanUrbanRecords ?? fetchResult, requestedLimit);
+      return json(envelope(product.data, product.meta));
+    }
+    if (request.method === "GET" && path === "/api/v1/ajman-parks") {
+      const product = await loadAjmanParksProduct(dependencies.fetchAjmanParksRecords ?? fetchResult);
       return json(envelope(product.data, product.meta));
     }
     if (request.method === "GET" && path === "/api/v1/industry-atlas/change") {

@@ -2,7 +2,7 @@
 
 ## Executive finding
 
-The platform exposes eighteen verified public products, but most research still
+The platform exposes nineteen verified public products, but most research still
 ends as separate pages and JSON responses. The highest-value missing workflow
 is a way to compose selected facts into one source-cited, bilingual deliverable.
 
@@ -10,7 +10,7 @@ is a way to compose selected facts into one source-cited, bilingual deliverable.
 
 | Gap | Current evidence | Priority |
 | --- | --- | --- |
-| Cross-product research workflow | Eighteen entries in `src/products.ts`; Evidence Studio composes bounded source-native evidence | P1 |
+| Cross-product research workflow | Nineteen entries in `src/products.ts`; Evidence Studio composes bounded source-native evidence | P1 |
 | Policy freshness monitoring | Complete in v1.67 across five audited official surfaces | Complete |
 | Live national breadth | 41 indexed sources and nine live record connectors | P1 |
 | Tool documentation parity | MCP registrations and the manually maintained README table can drift | P2 |
@@ -26,4 +26,3 @@ rank incompatible evidence or turn unavailable data into zero.
 
 1. Add licensed national live connectors beyond the current nine.
 2. Generate the public MCP tool catalogue from one contract.
-3. Add the audited Ajman parks footfall dataset as a source-native civic product.
