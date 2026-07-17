@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 46 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(46);
+  it("lists 47 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(47);
   });
 
   it("registers the official GCAA publication index with honest discovery boundaries", () => {

@@ -22,8 +22,10 @@ import { toolExplorerPage } from "../src/tool-explorer-web.js";
 import { connectivityPage } from "../src/connectivity-web.js";
 import { healthFacilitiesMapPage } from "../src/health-facilities-map-web.js";
 import { aeronauticalPublicationsPage } from "../src/aeronautical-publications-web.js";
+import { tourismPulsePage } from "../src/tourism-pulse-web.js";
 
 const pages = [
+  ["/tourism-pulse", tourismPulsePage],
   ["/aeronautical-publications", aeronauticalPublicationsPage],
   ["/connectivity", connectivityPage],
   ["/tools", toolExplorerPage],

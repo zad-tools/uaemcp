@@ -7,9 +7,9 @@ describe("public product registry", () => {
   it("publishes every evidence product with bilingual copy and working route contracts", async () => {
     const products = listProducts();
     const paths = Object.keys((openApiDocument().paths ?? {}) as Record<string, unknown>);
-    expect(products).toHaveLength(22);
+    expect(products).toHaveLength(23);
     expect(products.map((product) => product.id)).toEqual([
-      "connectivity_pulse", "policy_evidence_watch", "evidence_studio", "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "health_facilities_map", "aeronautical_publications", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "ajman_parks_footfall", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "connectivity_pulse", "tourism_pulse", "policy_evidence_watch", "evidence_studio", "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "health_facilities_map", "aeronautical_publications", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "ajman_parks_footfall", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
     for (const product of products) {
       expect(product).toMatchObject({ status: "published", access: "public" });

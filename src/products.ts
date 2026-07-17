@@ -40,6 +40,22 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     },
   },
   {
+    id: "tourism_pulse",
+    status: "published",
+    access: "public",
+    category: "TOURISM / ANNUAL SERIES",
+    categoryAr: "السياحة / السلاسل السنوية",
+    title: { en: "UAE Tourism Pulse", ar: "نبض السياحة في الإمارات" },
+    description: { en: "Explore five official national hotel-sector series from 2014–2025 while preserving each source-native unit.", ar: "استكشف خمس سلاسل رسمية وطنية لقطاع الفنادق من 2014 إلى 2025 مع الحفاظ على وحدة كل سلسلة كما نشرها المصدر." },
+    webPath: "/tourism-pulse",
+    apiPath: "/api/v1/tourism-pulse",
+    sourceIds: ["moet_tourism_2014_2025"],
+    evidence: {
+      scope: { en: "Five national annual Ministry of Economy and Tourism series covering 2014–2025.", ar: "خمس سلاسل وطنية سنوية من وزارة الاقتصاد والسياحة تغطي 2014–2025." },
+      limitations: [{ en: "National annual aggregates do not identify unique tourists, emirate performance, profitability, causality or future demand.", ar: "لا تحدد التجميعات الوطنية السنوية السياح الفريدين أو أداء كل إمارة أو الربحية أو السببية أو الطلب المستقبلي." }],
+    },
+  },
+  {
     id: "policy_evidence_watch", status: "published", access: "public", category: "POLICY / EVIDENCE", categoryAr: "السياسات / الأدلة",
     title: { en: "UAE Policy Evidence Watch", ar: "مرصد أدلة السياسات في الإمارات" },
     description: { en: "Track bounded content fingerprints for five audited official UAE legislation and policy pages without claiming that a detected page difference changed the law.", ar: "تتبّع بصمات محتوى محدودة لخمس صفحات إماراتية رسمية مدققة للتشريعات والسياسات دون الادعاء بأن اختلاف الصفحة غيّر القانون." },

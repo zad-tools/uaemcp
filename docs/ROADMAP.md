@@ -1,5 +1,14 @@
 # Roadmap
 
+## v1.74 — UAE Tourism Pulse — complete
+
+- Five separate official national annual tourism aggregates with source-native units
+- Metric and bounded year-range filters without interpolation or a composite score
+- Occupancy source fraction displayed transparently as percent using fraction × 100
+- Guest observations explicitly separated from unique tourists and descriptive trends from causality
+- Bilingual same-origin Dubai Font interface with mobile-safe RTL composition
+- Animated README evidence visual and direct official-source citation
+
 ## v1.73 — GCAA Aeronautical Publications — complete
 
 - Current official GCAA eAIP publication-index parsing with bounded results

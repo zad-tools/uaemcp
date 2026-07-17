@@ -16,6 +16,7 @@ func (c *Client) GetPolicyEvidenceWatchOperations(ctx context.Context, params ur
 func (c *Client) BuildEvidenceDossier(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/evidence-dossier", params) }
 func (c *Client) GetNationalEvidenceBrief(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/national-brief", params) }
 func (c *Client) GetConnectivityPulse(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/connectivity", params) }
+func (c *Client) GetTourismPulse(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tourism-pulse", params) }
 func (c *Client) SearchPlaceNames(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/places", params) }
 func (c *Client) BuildFounderPathway(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/founder-pathway", params) }
 func (c *Client) GetGoldenResidencyPathways(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/golden-residency", params) }

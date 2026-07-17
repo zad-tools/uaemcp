@@ -72,6 +72,8 @@ import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 import { loadAeronauticalPublications, type AeronauticalPublicationKind } from "./aeronautical-publications-service.js";
 import { aeronauticalPublicationsPage } from "./aeronautical-publications-web.js";
 import { healthFacilitiesMapPage } from "./health-facilities-map-web.js";
+import { loadTourismPulse, type TourismMetric } from "./tourism-pulse.js";
+import { tourismPulsePage } from "./tourism-pulse-web.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
@@ -158,6 +160,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tools") return new Response(toolExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/connectivity") return new Response(connectivityPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/tourism-pulse") return new Response(tourismPulsePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/aeronautical-publications") return new Response(aeronauticalPublicationsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -198,6 +201,22 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       if (from && to && from > to) throw new ValidationError("from must not be after to");
       const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series: series as ConnectivitySeriesId | undefined, from, to });
       return json(envelope(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+    }
+    if (request.method === "GET" && path === "/api/v1/tourism-pulse") {
+      const metric = optional(url.searchParams, "metric");
+      const metrics = ["hotel_guest_arrivals", "guest_nights", "hotel_establishments", "hotel_rooms", "occupancy_rate"] as const;
+      if (metric && !metrics.includes(metric as TourismMetric)) throw new ValidationError("metric is invalid");
+      const parseYear = (name: string): number | undefined => {
+        const raw = url.searchParams.get(name);
+        if (raw === null) return undefined;
+        if (!/^\d{4}$/.test(raw) || Number(raw) < 2014 || Number(raw) > 2025) throw new ValidationError(`${name} must be an integer from 2014 to 2025`);
+        return Number(raw);
+      };
+      const fromYear = parseYear("from_year");
+      const toYear = parseYear("to_year");
+      if (fromYear && toYear && fromYear > toYear) throw new ValidationError("from_year must not be after to_year");
+      const loaded = await loadTourismPulse({ fetcher: dependencies.fetchTourismWorkbook, metric: metric as TourismMetric | undefined, fromYear, toYear });
+      return json(envelope(loaded.report, { ...loaded.meta, filters: { metric, from_year: fromYear, to_year: toYear }, units_kept_separate: true, causal_interpretation: false }));
     }
     if (request.method === "GET" && path === "/api/v1/health-facilities-map") {
       const q = optional(url.searchParams, "q")?.trim();

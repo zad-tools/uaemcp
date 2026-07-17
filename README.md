@@ -56,6 +56,19 @@ between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
 
 <p align="center">
+  <a href="https://uaemcp.zad.tools/tourism-pulse"><img src="docs/assets/tourism-pulse-motion.svg" alt="Animated UAE Tourism Pulse showing five separate national annual aggregates and explicit evidence boundaries" width="100%"></a>
+</p>
+
+The **UAE Tourism Pulse** presents five official national annual aggregates as
+separate source-native series with metric and year-range filters. Guest counts
+are not presented as unique tourists, year-to-year movement is descriptive—not
+causal—and occupancy is transparently displayed as a percentage by multiplying
+the published source fraction by 100. It does not create a tourism score or
+infer emirate, hotel, traveller or market-segment detail. Use the
+[hosted pulse](https://uaemcp.zad.tools/tourism-pulse),
+`GET /api/v1/tourism-pulse`, or the `uae_tourism_pulse` MCP tool.
+
+<p align="center">
   <a href="https://uaemcp.zad.tools/aeronautical-publications"><img src="docs/assets/aeronautical-publications-motion.svg" alt="Animated GCAA aeronautical publication ledger showing package, publication and effective dates with an index-not-NOTAM boundary" width="100%"></a>
 </p>
 
@@ -232,7 +245,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.73.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.74.0` or newer.
 
 MCP client configuration:
 
@@ -273,7 +286,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.73.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.74.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -450,8 +463,8 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 46 official sources indexed, 14 live record
-connectors, at least 221 known queryable datasets, 1 blocked connector, and 3
+Current conservative coverage is 47 official sources indexed, 15 live record
+connectors, at least 222 known queryable datasets, 1 blocked connector, and 3
 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

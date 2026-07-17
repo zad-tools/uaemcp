@@ -12,6 +12,7 @@ impl UaemcpClient {
  pub async fn build_evidence_dossier(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/evidence-dossier"), params).await }
  pub async fn get_national_evidence_brief(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/national-brief"), params).await }
  pub async fn get_connectivity_pulse(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/connectivity"), params).await }
+ pub async fn get_tourism_pulse(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/tourism-pulse"), params).await }
  pub async fn search_place_names(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/places"), params).await }
  pub async fn build_founder_pathway(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/founder-pathway"), params).await }
  pub async fn get_golden_residency_pathways(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/golden-residency"), params).await }

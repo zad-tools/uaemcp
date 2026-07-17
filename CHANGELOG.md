@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.74.0 — 2026-07-18
+
+- Added UAE Tourism Pulse over the Ministry of Economy and Tourism's licensed national workbook: five annual series and 60 validated observations covering 2014–2025.
+- Added `/tourism-pulse`, REST, MCP and methodology contracts with metric and inclusive year filters.
+- Added a complete SHA-256-identified snapshot fallback, a 24-hour source cache and source-native unit preservation.
+- Added a bilingual Dubai Font interface and animated README evidence visual with explicit national-aggregate, unique-tourist and causality boundaries.
+
 ## 1.73.0 — 2026-07-18
 
 - Added a current UAE GCAA aeronautical-publications monitor with package, publication and effective dates preserved from the official eAIP index.

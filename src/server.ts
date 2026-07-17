@@ -51,6 +51,7 @@ import { createToolCatalog } from "./tool-catalog.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-service.js";
 import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 import { loadAeronauticalPublications } from "./aeronautical-publications-service.js";
+import { loadTourismPulse } from "./tourism-pulse.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
@@ -104,6 +105,25 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         if (from && to && from > to) throw new ValidationError("from must not be after to");
         const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series, from, to });
         return text(ok(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_tourism_pulse",
+    {
+      description: "Read five separate official UAE Ministry of Economy and Tourism national annual hotel-sector series for 2014–2025. Values retain source-native units; guest arrivals are not necessarily unique tourists, and descriptive trends do not establish causality, profitability or future demand.",
+      inputSchema: {
+        metric: z.enum(["hotel_guest_arrivals", "guest_nights", "hotel_establishments", "hotel_rooms", "occupancy_rate"]).optional(),
+        from_year: z.number().int().min(2014).max(2025).optional(),
+        to_year: z.number().int().min(2014).max(2025).optional(),
+      },
+    },
+    async ({ metric, from_year, to_year }) => {
+      try {
+        if (from_year && to_year && from_year > to_year) throw new ValidationError("from_year must not be after to_year");
+        const loaded = await loadTourismPulse({ fetcher: dependencies.fetchTourismWorkbook, metric, fromYear: from_year, toYear: to_year });
+        return text(ok(loaded.report, { ...loaded.meta, filters: { metric, from_year, to_year }, units_kept_separate: true, causal_interpretation: false }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -858,6 +878,25 @@ function registerResources(server: McpServer): void {
       per100MeansCoverage: false,
       prohibitedClaims: ["unique users", "population", "network coverage", "speed", "quality", "affordability", "digital inclusion", "economic growth"],
       attribution: "TDRA, source workbook name and publication date",
+    }) }] }),
+  );
+
+  server.registerResource(
+    "tourism_pulse_methodology",
+    "uae://tourism-pulse/methodology",
+    { title: "UAE Tourism Pulse methodology", description: "MOET annual tourism-series grain, source-native units, filters and prohibited interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      authority: "UAE Ministry of Economy and Tourism",
+      period: "2014–2025",
+      frequency: "annual",
+      geography: "UAE national aggregate",
+      metrics: ["hotel_guest_arrivals", "guest_nights", "hotel_establishments", "hotel_rooms", "occupancy_rate"],
+      unitsKeptSeparate: true,
+      occupancyRateUnit: "ratio",
+      guestArrivalsAreUniqueTourists: false,
+      emirateBreakdownAvailable: false,
+      causalInterpretation: false,
+      prohibitedClaims: ["unique tourist count", "emirate ranking", "profitability", "investment suitability", "causality", "forecast", "future demand"],
     }) }] }),
   );
 
