@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible MCP, REST, CLI, connector or web-interface defect.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never include tokens, cookies, personal data or unredacted production logs.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options: [MCP, REST API, CLI, Connector, Web interface, SDK, Container, Documentation]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: UAEMCP and Bun versions
+      placeholder: "UAEMCP 1.61.1; Bun 1.3.11"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: List exact sanitized steps, request arguments and expected behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add the structured error, status code or relevant log lines without secrets or personal data.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This report contains no credentials, personal data or confidential source material.
+          required: true
+        - label: This is not a security vulnerability or PII exposure.
+          required: true

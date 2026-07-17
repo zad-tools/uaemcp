@@ -1,7 +1,9 @@
 # Security policy
 
-Report vulnerabilities privately to `vacrom414@gmail.com`. Do not open a public
-issue until a fix is available.
+Report vulnerabilities through
+[GitHub private vulnerability reporting](https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/security/advisories/new)
+or privately to `vacrom414@gmail.com`. Do not open a public issue until a fix is
+available.
 
 The public server treats every upstream response as untrusted, blocks private
 network destinations by default, redacts direct-contact PII, limits response

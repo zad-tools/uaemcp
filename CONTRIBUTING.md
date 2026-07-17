@@ -31,6 +31,11 @@ into an empty successful result.
 - Include tests before implementation changes.
 - Run `bun run check` and build the Docker image.
 - Do not commit secrets, production logs, or generated source data.
+- Complete the pull-request evidence, verification and limitations checklist.
+
+Use the structured GitHub forms for bugs, official UAE source proposals and
+connector proposals. Security vulnerabilities and exposed personal data belong
+in a private advisory, never a public issue.
 
 The complete project conventions are in `docs/CODING_STANDARDS.md`; architecture
 and trust-boundary decisions are in `docs/ARCHITECTURE.md` and

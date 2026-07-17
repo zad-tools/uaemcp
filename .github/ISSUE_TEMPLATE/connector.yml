@@ -1,0 +1,47 @@
+name: Connector proposal
+description: Propose support for a reusable bounded data-platform connector.
+title: "connector: "
+labels: [enhancement, connector]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform or protocol
+      placeholder: CKAN, SDMX, public CSV pattern, custom government API...
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Official example endpoints
+      description: Provide at least one official UAE endpoint and its public documentation.
+    validations:
+      required: true
+  - type: checkboxes
+    id: capabilities
+    attributes:
+      label: Required capabilities
+      options:
+        - label: Dataset discovery
+        - label: Records and pagination
+        - label: Search or filtering
+        - label: Schema inspection
+        - label: Geospatial records
+        - label: Aggregation
+        - label: Historical snapshots
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Trust boundaries and limits
+      description: Describe authentication, pagination, response-size, rate-limit, licence and SSRF considerations.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Contract
+      options:
+        - label: The connector can use bounded reads and explicit errors without fabricating empty success.
+          required: true
+        - label: A mocked offline fixture can test the connector without committing captured personal data.
+          required: true

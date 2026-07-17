@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability or exposed personal data
+    url: https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/security/advisories/new
+    about: Report security and privacy issues privately, never in a public issue.
+  - name: Live API and MCP documentation
+    url: https://uaemcp.zad.tools/docs
+    about: Inspect the current public contracts and try an endpoint first.
+  - name: Support guide
+    url: https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/blob/main/SUPPORT.md
+    about: Choose the correct public or private support channel.

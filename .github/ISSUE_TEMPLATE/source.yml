@@ -1,0 +1,58 @@
+name: Official UAE data source
+description: Propose a public UAE government portal, dataset or API for the registry.
+title: "source: "
+labels: [enhancement, data-source]
+body:
+  - type: input
+    id: authority
+    attributes:
+      label: Government authority
+      placeholder: Official English and Arabic name when available
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Official HTTPS URL
+      placeholder: https://...
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: Observed access type
+      options: [Live records without a key, API key required, Dataset discovery only, Downloadable file, Metadata page, Unknown]
+    validations:
+      required: true
+  - type: textarea
+    id: machine
+    attributes:
+      label: Machine-readable evidence
+      description: Link the API specification, dataset resource, ArcGIS layer, CKAN/ODS catalogue or downloadable file.
+    validations:
+      required: true
+  - type: textarea
+    id: license
+    attributes:
+      label: Licence and attribution
+      description: Link the dataset-level licence or state clearly that it could not be found.
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Public value
+      description: Explain the questions or evidence products this source enables without overstating its coverage.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verification
+      options:
+        - label: The URL belongs to an official UAE government or government-backed authority.
+          required: true
+        - label: I did not copy personal data or credentials into this issue.
+          required: true
+        - label: I understand that a published webpage is not automatically an open redistribution licence.
+          required: true
