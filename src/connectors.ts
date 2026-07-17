@@ -13,7 +13,7 @@
 
 import { SETTINGS } from "./config.js";
 import { SourceUnavailable, ValidationError } from "./errors.js";
-import { getBytes, getJson, getText, probe } from "./http.js";
+import { getBytes, getJson, getText, postJson, probe } from "./http.js";
 import { redactRecords } from "./redaction.js";
 import { citation, fetchUrl, type Source } from "./sources.js";
 import { parseXlsx } from "./xlsx.js";
@@ -67,7 +67,7 @@ export interface Connector {
   fetch(source: Source, options: FetchOpts): Promise<FetchResult>;
   datasets?(source: Source, options: FetchOpts): Promise<DatasetRef[]>;
   capabilities?: {
-    records?: boolean; search?: boolean; geo?: boolean; aggregation?: boolean;
+    datasets?: boolean; records?: boolean; search?: boolean; geo?: boolean; aggregation?: boolean;
     schema?: boolean; history?: boolean; realtime?: boolean; export?: string[];
     queryLanguage?: string | null;
   };
@@ -383,6 +383,76 @@ async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> 
   return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
 }
 
+// ── XML / RSS ───────────────────────────────────────────────────────────────
+function xmlDecode(value: string): string {
+  return value
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'").replace(/&amp;/g, "&")
+    .replace(/&#(\d+);/g, (_match, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, code) => String.fromCodePoint(Number.parseInt(code, 16)));
+}
+
+export function parseXmlRecords(xml: string, rowTag: string): Rec[] {
+  if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new ValidationError("XML DOCTYPE and ENTITY declarations are not permitted");
+  if (!/^[A-Za-z_][\w:.-]{0,63}$/.test(rowTag)) throw new ValidationError("XML row_tag is invalid");
+  const escaped = rowTag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const rows = [...xml.matchAll(new RegExp(`<${escaped}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${escaped}>`, "gi"))];
+  return rows.map((match) => {
+    const record: Rec = {};
+    const body = match[1];
+    const children = body.matchAll(/<([A-Za-z_][\w:.-]{0,63})(?:\s[^>]*)?>([\s\S]*?)<\/\1>/g);
+    for (const child of children) {
+      const key = child[1];
+      if (["__proto__", "prototype", "constructor"].includes(key)) continue;
+      const value = xmlDecode(child[2]).replace(/<[^>]+>/g, "").trim();
+      if (record[key] === undefined) record[key] = value;
+      else record[key] = Array.isArray(record[key]) ? [...record[key] as unknown[], value] : [record[key], value];
+    }
+    return record;
+  });
+}
+
+async function fetchXml(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const rowTag = String(source.connector_config.row_tag ?? (source.kind === "rss" ? "item" : "record"));
+  let records = parseXmlRecords(await getText(fetchUrl(source), source.default_params), rowTag);
+  const total = records.length;
+  let clientFiltered = false;
+  if (opts.query) {
+    const query = opts.query.toLocaleLowerCase();
+    records = records.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query));
+    clientFiltered = true;
+  }
+  const offset = opts.offset ?? 0;
+  records = redactRecords(records.slice(offset, offset + Math.min(opts.limit ?? 10, 1000)));
+  return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
+}
+
+// ── Socrata SODA ────────────────────────────────────────────────────────────
+async function fetchSocrata(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const limit = Math.min(opts.limit ?? 10, 1000);
+  const params: Rec = { ...source.default_params, $limit: limit, $offset: opts.offset ?? 0 };
+  if (opts.query) params.$q = opts.query;
+  const records = redactRecords(coerceRecords(await getJson(fetchUrl(source), params)).slice(0, limit));
+  return result(source, records, { total: null, data_quality: scoreConfidence(records, null, false) });
+}
+
+// ── GraphQL (configured read-only documents) ────────────────────────────────
+async function fetchGraphql(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const query = String(source.connector_config.query ?? "").trim();
+  if (!query) throw new ValidationError("GraphQL connector requires a configured query");
+  if (query.length > 10_000 || /\b(?:mutation|subscription)\b/i.test(query) || !/^(?:query\b|\{)/i.test(query)) {
+    throw new ValidationError("GraphQL connector permits configured query operations only");
+  }
+  const limit = Math.min(opts.limit ?? 10, 1000);
+  const variables = { ...((source.connector_config.variables as Rec | undefined) ?? {}), limit, offset: opts.offset ?? 0, search: opts.query ?? null };
+  const payload = await postJson(fetchUrl(source), { query, variables }) as Rec;
+  if (Array.isArray(payload.errors) && payload.errors.length) throw new SourceUnavailable(`GraphQL source returned ${payload.errors.length} error(s)`);
+  const path = Array.isArray(source.connector_config.row_path) ? source.connector_config.row_path.map(String) : source.row_path;
+  const records = redactRecords(coerceRecords(dig(payload, path)).slice(0, limit));
+  return result(source, records, { total: null, data_quality: scoreConfidence(records, null, false) });
+}
+
 // ── SPARQL SELECT ────────────────────────────────────────────────────────────
 function boundedSparql(query: string, limit: number): string {
   const normalized = query.trim();
@@ -474,19 +544,23 @@ export function connectorCapabilities(kind: string): Connector["capabilities"] |
   return value ? { ...value, export: value.export ? [...value.export] : undefined } : null;
 }
 
-const liveCapabilities = { records: true, search: true, geo: true, aggregation: true, schema: true, history: true, realtime: false, export: ["json", "csv", "geojson", "xlsx"] };
+const liveCapabilities = { datasets: false, records: true, search: true, geo: true, aggregation: true, schema: true, history: true, realtime: false, export: ["json", "csv", "geojson", "xlsx"] };
 registerConnector("http_json", { fetch: fetchHttpJson, datasets: async (source) => [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: "", modified: "", has_geo: false }], capabilities: { ...liveCapabilities, queryLanguage: "text" } });
-registerConnector("ods", { fetch: fetchOds, datasets: odsDatasets, capabilities: { ...liveCapabilities, queryLanguage: "opendatasoft" } });
-registerConnector("ckan", { fetch: fetchCkan, datasets: ckanDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "ckan" } });
-registerConnector("arcgis", { fetch: fetchArcgis, datasets: arcgisDatasets, capabilities: { ...liveCapabilities, queryLanguage: "arcgis" } });
-registerConnector("csv", { fetch: fetchCsv, datasets: csvDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "text" } });
-registerConnector("xlsx", { fetch: fetchXlsx, datasets: csvDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "text" } });
+registerConnector("ods", { fetch: fetchOds, datasets: odsDatasets, capabilities: { ...liveCapabilities, datasets: true, queryLanguage: "opendatasoft" } });
+registerConnector("ckan", { fetch: fetchCkan, datasets: ckanDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, queryLanguage: "ckan" } });
+registerConnector("arcgis", { fetch: fetchArcgis, datasets: arcgisDatasets, capabilities: { ...liveCapabilities, datasets: true, queryLanguage: "arcgis" } });
+registerConnector("socrata", { fetch: fetchSocrata, datasets: csvDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, queryLanguage: "soda" } });
+registerConnector("csv", { fetch: fetchCsv, datasets: csvDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, queryLanguage: "text" } });
+registerConnector("xlsx", { fetch: fetchXlsx, datasets: csvDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, queryLanguage: "text" } });
+registerConnector("xml", { fetch: fetchXml, datasets: csvDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, queryLanguage: "text" } });
+registerConnector("rss", { fetch: fetchXml, datasets: csvDatasets, capabilities: { ...liveCapabilities, datasets: true, geo: false, realtime: true, queryLanguage: "text" } });
+registerConnector("graphql", { fetch: fetchGraphql, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "graphql" } });
 registerConnector("sparql", { fetch: fetchSparql, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "sparql" } });
 registerConnector("sdmx", { fetch: fetchSdmx, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "sdmx" } });
 registerConnector("metadata", {
   fetch: async (source) => { throw new SourceUnavailable(`'${source.id}' is a discovery-only source and exposes no record API yet. See ${citation(source)} for the portal's published datasets.`); },
   datasets: async () => [],
-  capabilities: { records: false, search: false, geo: false, aggregation: false, schema: false, history: false, realtime: false, export: [], queryLanguage: null },
+  capabilities: { datasets: false, records: false, search: false, geo: false, aggregation: false, schema: false, history: false, realtime: false, export: [], queryLanguage: null },
 });
 
 export async function fetchResult(source: Source, opts: FetchOpts = {}): Promise<FetchResult> {

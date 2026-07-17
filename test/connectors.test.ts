@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 
-vi.mock("../src/http.js", () => ({ getBytes: vi.fn(), getJson: vi.fn(), getText: vi.fn(), probe: vi.fn() }));
+vi.mock("../src/http.js", () => ({ getBytes: vi.fn(), getJson: vi.fn(), getText: vi.fn(), postJson: vi.fn(), probe: vi.fn() }));
 
-import { connectorCapabilities, connectorKinds, fetchResult, listDatasets, parseDelimited, parseSdmxJson, registerConnector } from "../src/connectors.js";
-import { getBytes, getJson, getText } from "../src/http.js";
+import { connectorCapabilities, connectorKinds, fetchResult, listDatasets, parseDelimited, parseSdmxJson, parseXmlRecords, registerConnector } from "../src/connectors.js";
+import { getBytes, getJson, getText, postJson } from "../src/http.js";
 import { exportRecords } from "../src/export.js";
 import { parseXlsx } from "../src/xlsx.js";
 import type { Source } from "../src/sources.js";
@@ -11,6 +11,7 @@ import type { Source } from "../src/sources.js";
 const mockGetJson = getJson as unknown as ReturnType<typeof vi.fn>;
 const mockGetText = getText as unknown as ReturnType<typeof vi.fn>;
 const mockGetBytes = getBytes as unknown as ReturnType<typeof vi.fn>;
+const mockPostJson = postJson as unknown as ReturnType<typeof vi.fn>;
 
 function mkSource(p: Partial<Source>): Source {
   return {
@@ -21,7 +22,7 @@ function mkSource(p: Partial<Source>): Source {
   };
 }
 
-beforeEach(() => { mockGetJson.mockReset(); mockGetText.mockReset(); mockGetBytes.mockReset(); });
+beforeEach(() => { mockGetJson.mockReset(); mockGetText.mockReset(); mockGetBytes.mockReset(); mockPostJson.mockReset(); });
 
 describe("http_json connector", () => {
   const src = mkSource({ kind: "http_json", row_path: ["result", "Factories"], max_page_size: 10 });
@@ -195,6 +196,46 @@ describe("sdmx connector", () => {
     const result = await fetchResult(mkSource({ kind: "sdmx" }), { query: "2025", limit: 1 });
     expect(result.total).toBe(2);
     expect(result.records[0]).toMatchObject({ TIME_PERIOD: "2025", OBS_VALUE: 12 });
+  });
+});
+
+describe("XML and RSS connectors", () => {
+  const xml = `<?xml version="1.0"?><feed><item><title><![CDATA[Clinic & Care]]></title><count>12</count></item><item><title>Hospital &amp; Lab</title><count>7</count></item></feed>`;
+  it("parses configured rows without executing document entities", () => {
+    expect(parseXmlRecords(xml, "item")).toEqual([
+      { title: "Clinic & Care", count: "12" },
+      { title: "Hospital & Lab", count: "7" },
+    ]);
+    expect(() => parseXmlRecords('<!DOCTYPE x [<!ENTITY ext SYSTEM "file:///etc/passwd">]><x/>', "item")).toThrow("DOCTYPE");
+  });
+  it("fetches RSS/XML, searches and paginates", async () => {
+    mockGetText.mockResolvedValue(xml);
+    const result = await fetchResult(mkSource({ kind: "rss", connector_config: { row_tag: "item" } }), { query: "hospital", limit: 1 });
+    expect(result.total).toBe(2);
+    expect(result.records).toEqual([{ title: "Hospital & Lab", count: "7" }]);
+  });
+});
+
+describe("Socrata connector", () => {
+  it("uses bounded SODA pagination and text search", async () => {
+    mockGetJson.mockResolvedValue([{ name: "Clinic", count: "4" }]);
+    const result = await fetchResult(mkSource({ kind: "socrata", base_url: "https://data.example.gov/resource/abcd-1234.json" }), { query: "clinic", offset: 5, limit: 7 });
+    expect(result.records).toEqual([{ name: "Clinic", count: "4" }]);
+    expect(mockGetJson.mock.calls[0][1]).toMatchObject({ "$limit": 7, "$offset": 5, "$q": "clinic" });
+  });
+});
+
+describe("GraphQL connector", () => {
+  it("posts only a configured bounded query and extracts its row path", async () => {
+    mockPostJson.mockResolvedValue({ data: { facilities: { nodes: [{ name: "Clinic" }] } } });
+    const source = mkSource({ kind: "graphql", connector_config: { query: "query Facilities($limit: Int!, $offset: Int!) { facilities(limit: $limit, offset: $offset) { nodes { name } } }", row_path: ["data", "facilities", "nodes"] } });
+    const result = await fetchResult(source, { limit: 9, offset: 2 });
+    expect(result.records).toEqual([{ name: "Clinic" }]);
+    expect(mockPostJson.mock.calls[0][1]).toMatchObject({ variables: { limit: 9, offset: 2, search: null } });
+  });
+  it("rejects mutation documents and missing configured queries", async () => {
+    await expect(fetchResult(mkSource({ kind: "graphql", connector_config: { query: "mutation { eraseAll }" } }))).rejects.toThrow("query operations");
+    await expect(fetchResult(mkSource({ kind: "graphql" }))).rejects.toThrow("configured query");
   });
 });
 

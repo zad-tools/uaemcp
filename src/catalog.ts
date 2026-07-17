@@ -19,9 +19,9 @@ export interface Capabilities {
 
 export function capabilitiesFor(source: Source): Capabilities {
   const records = source.access_status === "live" && source.kind !== "metadata";
-  const datasets = ["ckan", "ods", "arcgis"].includes(source.kind);
-  const queryLanguage = source.kind === "http_json" ? "text" : source.kind === "metadata" ? null : source.kind === "ods" ? "opendatasoft" : source.kind;
   const plugin = connectorCapabilities(source.kind);
+  const datasets = plugin?.datasets ?? ["ckan", "ods", "arcgis"].includes(source.kind);
+  const queryLanguage = source.kind === "http_json" ? "text" : source.kind === "metadata" ? null : source.kind === "ods" ? "opendatasoft" : source.kind;
   return {
     metadata: true,
     datasets,

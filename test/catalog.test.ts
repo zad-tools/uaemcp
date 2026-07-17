@@ -8,6 +8,11 @@ describe("unified catalog", () => {
     expect(capabilitiesFor(REGISTRY.get("dubai_land_department")).records).toBe(false);
   });
 
+  it("derives dataset discovery from the connector contract", () => {
+    expect(capabilitiesFor({ ...REGISTRY.get("moiat_industrial_licenses"), kind: "rss" }).datasets).toBe(true);
+    expect(capabilitiesFor({ ...REGISTRY.get("moiat_industrial_licenses"), kind: "graphql" }).datasets).toBe(false);
+  });
+
   it("exposes explicit portal and organization concepts", () => {
     const portal = portalModel(REGISTRY.get("ajman_data_portal"));
     expect(portal.type).toBe("portal");

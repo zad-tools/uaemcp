@@ -11,7 +11,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { SourceNotFound, ValidationError } from "./errors.js";
 
-export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "csv" | "xlsx" | "sdmx" | "sparql" | "metadata";
+export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "socrata" | "csv" | "xlsx" | "xml" | "rss" | "graphql" | "sdmx" | "sparql" | "metadata";
 export type AccessStatus = "live" | "blocked" | "key_required" | "metadata_only";
 
 export interface Source {

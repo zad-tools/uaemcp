@@ -34,6 +34,13 @@
 - Honest freshness, schema-stability and record-trend states
 - Composite quality score without inventing unavailable history
 
+## v1.33 — Universal read connectors — complete
+
+- Socrata SODA connector with bounded paging and search
+- Safe XML and RSS record extraction with external entities disabled
+- Read-only GraphQL connector with configured documents and bounded variables
+- SSRF validation on every redirect and HTTPS downgrade rejection
+
 ## v1.40 — Deeper intelligence
 
 - UAE geography normalization

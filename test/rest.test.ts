@@ -62,7 +62,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.32.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.33.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });

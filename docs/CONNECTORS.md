@@ -3,10 +3,14 @@
 UAEMCP dispatches source access through a runtime registry. A connector can be
 added without editing the MCP, REST, catalog, snapshot or intelligence layers.
 
-Built-ins: `http_json`, `ckan`, `ods`, `arcgis`, `csv`, `xlsx`, `sdmx`,
-`sparql`, and honest discovery-only `metadata`. XLSX extraction is checked
+Built-ins: `http_json`, `ckan`, `ods`, `arcgis`, `socrata`, `csv`, `xlsx`,
+`xml`, `rss`, `graphql`, `sdmx`, `sparql`, and honest discovery-only
+`metadata`. XLSX extraction is checked
 against a central-directory size budget before decompression. SPARQL permits
 bounded `SELECT` only and rejects updates and federated `SERVICE` clauses.
+XML/RSS reject document types and entity declarations. GraphQL only executes
+an operator-configured read query with server-controlled paging variables;
+mutations, subscriptions and arbitrary client documents are rejected.
 
 ```ts
 import { registerConnector } from "uaemcp/connectors";

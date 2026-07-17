@@ -12,7 +12,7 @@ import { validateUrl } from "./ssrf.js";
 
 async function request(
   url: string,
-  opts: { params?: Record<string, unknown>; timeoutMs?: number } = {},
+  opts: { params?: Record<string, unknown>; timeoutMs?: number; method?: "GET" | "POST"; body?: string } = {},
 ): Promise<Response> {
   let full = url;
   if (opts.params) {
@@ -23,22 +23,37 @@ async function request(
     const sep = url.includes("?") ? "&" : "?";
     full = qs.toString() ? `${url}${sep}${qs}` : url;
   }
-  await validateUrl(full, { allowPrivate: SETTINGS.allowPrivateHosts });
-
   const controller = new AbortController();
   const timeout = opts.timeoutMs ?? SETTINGS.httpTimeoutMs;
   const timer = setTimeout(() => controller.abort(), timeout);
   let resp: Response;
   try {
-    resp = await fetch(full, {
-      redirect: "follow",
-      signal: controller.signal,
-      headers: {
-        "User-Agent": SETTINGS.userAgent,
-        Accept: "application/json, text/html;q=0.9, */*;q=0.8",
-      },
-    });
+    let current = full;
+    let method: "GET" | "POST" = opts.method ?? "GET";
+    let body = opts.body;
+    for (let redirects = 0; ; redirects += 1) {
+      await validateUrl(current, { allowPrivate: SETTINGS.allowPrivateHosts });
+      resp = await fetch(current, {
+        method, body, redirect: "manual", signal: controller.signal,
+        headers: {
+          "User-Agent": SETTINGS.userAgent,
+          Accept: "application/json, text/html;q=0.9, */*;q=0.8",
+          ...(body ? { "Content-Type": "application/json" } : {}),
+        },
+      });
+      if (resp.status < 300 || resp.status >= 400) break;
+      if (redirects >= 5) throw new SourceUnavailable(`source exceeded redirect limit: ${full}`);
+      const location = resp.headers.get("location");
+      if (!location) throw new SourceUnavailable(`source returned redirect without location: ${current}`);
+      const next = new URL(location, current);
+      if (new URL(current).protocol === "https:" && next.protocol !== "https:") {
+        throw new SourceUnavailable(`source attempted an insecure redirect: ${current}`);
+      }
+      current = next.toString();
+      if (resp.status === 303) { method = "GET"; body = undefined; }
+    }
   } catch (err) {
+    if (err instanceof SourceUnavailable) throw err;
     const reason = err instanceof Error && err.name === "AbortError" ? "timeout" : "transport error";
     throw new SourceUnavailable(`${reason} contacting source: ${full}`);
   } finally {
@@ -65,6 +80,19 @@ export async function getJson(
   if (text.length > SETTINGS.maxResponseBytes) {
     throw new SourceUnavailable(`source response too large: ${url}`);
   }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new SourceUnavailable(`source did not return valid JSON: ${url}`);
+  }
+}
+
+export async function postJson(url: string, payload: unknown, timeoutMs?: number): Promise<unknown> {
+  const body = JSON.stringify(payload);
+  if (body.length > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`request body too large: ${url}`);
+  const resp = await request(url, { method: "POST", body, timeoutMs });
+  const text = await resp.text();
+  if (text.length > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`source response too large: ${url}`);
   try {
     return JSON.parse(text);
   } catch {

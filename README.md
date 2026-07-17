@@ -7,7 +7,8 @@ original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
 The server keeps the public `uaemcp` contract and extends it to 15 source-cited
 MCP tools, six resources, three prompts, bilingual catalog search, CKAN,
-OpenDataSoft, ArcGIS, JSON, CSV, XLSX, SDMX and SPARQL connectors, geo queries,
+OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
+SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
 bounded dataset snapshots for repeatable comparisons.

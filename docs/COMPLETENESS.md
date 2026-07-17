@@ -30,7 +30,8 @@ it does not mean every UAE portal has a public machine-readable API.
 - Explicit portal, organization, dataset, connector, schema, snapshot,
   capability, license, quality and lineage-oriented models
 - Plugin connector registry
-- JSON, CKAN, OpenDataSoft, ArcGIS, CSV, XLSX, SDMX and bounded SPARQL
+- JSON, CKAN, OpenDataSoft, ArcGIS, Socrata, CSV, XLSX, XML, RSS,
+  read-only GraphQL, SDMX and bounded SPARQL
 - Schema discovery with field types, examples, nullability and statistics
 - Bilingual Arabic/English glossary and query expansion
 - PII redaction, write-token gating, rate limiting and SSRF protection
@@ -57,7 +58,6 @@ it does not mean every UAE portal has a public machine-readable API.
 
 ### Not yet shipped
 
-- Socrata, XML, RSS and GraphQL built-in connectors
 - Embedding-backed semantic retrieval
 - UAE-wide entity resolution and normalized administrative geography
 - Vector tile service and arbitrary cross-source spatial joins
