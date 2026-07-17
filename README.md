@@ -275,7 +275,7 @@ Registry with an SBOM and build provenance:
 ```bash
 docker run --rm -p 127.0.0.1:8080:8080 \
   -e UAEMCP_ALLOWED_HOSTS=127.0.0.1,localhost \
-  ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp:edge
+  ghcr.io/zad-tools/uaemcp:edge
 ```
 
 Or use the hardened registry Compose file with a persistent SQLite volume,

@@ -4,7 +4,7 @@
 
 The `publish-container` workflow builds the same Dockerfile for `linux/amd64`
 and `linux/arm64`, publishes it to
-`ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp`, attaches an SBOM and
+`ghcr.io/zad-tools/uaemcp`, attaches an SBOM and
 maximum-mode provenance, then runs the published amd64 image to verify its CLI
 version. Use `compose.ghcr.yml` for a registry-backed self-host with a persistent
 data volume and reduced container privileges.

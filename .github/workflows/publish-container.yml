@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  IMAGE_NAME: ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp
+  IMAGE_NAME: ghcr.io/zad-tools/uaemcp
 
 jobs:
   publish:

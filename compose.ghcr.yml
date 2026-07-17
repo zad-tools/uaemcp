@@ -1,6 +1,6 @@
 services:
   uaemcp:
-    image: ghcr.io/ahmedvnabil/open-emirates-intelligence-mcp:edge
+    image: ghcr.io/zad-tools/uaemcp:edge
     pull_policy: always
     restart: unless-stopped
     init: true
