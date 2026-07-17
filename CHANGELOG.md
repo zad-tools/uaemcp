@@ -10,6 +10,7 @@
 - Added a complete open-source contribution surface: conduct and support policies, structured bug/source/connector forms, a trust-focused pull-request checklist, repository labels and private vulnerability reporting.
 - Added Bun-native Dependabot updates, weekly CodeQL analysis, least-privilege CI permissions and a mandatory dependency audit in every local and hosted release check.
 - Removed CodeQL-identified ReDoS and incomplete-sanitization paths from URL assembly, ODS search, XML/RSS parsing and SPARQL validation; browser-script tests now use a deterministic HTML scanner.
+- Updated the Bun runtime and types to 1.3.14, TypeScript to 7.0.2, `ipaddr.js` to 2.4.0 and the verified GitHub Actions toolchain to current supported majors.
 
 ## 1.61.0
 
