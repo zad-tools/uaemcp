@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://uaemcp.zad.tools"><img src="https://img.shields.io/badge/LIVE-uaemcp.zad.tools-087443?style=flat-square" alt="Live instance"></a>
-  <a href="https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ahmedvnabil/Open-Emirates-Intelligence-MCP/ci.yml?style=flat-square&label=CI" alt="CI status"></a>
+  <a href="https://github.com/zad-tools/uaemcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/zad-tools/uaemcp/ci.yml?style=flat-square&label=CI" alt="CI status"></a>
   <a href="https://www.npmjs.com/package/uaemcp"><img src="https://img.shields.io/npm/v/uaemcp?style=flat-square&logo=npm" alt="npm version"></a>
   <img src="https://img.shields.io/badge/runtime-Bun-f1eddf?style=flat-square&logo=bun&logoColor=13251d" alt="Bun runtime">
   <img src="https://img.shields.io/badge/license-MIT-c34032?style=flat-square" alt="MIT license">
@@ -238,10 +238,10 @@ The Bun rewrite is currently newer than npm's `latest` tag. Until npm Trusted
 Publishing is connected, run the CI-tested `main` branch directly from GitHub:
 
 ```bash
-bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main --version
-bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main doctor
-bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main       # stdio MCP server
-bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP server at /mcp
+bunx --bun github:zad-tools/uaemcp#main --version
+bunx --bun github:zad-tools/uaemcp#main doctor
+bunx --bun github:zad-tools/uaemcp#main       # stdio MCP server
+bunx --bun github:zad-tools/uaemcp#main http # HTTP server at /mcp
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
@@ -254,7 +254,7 @@ MCP client configuration:
   "mcpServers": {
     "uae-intelligence": {
       "command": "bunx",
-      "args": ["--bun", "github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main"]
+      "args": ["--bun", "github:zad-tools/uaemcp#main"]
     }
   }
 }

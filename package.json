@@ -5,10 +5,10 @@
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP.git"
+    "url": "git+https://github.com/zad-tools/uaemcp.git"
   },
   "homepage": "https://uaemcp.zad.tools",
-  "bugs": "https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/issues",
+  "bugs": "https://github.com/zad-tools/uaemcp/issues",
   "license": "MIT",
   "type": "module",
   "bin": {
