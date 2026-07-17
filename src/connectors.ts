@@ -75,6 +75,12 @@ export interface Connector {
 
 const utcNow = (): string => new Date().toISOString().replace(/\.\d+Z$/, "Z");
 
+function withoutTrailingSlashes(value: string): string {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "/") end -= 1;
+  return value.slice(0, end);
+}
+
 function dig(payload: unknown, path: string[]): unknown {
   let node: unknown = payload;
   for (const key of path) {
@@ -181,12 +187,14 @@ async function fetchHttpJson(source: Source, opts: FetchOpts): Promise<FetchResu
 // ── OpenDataSoft ─────────────────────────────────────────────────────────────
 function odsApiBase(source: Source): string {
   const override = source.connector_config.api_base as string | undefined;
-  return (override ?? source.base_url.replace(/\/+$/, "") + "/api/explore/v2.1").replace(/\/+$/, "");
+  const base = override ?? `${withoutTrailingSlashes(source.base_url)}/api/explore/v2.1`;
+  return withoutTrailingSlashes(base);
 }
 
 function odsWhere(query?: string): Record<string, unknown> {
   if (!query) return {};
-  return { where: `search("${query.replace(/"/g, '\\"')}")` };
+  const escaped = JSON.stringify(query).slice(1, -1);
+  return { where: `search("${escaped}")` };
 }
 
 async function fetchOds(source: Source, opts: FetchOpts): Promise<FetchResult> {
@@ -223,8 +231,8 @@ async function odsDatasets(source: Source, opts: FetchOpts): Promise<DatasetRef[
 
 // ── CKAN ─────────────────────────────────────────────────────────────────────
 function ckanAction(source: Source, action: string): string {
-  const base = (source.connector_config.api_base as string | undefined) ?? source.base_url.replace(/\/+$/, "") + "/api/3/action";
-  return base.replace(/\/+$/, "") + "/" + action;
+  const base = (source.connector_config.api_base as string | undefined) ?? `${withoutTrailingSlashes(source.base_url)}/api/3/action`;
+  return `${withoutTrailingSlashes(base)}/${action}`;
 }
 
 async function fetchCkan(source: Source, opts: FetchOpts): Promise<FetchResult> {
@@ -271,7 +279,7 @@ async function ckanDatasets(source: Source, opts: FetchOpts): Promise<DatasetRef
 
 // ── ArcGIS ───────────────────────────────────────────────────────────────────
 function arcgisService(source: Source): string {
-  return String((source.connector_config.service_url as string | undefined) ?? fetchUrl(source)).replace(/\/+$/, "");
+  return withoutTrailingSlashes(String((source.connector_config.service_url as string | undefined) ?? fetchUrl(source)));
 }
 
 async function fetchArcgis(source: Source, opts: FetchOpts): Promise<FetchResult> {
@@ -398,9 +406,34 @@ async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> 
 }
 
 // ── XML / RSS ───────────────────────────────────────────────────────────────
+function unwrapCdata(value: string): string {
+  let output = "";
+  let cursor = 0;
+  while (cursor < value.length) {
+    const start = value.indexOf("<![CDATA[", cursor);
+    if (start < 0) return output + value.slice(cursor);
+    output += value.slice(cursor, start);
+    const end = value.indexOf("]]>", start + 9);
+    if (end < 0) throw new ValidationError("XML CDATA section is not closed");
+    output += value.slice(start + 9, end);
+    cursor = end + 3;
+  }
+  return output;
+}
+
+function stripXmlMarkup(value: string): string {
+  let output = "";
+  let insideTag = false;
+  for (const character of value) {
+    if (character === "<") insideTag = true;
+    else if (character === ">") insideTag = false;
+    else if (!insideTag) output += character;
+  }
+  return output;
+}
+
 function xmlDecode(value: string): string {
-  return value
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+  return unwrapCdata(value)
     .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'").replace(/&amp;/g, "&")
     .replace(/&#(\d+);/g, (_match, code) => String.fromCodePoint(Number(code)))
@@ -410,18 +443,47 @@ function xmlDecode(value: string): string {
 export function parseXmlRecords(xml: string, rowTag: string): Rec[] {
   if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new ValidationError("XML DOCTYPE and ENTITY declarations are not permitted");
   if (!/^[A-Za-z_][\w:.-]{0,63}$/.test(rowTag)) throw new ValidationError("XML row_tag is invalid");
-  const escaped = rowTag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const rows = [...xml.matchAll(new RegExp(`<${escaped}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${escaped}>`, "gi"))];
-  return rows.map((match) => {
+  const rows: string[] = [];
+  const open = `<${rowTag}`;
+  const close = `</${rowTag}>`;
+  let cursor = 0;
+  while (cursor < xml.length) {
+    let start = xml.indexOf(open, cursor);
+    while (start >= 0) {
+      const boundary = xml[start + open.length];
+      if (boundary === ">" || boundary === "/" || boundary === " " || boundary === "\t" || boundary === "\r" || boundary === "\n") break;
+      start = xml.indexOf(open, start + open.length);
+    }
+    if (start < 0) break;
+    const openingEnd = xml.indexOf(">", start + open.length);
+    if (openingEnd < 0) throw new ValidationError("XML row opening tag is not closed");
+    const end = xml.indexOf(close, openingEnd + 1);
+    if (end < 0) throw new ValidationError("XML row closing tag is missing");
+    rows.push(xml.slice(openingEnd + 1, end));
+    cursor = end + close.length;
+  }
+  return rows.map((body) => {
     const record: Rec = {};
-    const body = match[1];
-    const children = body.matchAll(/<([A-Za-z_][\w:.-]{0,63})(?:\s[^>]*)?>([\s\S]*?)<\/\1>/g);
-    for (const child of children) {
-      const key = child[1];
-      if (["__proto__", "prototype", "constructor"].includes(key)) continue;
-      const value = xmlDecode(child[2]).replace(/<[^>]+>/g, "").trim();
+    let childCursor = 0;
+    while (childCursor < body.length) {
+      const childStart = body.indexOf("<", childCursor);
+      if (childStart < 0 || body.startsWith("</", childStart)) break;
+      const childOpeningEnd = body.indexOf(">", childStart + 1);
+      if (childOpeningEnd < 0) break;
+      const rawName = body.slice(childStart + 1, childOpeningEnd).trim().split(/\s/, 1)[0];
+      const key = rawName.replace(/\/$/, "");
+      if (!/^[A-Za-z_][\w:.-]{0,63}$/.test(key)) { childCursor = childOpeningEnd + 1; continue; }
+      const childClose = `</${key}>`;
+      const childEnd = body.indexOf(childClose, childOpeningEnd + 1);
+      if (childEnd < 0) { childCursor = childOpeningEnd + 1; continue; }
+      if (["__proto__", "prototype", "constructor"].includes(key)) {
+        childCursor = childEnd + childClose.length;
+        continue;
+      }
+      const value = stripXmlMarkup(xmlDecode(body.slice(childOpeningEnd + 1, childEnd))).trim();
       if (record[key] === undefined) record[key] = value;
       else record[key] = Array.isArray(record[key]) ? [...record[key] as unknown[], value] : [record[key], value];
+      childCursor = childEnd + childClose.length;
     }
     return record;
   });
@@ -470,6 +532,7 @@ async function fetchGraphql(source: Source, opts: FetchOpts): Promise<FetchResul
 // ── SPARQL SELECT ────────────────────────────────────────────────────────────
 function boundedSparql(query: string, limit: number): string {
   const normalized = query.trim();
+  if (normalized.length > 10_000) throw new ValidationError("SPARQL query exceeds 10,000 characters");
   if (!/^(?:PREFIX\s+\S+:\s*<[^>]+>\s*)*SELECT\b/is.test(normalized)) throw new ValidationError("SPARQL connector only permits SELECT queries");
   if (/\b(?:INSERT|DELETE|LOAD|CLEAR|CREATE|DROP|COPY|MOVE|ADD|SERVICE)\b/i.test(normalized)) throw new ValidationError("SPARQL update and SERVICE clauses are not permitted");
   if (/\bLIMIT\s+\d+/i.test(normalized)) return normalized.replace(/\bLIMIT\s+(\d+)/i, (_match, value) => `LIMIT ${Math.min(Number(value), limit)}`);

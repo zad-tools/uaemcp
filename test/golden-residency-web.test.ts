@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { goldenResidencyPage } from "../src/golden-residency-web.js";
+import { inlineScripts } from "./support/html.js";
 
 describe("Golden Residency interface", () => {
   it("ships bilingual Dubai Font readiness guidance and a valid browser script", () => {
@@ -13,7 +14,7 @@ describe("Golden Residency interface", () => {
     expect(html).toContain("WHERE WILL YOU APPLY?");
     expect(html).toContain("LOCAL CRITERIA CHECK");
     expect(html).toContain("MutationObserver");
-    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
+    const scripts = inlineScripts(html);
     expect(scripts).toHaveLength(3);
     for (const script of scripts) expect(() => new Function(script)).not.toThrow();
   });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { founderPathwayPage } from "../src/founder-pathway-web.js";
+import { singleInlineScript } from "./support/html.js";
 
 describe("Founder Pathway web product", () => {
   it("ships a bilingual Dubai Font journey over the same REST contract", () => {
@@ -12,8 +13,6 @@ describe("Founder Pathway web product", () => {
     expect(html).toContain("printDossier");
     expect(html).toContain("action-progress");
     expect(html).toContain("session only");
-    const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
-    expect(script).toBeDefined();
-    expect(() => new Function(script ?? "")).not.toThrow();
+    expect(() => new Function(singleInlineScript(html))).not.toThrow();
   });
 });

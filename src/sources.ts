@@ -71,8 +71,14 @@ function src(p: Partial<Source> & Pick<Source, "id" | "name_en" | "name_ar" | "o
 }
 
 export function fetchUrl(s: Source): string {
+  let baseEnd = s.base_url.length;
+  while (baseEnd > 0 && s.base_url[baseEnd - 1] === "/") baseEnd -= 1;
+  let endpointStart = 0;
+  while (endpointStart < s.endpoint.length && s.endpoint[endpointStart] === "/") endpointStart += 1;
+  const baseUrl = s.base_url.slice(0, baseEnd);
+  const endpoint = s.endpoint.slice(endpointStart);
   return s.endpoint
-    ? s.base_url.replace(/\/+$/, "") + "/" + s.endpoint.replace(/^\/+/, "")
+    ? `${baseUrl}/${endpoint}`
     : s.base_url;
 }
 

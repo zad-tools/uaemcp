@@ -9,6 +9,7 @@
 - Made the pre-release Bun quickstart truthful by installing the tested GitHub branch while npm `latest` remains on the earlier implementation, and documented the exact token-free Trusted Publisher handoff.
 - Added a complete open-source contribution surface: conduct and support policies, structured bug/source/connector forms, a trust-focused pull-request checklist, repository labels and private vulnerability reporting.
 - Added Bun-native Dependabot updates, weekly CodeQL analysis, least-privilege CI permissions and a mandatory dependency audit in every local and hosted release check.
+- Removed CodeQL-identified ReDoS and incomplete-sanitization paths from URL assembly, ODS search, XML/RSS parsing and SPARQL validation; browser-script tests now use a deterministic HTML scanner.
 
 ## 1.61.0
 

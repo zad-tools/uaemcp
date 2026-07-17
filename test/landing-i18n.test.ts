@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { trustSummary } from "../src/manifest.js";
 import { landingPage } from "../src/web.js";
+import { singleInlineScript } from "./support/html.js";
 
 describe("bilingual landing page", () => {
   it("translates navigation, proof, workflow, catalog and interactive controls", () => {
@@ -21,9 +22,7 @@ describe("bilingual landing page", () => {
   });
 
   it("keeps the generated browser script syntactically valid", () => {
-    const script = landingPage().match(/<script>([\s\S]*)<\/script>/)?.[1];
-    expect(script).toBeDefined();
-    expect(() => new Function(script ?? "")).not.toThrow();
+    expect(() => new Function(singleInlineScript(landingPage()))).not.toThrow();
   });
 
   it("renders the current trust contract instead of stale brand metrics", () => {

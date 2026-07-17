@@ -70,6 +70,12 @@ describe("ods connector", () => {
     expect(r.records).toEqual([{ year: 2024, value: 7 }]);
     expect(r.data_quality.confidence).toBeGreaterThanOrEqual(0.9);
   });
+  it("escapes ODS search expressions as a JSON string literal", async () => {
+    mockGetJson.mockResolvedValue({ total_count: 0, results: [] });
+    await fetchResult(src, { dataset: "roads", query: 'clinic\\" ) OR true', limit: 10 });
+    const params = mockGetJson.mock.calls[0][1] as Record<string, string>;
+    expect(params.where).toBe('search("clinic\\\\\\\" ) OR true")');
+  });
   it("without dataset returns empty, not error", async () => {
     const r = await fetchResult(src, { limit: 10 });
     expect(r.records).toEqual([]);
@@ -173,6 +179,10 @@ describe("sparql connector", () => {
     await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "SELECT * WHERE { SERVICE <https://x> { ?s ?p ?o } }" } }))).rejects.toThrow("SERVICE");
     await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "SELECT * WHERE { ?s ?p ?o }" } }), { query: "SELECT * WHERE {}" })).rejects.toThrow("does not accept arbitrary");
   });
+  it("rejects oversized configured queries before regular-expression validation", async () => {
+    const oversized = `SELECT * WHERE { ${"?s ?p ?o . ".repeat(1_000)} }`;
+    await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: oversized } }))).rejects.toThrow("10,000");
+  });
 });
 
 describe("xlsx connector", () => {
@@ -260,6 +270,10 @@ describe("XML and RSS connectors", () => {
       { title: "Hospital & Lab", count: "7" },
     ]);
     expect(() => parseXmlRecords('<!DOCTYPE x [<!ENTITY ext SYSTEM "file:///etc/passwd">]><x/>', "item")).toThrow("DOCTYPE");
+  });
+  it("matches exact row tags and strips nested markup with a bounded scanner", () => {
+    const input = "<feed><itemized><title>wrong</title></itemized><item><title>Clinic <b>One</b></title><constructor>blocked</constructor></item></feed>";
+    expect(parseXmlRecords(input, "item")).toEqual([{ title: "Clinic One" }]);
   });
   it("fetches RSS/XML, searches and paginates", async () => {
     mockGetText.mockResolvedValue(xml);

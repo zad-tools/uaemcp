@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { businessSetupPage } from "../src/business-setup-web.js";
+import { singleInlineScript } from "./support/html.js";
 
 describe("Business Setup interface", () => {
   it("ships bilingual Dubai Font routing with a valid browser script", () => {
@@ -8,7 +9,6 @@ describe("Business Setup interface", () => {
     expect(html).toContain("دليل تأسيس الأعمال");
     expect(html).toContain("/api/v1/business-setup/route");
     expect(html).toContain('id="lang"');
-    const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
-    expect(() => new Function(script ?? "")).not.toThrow();
+    expect(() => new Function(singleInlineScript(html))).not.toThrow();
   });
 });
