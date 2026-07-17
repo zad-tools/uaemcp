@@ -134,6 +134,13 @@ const PRODUCTS: readonly PublicProduct[] = Object.freeze([
     },
   },
   {
+    id: "ajman_urban_evidence", status: "published", access: "public", category: "URBAN / SERIES", categoryAr: "العمران / السلاسل",
+    title: { en: "Ajman Urban Evidence", ar: "أدلة التطور الحضري في عجمان" },
+    description: { en: "Inspect bounded observations of official building permissions, certified rent contracts, new-road length and developed crossroads in their source-native units.", ar: "افحص مشاهدات محدودة من البيانات الرسمية لتراخيص البناء وعقود الإيجار المصدقة وطول الطرق الجديدة والتقاطعات المطورة بوحداتها الأصلية." },
+    webPath: "/ajman-urban", apiPath: "/api/v1/ajman-urban", sourceIds: ["ajman_data_portal"],
+    evidence: { scope: { en: "Six distinct live datasets published through the official Ajman Data portal.", ar: "ست مجموعات بيانات حية ومستقلة منشورة عبر بوابة بيانات عجمان الرسمية." }, limitations: [{ en: "Building, rent and road measures stay separate and are not a property index, investment return or composite growth score.", ar: "تبقى مقاييس البناء والإيجار والطرق منفصلة وليست مؤشرًا عقاريًا أو عائدًا استثماريًا أو درجة نمو مركبة." }] },
+  },
+  {
     id: "industry_atlas",
     status: "published",
     access: "public",

@@ -5,7 +5,7 @@
     @font-face{font-family:Dubai;src:url('../assets/fonts/Dubai-Regular.woff')}text{font-family:Dubai,Arial,sans-serif}.small{font:12px monospace;letter-spacing:1.5px}.title{font-size:48px;font-weight:700}.label{font-size:19px;font-weight:700}.note{font-size:14px}.route{stroke-dasharray:10 12;animation:flow 5s linear infinite}.pulse{animation:pulse 2.4s ease-in-out infinite}.b{animation-delay:.8s}.c{animation-delay:1.6s}@keyframes flow{to{stroke-dashoffset:-88}}@keyframes pulse{50%{r:10;opacity:.35}}@media(prefers-reduced-motion:reduce){.route,.pulse{animation:none}}
   </style>
   <rect width="1200" height="460" fill="#f1eddf"/><rect x="0" y="0" width="1200" height="74" fill="#173d2d"/>
-  <text x="48" y="47" fill="#f1eddf" class="small">OPEN EMIRATES INTELLIGENCE / AJMAN / 1.62.0</text>
+  <text x="48" y="47" fill="#f1eddf" class="small">OPEN EMIRATES INTELLIGENCE / AJMAN / 1.63.0</text>
   <text x="48" y="142" fill="#10271e" class="title">THREE VIEWS. NEVER ONE TOTAL.</text>
   <g transform="translate(48 190)"><rect width="270" height="150" fill="#173d2d"/><text x="24" y="38" fill="#cbb56f" class="small">01 / ACTIVITY VIEW</text><text x="24" y="81" fill="#f1eddf" class="label">Activities + licence types</text><text x="24" y="112" fill="#c4d2ca" class="note">Bounded official sample</text></g>
   <g transform="translate(465 190)"><rect width="270" height="150" fill="#173d2d"/><text x="24" y="38" fill="#cbb56f" class="small">02 / AREA VIEW</text><text x="24" y="81" fill="#f1eddf" class="label">Areas + licence types</text><text x="24" y="112" fill="#c4d2ca" class="note">Bounded official sample</text></g>

@@ -21,6 +21,7 @@ public final class UaemcpClient {
  public String getIndustryChange(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas/change",params);}
  public String getTradeFlowRadar(Map<String,String> params) throws Exception {return get("/api/v1/trade-flow",params);}
  public String getAjmanBusinessEvidence(Map<String,String> params) throws Exception {return get("/api/v1/ajman-business",params);}
+ public String getAjmanUrbanEvidence(Map<String,String> params) throws Exception {return get("/api/v1/ajman-urban",params);}
  public String getTaxServiceActivity2025(Map<String,String> params) throws Exception {return get("/api/v1/tax-services",params);}
  public String getTaxServiceArchive(Map<String,String> params) throws Exception {return get("/api/v1/tax-services/archive",params);}
  public String listSources(Map<String,String> params) throws Exception {return get("/api/v1/sources",params);}

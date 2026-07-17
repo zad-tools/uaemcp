@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.63 — Ajman urban evidence — complete
+
+- Six official building, certified-rent and road datasets exposed as separate source-native series
+- Bounded 100-row observations with explicit per-dataset coverage ratios
+- Explicit units, lineage and no cross-dataset property or growth score
+- Bilingual Dubai Font explorer and animated README evidence diagram
+
 ## v1.62 — Ajman business evidence — complete
 
 - Three separately ranked official Ajman licence-data views for activity, area and published status

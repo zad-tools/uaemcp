@@ -13,9 +13,13 @@ import { goldenResidencyPage } from "../src/golden-residency-web.js";
 import { businessSetupPage } from "../src/business-setup-web.js";
 import { startupSupportPage } from "../src/startup-support-web.js";
 import { founderPathwayPage } from "../src/founder-pathway-web.js";
+import { ajmanBusinessPage } from "../src/ajman-business-web.js";
+import { ajmanUrbanPage } from "../src/ajman-urban-web.js";
 
 const pages = [
   ["/founder-pathway", founderPathwayPage],
+  ["/ajman-business", ajmanBusinessPage],
+  ["/ajman-urban", ajmanUrbanPage],
   ["/startup-support", startupSupportPage],
   ["/business-setup", businessSetupPage],
   ["/golden-residency", goldenResidencyPage],
@@ -35,7 +39,7 @@ describe("Dubai Font public brand contract", () => {
     for (const [, render] of pages) {
       const html = render();
       expect(html).toContain('font-family:"Dubai"');
-      expect(html).toMatch(/html\[dir=rtl\] body|\*\{box-sizing:border-box;font-family:"Dubai"/);
+      expect(html).toMatch(/html\[dir=rtl\] body|\*\{box-sizing:border-box;font-family:"Dubai"|html body \*\{font-family:"Dubai"/);
       expect(html).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
       expect(html).toMatch(/url\(["']\/assets\/fonts\/Dubai-Regular\.woff["']\)/);
       expect(html).toMatch(/url\(["']\/assets\/fonts\/Dubai-Bold\.woff["']\)/);

@@ -30,6 +30,7 @@ import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
+import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
@@ -214,6 +215,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     async ({ query, limit }) => {
       try {
         const product = await loadAjmanBusinessProduct(dependencies.fetchAjmanBusinessRecords ?? fetchResult, limit, query);
+        return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_ajman_urban_evidence",
+    {
+      description: "Read six distinct official Ajman building, certified-rent and road datasets as source-native annual series. Measures remain separate and are not a property index, investment return or growth score.",
+      inputSchema: { limit: z.number().int().min(1).max(100).default(100) },
+    },
+    async ({ limit }) => {
+      try {
+        const product = await loadAjmanUrbanProduct(dependencies.fetchAjmanUrbanRecords ?? fetchResult, limit);
         return text(ok(product.data, product.meta));
       } catch (error) { return text(fail(error)); }
     },

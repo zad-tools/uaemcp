@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.63.0
+
+- Added Ajman Urban Evidence over six official building, certified-rent, road-length and developed-crossroad datasets.
+- Preserved every dataset and unit as a separate bounded annual observation instead of producing a misleading property or urban-growth composite.
+- Added `/ajman-urban`, `/api/v1/ajman-urban` and the read-only `uae_ajman_urban_evidence` MCP tool with OpenAPI, SDK and trust-manifest discovery.
+- Corrected source rows whose Arabic and English building-license labels are published in swapped fields.
+- Added a bilingual RTL Dubai Font interface and animated README evidence diagram.
+
 ## 1.62.0
 
 - Added the Ajman Business Evidence Explorer over three official OpenDataSoft licence views for activities, areas and published company status.
