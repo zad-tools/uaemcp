@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { healthIndicatorsPage } from "../src/health-indicators-web.js";
 import { industryAtlasPage } from "../src/industry-atlas-web.js";
 import { observatoryPage } from "../src/observatory-web.js";
@@ -69,15 +69,22 @@ describe("Dubai Font public brand contract", () => {
   });
 
   it("serves both Dubai Font weights for GET and HEAD requests", async () => {
-    for (const path of ["/assets/fonts/Dubai-Regular.woff", "/assets/fonts/Dubai-Bold.woff"]) {
-      const getResponse = await handleRest(new Request(`http://localhost${path}`));
-      expect(getResponse?.status).toBe(200);
-      expect(getResponse?.headers.get("content-type")).toBe("font/woff");
+    const fetchFont = (async (_: URL | RequestInfo, init?: RequestInit) => new Response(init?.method === "HEAD" ? null : new Uint8Array([1, 2, 3]), { headers: { "content-type": "font/woff" } })) as typeof fetch;
+    const upstream = vi.spyOn(globalThis, "fetch").mockImplementation(fetchFont);
+    try {
+      for (const path of ["/assets/fonts/Dubai-Regular.woff", "/assets/fonts/Dubai-Bold.woff"]) {
+        const getResponse = await handleRest(new Request(`http://localhost${path}`));
+        expect(getResponse?.status).toBe(200);
+        expect(getResponse?.headers.get("content-type")).toBe("font/woff");
 
-      const headResponse = await handleRest(new Request(`http://localhost${path}`, { method: "HEAD" }));
-      expect(headResponse?.status).toBe(200);
-      expect(headResponse?.headers.get("content-type")).toBe("font/woff");
-      expect(await headResponse?.text()).toBe("");
+        const headResponse = await handleRest(new Request(`http://localhost${path}`, { method: "HEAD" }));
+        expect(headResponse?.status).toBe(200);
+        expect(headResponse?.headers.get("content-type")).toBe("font/woff");
+        expect(await headResponse?.text()).toBe("");
+      }
+      expect(upstream).toHaveBeenCalledTimes(4);
+    } finally {
+      upstream.mockRestore();
     }
   });
 });
