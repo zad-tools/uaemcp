@@ -32,7 +32,7 @@ export interface DashboardSummary {
   cached: boolean;
 }
 
-function withTimeout(source: Source): Promise<HealthResult> {
+function withTimeout(source: Source, healthCheck: typeof checkHealth): Promise<HealthResult> {
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       resolve({
@@ -44,7 +44,7 @@ function withTimeout(source: Source): Promise<HealthResult> {
         latency_ms: SETTINGS.healthTimeoutMs,
       });
     }, SETTINGS.healthTimeoutMs);
-    checkHealth(source)
+    healthCheck(source)
       .then((r) => {
         clearTimeout(timer);
         resolve(r);
@@ -64,7 +64,7 @@ function withTimeout(source: Source): Promise<HealthResult> {
 }
 
 export async function buildDashboardSummary(
-  opts: { useCache?: boolean; now?: number; recordHistory?: boolean } = {},
+  opts: { useCache?: boolean; now?: number; recordHistory?: boolean; healthCheck?: typeof checkHealth } = {},
 ): Promise<DashboardSummary> {
   const useCache = opts.useCache ?? true;
   const now = opts.now ?? Date.now();
@@ -74,7 +74,7 @@ export async function buildDashboardSummary(
 
   const started = Date.now();
   const sources = REGISTRY.list();
-  const checks = await Promise.all(sources.map((s) => withTimeout(s)));
+  const checks = await Promise.all(sources.map((s) => withTimeout(s, opts.healthCheck ?? checkHealth)));
   if (opts.recordHistory) checks.forEach((check) => reliabilityStore().recordHealth(check));
 
   const statusCounts: Record<string, number> = {};

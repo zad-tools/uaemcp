@@ -21,10 +21,10 @@ function bump(map: Map<string, number>, key: unknown): void {
   if (typeof key === "string" && key) map.set(key, (map.get(key) ?? 0) + 1);
 }
 
-export async function buildMarketSnapshot(topic: string, limit = 100) {
+export async function buildMarketSnapshot(topic: string, limit = 100, recordFetcher: typeof fetchRecords = fetchRecords) {
   const sourceId = TOPIC_SOURCE[topic.toLowerCase().trim()] ?? "moiat_industrial_licenses";
   const source = REGISTRY.get(sourceId);
-  const records = await fetchRecords(source, { limit });
+  const records = await recordFetcher(source, { limit });
 
   const emirates = new Map<string, number>();
   const areas = new Map<string, number>();
