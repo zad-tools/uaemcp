@@ -24,4 +24,22 @@ describe("National Evidence Brief REST contract", () => {
     const response = await handleRest(new Request("http://localhost/api/v1/national-brief?industry_limit=0"));
     expect(response?.status).toBe(422);
   });
+
+  it("accepts the emirate ids emitted by the web form and filters the industry pillar", async () => {
+    const response = await handleRest(new Request("http://localhost/api/v1/national-brief?emirate=abu_dhabi"), {
+      fetchHealthRecords: async () => fixtureResult("mohap_health_core_indicators_2024", [{ "Indicator Name": "Doctors", "2023": 10 }]),
+      fetchIndustryRecords: async () => fixtureResult("moiat_industrial_licenses", [
+        { CompanyName: "A", EmirateNameEN: "Abu Dhabi", Products: [] },
+        { CompanyName: "B", EmirateNameEN: "Dubai", Products: [] },
+      ]),
+      fetchTaxRecords: async () => fixtureResult("fta_service_activity_2025", [{ Service_Name_EN: "Grand Total", Q1: 5, Q2: 5, Q3: 5, Q4: 5, "Grand Total": 20 }]),
+    });
+    const body = await response?.json();
+    const industry = body.data.pillars.find((pillar: { id: string }) => pillar.id === "industry");
+
+    expect(response?.status).toBe(200);
+    expect(body.meta.filters.emirate).toBe("abu_dhabi");
+    expect(industry.data.scope.sampleSize).toBe(1);
+    expect(industry.data.emirates).toEqual([expect.objectContaining({ id: "abu_dhabi", establishments: 1 })]);
+  });
 });

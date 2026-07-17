@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 34 source-cited
-MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 35 source-cited
+MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -65,6 +65,18 @@ period, unit and limitations. It never adds the pillars together, ranks them or
 invents a composite national score. Use the [hosted page](https://uaemcp.zad.tools/national-brief),
 the REST endpoint, or the `uae_national_evidence_brief` MCP tool. See the
 [MCP client setup guide](docs/MCP_CLIENTS.md) for tested connection patterns.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/health-facilities"><img src="docs/assets/health-facilities-motion.svg" alt="Animated UAE Health Facilities Atlas showing official aggregate counts from 2015 to 2024" width="100%"></a>
+</p>
+
+The **UAE Health Facilities Atlas** exposes 950 official MOHAP aggregate rows
+covering 2015–2024, all seven emirates, government/private sectors and 42 raw
+facility-type labels. The default 2024 slice contains 120 rows and a reported
+count of 7,392. These are not individual facility locations, beds, capacity,
+workforce, accessibility or quality measurements. Use the
+[hosted atlas](https://uaemcp.zad.tools/health-facilities), REST, or
+`uae_health_facilities_atlas`.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/founder-pathway"><img src="docs/assets/founder-pathway.svg" alt="Animated UAE Founder Pathway from official setup to support and residency readiness" width="100%"></a>
@@ -143,7 +155,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.64.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.65.0` or newer.
 
 MCP client configuration:
 
@@ -184,7 +196,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.64.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.65.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -220,6 +232,7 @@ Endpoints:
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — normalized bilingual official place-name search and mapped FGIC evidence; API at `GET /api/v1/places`
 - UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
+- UAE Health Facilities Atlas: `GET /health-facilities` — 950 aggregate MOHAP rows for 2015–2024, explicitly not a facility directory, beds, capacity or quality
 - UAE Education Ledger: `GET /education` — FCSC-accredited 2023/2024 national totals, reconciliation checks and the separate seven-resource Ministry of Education catalogue
 - UAE Golden Residency Navigator: `GET /golden-residency` — 14 official routes with direct category pages at ICP/GDRFA/ADRO, federal-vs-local criteria warnings and a printable non-identifying readiness dossier
 
@@ -321,9 +334,10 @@ language. It is included in the main release check.
 | --- | --- |
 | `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
 | `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
+| `uae_health_facilities_atlas` | Explore official 2015–2024 aggregate facility counts by year, emirate, sector, category and type without inferring capacity or quality |
 | `uae_golden_residency` | Explore official Golden Residency pathways or assess non-identifying evidence readiness without determining eligibility |
 | `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |
-| `uae_sources_list` | List the 40 registered official sources |
+| `uae_sources_list` | List the 41 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -366,7 +380,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 40 official sources indexed, 8 live record
+Current conservative coverage is 41 official sources indexed, 9 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

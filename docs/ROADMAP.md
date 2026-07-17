@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.65 — National health facilities evidence — complete
+
+- 950 official aggregate MOHAP rows covering 2015–2024 and all seven emirates
+- Year, emirate, sector, category and bilingual facility-type filtering
+- Live workbook delivery with verified snapshot fallback and explicit stale-metadata warning
+- No facility-directory, coordinates, beds, capacity, access, quality or performance claims
+- Bilingual Dubai Font atlas, REST, MCP tool, methodology resource and generated SDK support
+
 ## v1.64 — National Evidence Brief — complete
 
 - Four official education, health, industry and tax-activity evidence pillars in one national surface

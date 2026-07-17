@@ -40,6 +40,9 @@ import { ajmanUrbanPage } from "./ajman-urban-web.js";
 import { listProducts } from "./products.js";
 import { healthIndicatorsPage } from "./health-indicators-web.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
+import { healthFacilitiesPage } from "./health-facilities-web.js";
+import { loadHealthFacilitiesAtlas } from "./health-facilities-service.js";
+import { HEALTH_FACILITY_EMIRATES, HEALTH_FACILITY_SECTORS, HEALTH_FACILITY_YEARS } from "./health-facilities.js";
 import { buildEducationLedger } from "./education-ledger.js";
 import { educationLedgerPage } from "./education-ledger-web.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS, type GoldenReadinessInput } from "./golden-residency.js";
@@ -115,6 +118,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/ajman-business") return new Response(ajmanBusinessPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/ajman-urban") return new Response(ajmanUrbanPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/health-facilities") return new Response(healthFacilitiesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/business-setup") return new Response(businessSetupPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
@@ -225,6 +229,23 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
         query: optional(url.searchParams, "q"), limit,
       });
       return json(envelope(loaded.report, loaded.meta));
+    }
+    if (request.method === "GET" && path === "/api/v1/health-facilities") {
+      const year = Number(url.searchParams.get("year") ?? 2024);
+      if (!HEALTH_FACILITY_YEARS.includes(year as typeof HEALTH_FACILITY_YEARS[number])) throw new ValidationError("year must be an integer from 2015 to 2024");
+      const emirate = optional(url.searchParams, "emirate");
+      if (emirate && !HEALTH_FACILITY_EMIRATES.includes(emirate as typeof HEALTH_FACILITY_EMIRATES[number])) throw new ValidationError("emirate is invalid");
+      const sector = optional(url.searchParams, "sector");
+      if (sector && !HEALTH_FACILITY_SECTORS.includes(sector as typeof HEALTH_FACILITY_SECTORS[number])) throw new ValidationError("sector is invalid");
+      const category = optional(url.searchParams, "category");
+      const facilityType = optional(url.searchParams, "facility_type");
+      const query = optional(url.searchParams, "q");
+      for (const [key, value] of [["category", category], ["facility_type", facilityType], ["q", query]] as const) if (value && value.length > 100) throw new ValidationError(`${key} must contain at most 100 characters`);
+      const rawLimit = url.searchParams.get("limit");
+      if (rawLimit !== null && (!/^\d+$/.test(rawLimit) || Number(rawLimit) < 1 || Number(rawLimit) > 200)) throw new ValidationError("limit must be an integer from 1 to 200");
+      const rowLimit = rawLimit === null ? 100 : Number(rawLimit);
+      const loaded = await loadHealthFacilitiesAtlas(dependencies.fetchHealthFacilitiesRecords ?? fetchResult, { year, emirate, sector: sector as "Government" | "Private" | undefined, category, facilityType, query, rowLimit });
+      return json(envelope(loaded.data, loaded.meta));
     }
     if (request.method === "GET" && path === "/api/v1/education") {
       const ledger = buildEducationLedger();

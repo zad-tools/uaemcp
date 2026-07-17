@@ -33,6 +33,8 @@ import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
 import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
+import { loadHealthFacilitiesAtlas } from "./health-facilities-service.js";
+import { HEALTH_FACILITY_EMIRATES, HEALTH_FACILITY_SECTORS, HEALTH_FACILITY_YEARS } from "./health-facilities.js";
 import { buildEducationLedger } from "./education-ledger.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
 import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup } from "./business-setup.js";
@@ -245,6 +247,20 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
       try {
         const result = await loadNationalEvidenceBrief({ healthLimit, industryLimit, emirate, query }, { fetchHealthRecords: dependencies.fetchHealthRecords, fetchIndustryRecords: dependencies.fetchIndustryRecords, fetchTaxRecords: dependencies.fetchTaxRecords });
         return text(ok(result.data, result.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_health_facilities_atlas",
+    {
+      description: "Explore official MOHAP aggregate facility counts for 2015–2024 by emirate, sector, category and type. Rows are not individual facilities; results do not measure beds, capacity, access or quality.",
+      inputSchema: { year: z.enum(HEALTH_FACILITY_YEARS.map(String) as [string, ...string[]]).default("2024"), emirate: z.enum(HEALTH_FACILITY_EMIRATES).optional(), sector: z.enum(HEALTH_FACILITY_SECTORS).optional(), category: z.string().trim().max(100).optional(), facilityType: z.string().trim().max(100).optional(), query: z.string().trim().max(100).optional(), limit: z.number().int().min(1).max(200).default(100) },
+    },
+    async ({ year, emirate, sector, category, facilityType, query, limit }) => {
+      try {
+        const loaded = await loadHealthFacilitiesAtlas(dependencies.fetchHealthFacilitiesRecords ?? fetchResult, { year: Number(year), emirate, sector, category, facilityType, query, rowLimit: limit });
+        return text(ok(loaded.data, loaded.meta));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -671,6 +687,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "health_facilities_atlas_methodology",
+    "uae://health-facilities/methodology",
+    { title: "UAE Health Facilities Atlas methodology", description: "Aggregate observation grain, filters, evidence boundaries and prohibited interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ period: "2015–2024", grain: ["year", "emirate", "sector", "main_category", "facility_type"], unit: "published aggregate facility count", individualFacilityDirectory: false, coordinates: "emirate reference points only", prohibitedClaims: ["beds", "capacity", "workforce", "accessibility", "quality", "health outcomes", "best emirate"], metadataWarning: "Embedded metadata says 2015–2022/updated 2022 while data includes 2023–2024." }) }] }),
+  );
 
   server.registerResource(
     "national_evidence_brief_methodology",

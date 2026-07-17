@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.65.0
+
+- Added the UAE Health Facilities Atlas over 950 official MOHAP aggregate rows covering 2015–2024.
+- Added year, emirate, sector, category and bilingual type search while preserving raw taxonomy and aggregate observation grain.
+- Added `/health-facilities`, `/api/v1/health-facilities`, `uae_health_facilities_atlas` and `uae://health-facilities/methodology`.
+- Added a SHA-256-identified verified snapshot fallback so upstream blocking never becomes a false zero.
+- Explicitly excluded individual-location, bed, capacity, workforce, accessibility, quality and performance claims.
+- Added a bilingual RTL Dubai Font interface and animated README evidence visual.
+
 ## 1.64.0
 
 - Added the UAE National Evidence Brief across education, health, industry and FTA service activity.

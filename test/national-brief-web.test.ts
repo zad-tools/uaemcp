@@ -8,6 +8,9 @@ describe("National Evidence Brief interface", () => {
     expect(html).toContain('font-family:"Dubai"');
     expect(html).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
     expect(html).toContain("موجز الأدلة الوطني للإمارات");
+    expect(html).toContain('<option value="abu_dhabi">Abu Dhabi</option>');
+    expect(html).toContain('<option value="ras_al_khaimah">Ras Al Khaimah</option>');
+    expect(html).not.toContain("<option>Abu Dhabi</option>");
     expect(() => new Function(singleInlineScript(html))).not.toThrow();
   });
 });

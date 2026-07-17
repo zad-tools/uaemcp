@@ -33,7 +33,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(health).toEqual({ status: "alive", runtime: "bun" });
     expect(ready.status).toBe("ready");
-    expect(ready.sources).toBe(40);
+    expect(ready.sources).toBe(41);
     expect(metrics).toContain("uaemcp_http_requests_total");
     expect(metrics).toContain("uaemcp_http_responses_total{outcome=\"success\"}");
     expect(metrics).toContain("uaemcp_http_request_duration_seconds_sum");
@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.64.0",
+      version: "1.65.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -100,6 +100,7 @@ describe("Bun HTTP runtime", () => {
       "uae_entity_resolve",
       "uae_golden_residency",
       "uae_health_indicators",
+      "uae_health_facilities_atlas",
       "uae_place_names",
       "uae_observatory",
       "uae_industry_atlas",
@@ -115,21 +116,21 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.meta).toEqual({ total: 15, published: 15 });
+    expect(body.meta).toEqual({ total: 16, published: 16 });
     expect(body.data.map((product: { id: string }) => product.id)).toEqual([
-      "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
   });
 
   it("publishes the product registry as addressable MCP context", async () => {
     const listed = await rpc("resources/list");
     const templates = await rpc("resources/templates/list");
-    expect(listed.payload.result.resources).toHaveLength(8);
+    expect(listed.payload.result.resources).toHaveLength(9);
     expect(templates.payload.result.resourceTemplates).toHaveLength(2);
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
     const { payload } = await rpc("resources/read", { uri: "uae://products" });
     const body = JSON.parse(payload.result.contents[0].text);
-    expect(body.total).toBe(15);
+    expect(body.total).toBe(16);
     expect(body.products[0].id).toBe("founder_pathway");
   });
 
@@ -137,7 +138,7 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_observatory", arguments: { action: "report" } });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.data).toMatchObject({ monitoredSources: 40, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(body.data).toMatchObject({ monitoredSources: 41, currentStatus: expect.any(Object), incidents: expect.any(Object) });
   });
 
   it("exposes the industrial change-monitor state without fabricating history", async () => {

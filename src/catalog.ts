@@ -75,7 +75,7 @@ export function coverageSummary(): Record<string, unknown> {
     blockedConnectors: count("blocked"),
     keyRequiredPortals: count("key_required"),
     metadataOnlyPortals: count("metadata_only"),
-    queryableDatasetsKnownMinimum: 216,
+    queryableDatasetsKnownMinimum: 217,
     note: "Queryable dataset counts are conservative and never inferred from metadata-only portals.",
   };
 }

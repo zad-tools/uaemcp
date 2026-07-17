@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 40 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(40);
+  it("lists 41 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(41);
   });
 
   it("registers the official FGIC National Gazetteer as a live geospatial source", () => {

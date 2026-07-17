@@ -69,4 +69,25 @@ describe("national brief service", () => {
     expect(healthLimit).toBe(200);
     expect(industryLimit).toBe(100);
   });
+
+  it("accepts the public emirate id and applies it only to the industry pillar", async () => {
+    const mixedIndustry = async () => result("moiat_industrial_licenses", [
+      { ID: "auh", CompanyName: "Abu Dhabi Factory", EmirateNameEN: "Abu Dhabi", Products: [] },
+      { ID: "dxb", CompanyName: "Dubai Factory", EmirateNameAR: "دبي", Products: [] },
+    ]);
+    const loaded = await loadNationalEvidenceBrief({ emirate: "abu_dhabi" }, {
+      fetchHealthRecords: health as any,
+      fetchIndustryRecords: mixedIndustry as any,
+      fetchTaxRecords: tax as any,
+    });
+    const education = loaded.data.pillars.find((pillar) => pillar.id === "education");
+    const industryPillar = loaded.data.pillars.find((pillar) => pillar.id === "industry");
+
+    expect((industryPillar?.data as any).filters.emirate).toBe("abu_dhabi");
+    expect((industryPillar?.data as any).scope.sampleSize).toBe(1);
+    expect((industryPillar?.data as any).emirates).toEqual([
+      expect.objectContaining({ id: "abu_dhabi", establishments: 1 }),
+    ]);
+    expect((education?.data as any).snapshot.generalEducation.total).toBe(1_811_145);
+  });
 });
