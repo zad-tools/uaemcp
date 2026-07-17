@@ -98,7 +98,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.56.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.56.1" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -152,7 +152,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.56.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.56.1" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");
     expect(manifest.tools.read).toContain("uae_products_list");

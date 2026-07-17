@@ -41,12 +41,20 @@ describe("Dubai Font public brand contract", () => {
     }
   });
 
+  it("loads the tax activity font from the same trusted origin", async () => {
+    const html = taxServicesPage();
+    expect(html).toContain('url("/assets/fonts/Dubai-Regular.woff")');
+    expect(html).toContain('url("/assets/fonts/Dubai-Bold.woff")');
+    const response = await handleRest(new Request("http://localhost/tax-services"));
+    expect(response?.headers.get("content-security-policy")).toContain("font-src 'self'");
+  });
+
   it("allows the Dubai Font origin in every public interface CSP", async () => {
     for (const [path] of pages) {
       const response = await handleRest(new Request(`http://localhost${path}`));
       expect(response?.status).toBe(200);
       expect(response?.headers.get("content-security-policy")).toContain("font-src");
-      expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
+      if (path !== "/tax-services") expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
     }
   });
 });
