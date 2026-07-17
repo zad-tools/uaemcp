@@ -33,7 +33,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(health).toEqual({ status: "alive", runtime: "bun" });
     expect(ready.status).toBe("ready");
-    expect(ready.sources).toBe(37);
+    expect(ready.sources).toBe(38);
     expect(metrics).toContain("uaemcp_http_requests_total");
     expect(metrics).toContain("uaemcp_http_responses_total{outcome=\"success\"}");
     expect(metrics).toContain("uaemcp_http_request_duration_seconds_sum");
@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.48.0",
+      version: "1.49.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -93,6 +93,7 @@ describe("Bun HTTP runtime", () => {
       "uae_spatial_join",
       "uae_indicator",
       "uae_entity_resolve",
+      "uae_health_indicators",
       "uae_observatory",
       "uae_industry_atlas",
       "uae_tax_service_activity",
@@ -105,9 +106,9 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.meta).toEqual({ total: 6, published: 6 });
+    expect(body.meta).toEqual({ total: 7, published: 7 });
     expect(body.data.map((product: { id: string }) => product.id)).toEqual([
-      "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "health_indicators", "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
   });
 
@@ -119,15 +120,15 @@ describe("Bun HTTP runtime", () => {
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
     const { payload } = await rpc("resources/read", { uri: "uae://products" });
     const body = JSON.parse(payload.result.contents[0].text);
-    expect(body.total).toBe(6);
-    expect(body.products[0].id).toBe("trade_flow_radar");
+    expect(body.total).toBe(7);
+    expect(body.products[0].id).toBe("health_indicators");
   });
 
   it("exposes the observatory through MCP without triggering upstream probes", async () => {
     const { payload } = await rpc("tools/call", { name: "uae_observatory", arguments: { action: "report" } });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.data).toMatchObject({ monitoredSources: 37, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(body.data).toMatchObject({ monitoredSources: 38, currentStatus: expect.any(Object), incidents: expect.any(Object) });
   });
 
   it("exposes the industrial change-monitor state without fabricating history", async () => {

@@ -19,6 +19,27 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "health_indicators",
+    status: "published",
+    access: "public",
+    category: "HEALTH / SERIES",
+    categoryAr: "الصحة / السلاسل الزمنية",
+    title: { en: "UAE Health Indicators", ar: "مؤشرات الصحة في الإمارات" },
+    description: {
+      en: "Inspect official MOHAP health indicator rows across the workbook's visible year columns without undocumented normalization.",
+      ar: "افحص صفوف مؤشرات الصحة الرسمية عبر السنوات الظاهرة في ملف الوزارة دون تطبيع غير موثق.",
+    },
+    webPath: "/health-indicators",
+    apiPath: "/api/v1/health-indicators",
+    sourceIds: ["mohap_health_core_indicators_2024"],
+    evidence: {
+      scope: { en: "111 source-native indicator rows from the official MOHAP 2024 workbook.", ar: "111 صف مؤشر بقيمها الأصلية من ملف وزارة الصحة الرسمي المنشور لعام 2024." },
+      limitations: [
+        { en: "Visible series currently end at 2023 and ratio/percentage scales are not consistently encoded.", ar: "السلاسل الظاهرة تنتهي حاليًا في 2023 وترميز النسب والقيم المئوية غير متسق." },
+      ],
+    },
+  },
+  {
     id: "trade_flow_radar",
     status: "published",
     access: "public",

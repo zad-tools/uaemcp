@@ -1,5 +1,11 @@
 # Roadmap
 
+## v1.49 — Federal health evidence product — complete
+
+- Official MOHAP Health Core Indicators live connector with bounded XLSX parsing
+- Source-native indicator series, bilingual evidence ledger, REST and MCP parity
+- Explicit scale, freshness, and interpretation limits instead of undocumented normalization
+
 The original transformation plan used milestones v0.3, v0.4, v0.5, v1.0 and
 v2.0. This Bun rewrite began after the inherited package version, so the shipped
 mapping is: v0.3 catalog → v1.29, v0.4 reliability → v1.30–1.33, v0.5 semantic

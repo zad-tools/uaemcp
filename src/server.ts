@@ -30,6 +30,7 @@ import { buildTaxServiceReport } from "./tax-services.js";
 import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { listProducts } from "./products.js";
+import { buildHealthIndicators } from "./health-indicators.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -48,6 +49,23 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_health_indicators",
+    {
+      description: "Search official MOHAP health core indicator rows across published year columns. Values are source-native and not silently normalized; the response states mixed ratio/percentage scale and period limitations.",
+      inputSchema: { query: z.string().optional(), limit: z.number().int().min(1).max(200).default(100) },
+    },
+    async ({ query, limit }) => {
+      try {
+        const source = REGISTRY.get("mohap_health_core_indicators_2024");
+        const result = await (dependencies.fetchHealthRecords ?? fetchResult)(source, { limit: 200 });
+        return text(ok(buildHealthIndicators(result.records, {
+          citation: result.citation, fetchedAt: result.fetched_at, query, limit,
+        }), { ...metaOf(result), source_id: source.id, returned_records: result.records.length }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_products_list",

@@ -17,6 +17,7 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     tags: [{ name: "Products" }, { name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
     paths: {
       "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
+      "/api/v1/health-indicators": { get: { operationId: "getHealthIndicators", tags: ["Intelligence"], parameters: [parameter("q"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 200 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/coverage": { get: { operationId: "getCoverage", tags: ["Catalog"], responses: { "200": response(envelope({ $ref: "#/components/schemas/Coverage" })) } } },
       "/api/v1/industry-atlas": { get: { operationId: "getIndustryAtlas", tags: ["Intelligence"], parameters: [parameter("emirate"), parameter("q"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 1000 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/industry-atlas/change": { get: { operationId: "getIndustryChange", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },

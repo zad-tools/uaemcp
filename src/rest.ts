@@ -33,6 +33,8 @@ import { taxArchivePage } from "./tax-archive-web.js";
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { tradeFlowPage } from "./trade-flow-web.js";
 import { listProducts } from "./products.js";
+import { buildHealthIndicators } from "./health-indicators.js";
+import { healthIndicatorsPage } from "./health-indicators-web.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -59,26 +61,40 @@ function integer(params: URLSearchParams, key: string, fallback: number, max: nu
 
 const optional = (params: URLSearchParams, key: string): string | undefined => params.get(key) || undefined;
 
-const REST_DEFAULTS: RuntimeDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult };
+const REST_DEFAULTS: RuntimeDependencies = { fetchIndustryRecords: fetchResult, fetchTaxRecords: fetchResult, fetchHealthRecords: fetchResult };
 
 export async function handleRest(request: Request, dependencies: RuntimeDependencies = REST_DEFAULTS): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, "") || "/";
 
   try {
-    if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/observatory") return new Response(observatoryPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/industry-atlas") return new Response(industryAtlasPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/places") return new Response(placesExplorerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
-    if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/tax-services") return new Response(taxServicesPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/tax-services/archive") return new Response(taxArchivePage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/health-indicators") {
+      const source = REGISTRY.get("mohap_health_core_indicators_2024");
+      const result = await (dependencies.fetchHealthRecords ?? fetchResult)(source, { limit: 200 });
+      const limit = Math.max(1, integer(url.searchParams, "limit", 100, 200));
+      const report = buildHealthIndicators(result.records, {
+        citation: result.citation, fetchedAt: result.fetched_at,
+        query: optional(url.searchParams, "q"), limit,
+      });
+      return json(envelope(report, {
+        source_id: source.id, citation: result.citation, fetched_at: result.fetched_at,
+        returned_records: result.records.length, data_quality: result.data_quality,
+      }));
     }
     if (request.method === "GET" && path === "/api/v1/tax-services") {
       const source = REGISTRY.get("fta_service_activity_2025");

@@ -6,7 +6,7 @@ import { REGISTRY } from "../src/sources.js";
 describe("explainable indicators", () => {
   it("publishes a bounded indicator catalog and honest coverage", () => {
     expect(listIndicators()).toHaveLength(4);
-    expect(coverageIndicator()).toMatchObject({ indicator: "open_data_coverage", value: 18.92, dimensions: { live: 7, indexed: 37 } });
+    expect(coverageIndicator()).toMatchObject({ indicator: "open_data_coverage", value: 21.05, dimensions: { live: 8, indexed: 38 } });
   });
   it("returns null health without observations and scores retained checks", () => {
     const store = new ReliabilityStore(":memory:"); const source = REGISTRY.get("moiat_industrial_licenses");

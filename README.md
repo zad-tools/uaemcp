@@ -41,7 +41,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 24 source-cited
+The server keeps the public `uaemcp` contract and extends it to 25 source-cited
 MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -103,7 +103,12 @@ Endpoints:
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
+- UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/health-indicators"><img src="docs/assets/screenshots/health-indicators.jpg" alt="UAE Health Indicators evidence ledger using Dubai Font" width="100%"></a>
+</p>
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/observatory"><img src="docs/assets/screenshots/observatory.png" alt="Emirates Open Data Observatory" width="100%"></a>
@@ -182,7 +187,7 @@ language. It is included in the main release check.
 | Tool | Purpose |
 | --- | --- |
 | `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |
-| `uae_sources_list` | List the 37 registered official sources |
+| `uae_sources_list` | List the 38 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -198,6 +203,7 @@ language. It is included in the main release check.
 | `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
 | `uae_tax_service_archive` | Read the source-native FTA 2017–2022, 2024 and 2025 workbooks without unsafe cross-year comparison |
 | `uae_trade_flow_radar` | Analyze bounded Ajman export and re-export certificate records without presenting counts as trade value |
+| `uae_health_indicators` | Search official MOHAP health indicators while preserving the workbook's published values and limits |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
@@ -224,7 +230,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 37 official sources indexed, 7 live record
+Current conservative coverage is 38 official sources indexed, 8 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

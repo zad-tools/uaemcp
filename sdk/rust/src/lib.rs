@@ -5,6 +5,7 @@ impl UaemcpClient {
  pub fn new(base_url: &str) -> Self { Self { base_url: base_url.trim_end_matches('/').into(), http: reqwest::Client::new() } }
  async fn get(&self, path: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.http.get(format!("{}{}",self.base_url,path)).query(params).send().await?.error_for_status()?.json().await }
  pub async fn list_products(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/products"), params).await }
+ pub async fn get_health_indicators(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/health-indicators"), params).await }
  pub async fn get_coverage(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/coverage"), params).await }
  pub async fn get_industry_atlas(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/industry-atlas"), params).await }
  pub async fn get_industry_change(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/industry-atlas/change"), params).await }
