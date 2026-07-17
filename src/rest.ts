@@ -99,8 +99,9 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       const body = await request.json().catch(() => { throw new ValidationError("body must be valid JSON"); }) as GoldenReadinessInput;
       const allowed = new Set<string>(GOLDEN_PATHWAY_IDS);
       if (!body || typeof body !== "object" || !allowed.has(body.pathway)) throw new ValidationError("pathway is invalid");
-      const allowedFields = new Set(["pathway", "capitalAed", "propertyValueAed", "annualTaxAed", "projectValueAed", "innovativeProjectEvidence", "incubatorRecommendation", "gradePercent", "universityGpa", "graduatedWithinTwoYears", "ministryRecommendation", "universityRecommendation", "professionalRecommendation", "attestedDegree", "fiveYearsExperience", "employmentContract", "monthlySalaryAed", "validPassportEvidence", "humanitarianYears", "volunteerHours", "humanitarianSupportAed"]);
+      const allowedFields = new Set(["pathway", "jurisdiction", "capitalAed", "propertyValueAed", "annualTaxAed", "projectValueAed", "innovativeProjectEvidence", "incubatorRecommendation", "gradePercent", "universityGpa", "graduatedWithinTwoYears", "ministryRecommendation", "universityRecommendation", "professionalRecommendation", "attestedDegree", "fiveYearsExperience", "employmentContract", "monthlySalaryAed", "validPassportEvidence", "humanitarianYears", "volunteerHours", "humanitarianSupportAed"]);
       if (Object.keys(body).some((key) => !allowedFields.has(key))) throw new ValidationError("only non-identifying readiness fields are accepted");
+      if (body.jurisdiction !== undefined && !["federal", "dubai", "abu_dhabi"].includes(body.jurisdiction)) throw new ValidationError("jurisdiction is invalid");
       const numericFields = ["capitalAed", "propertyValueAed", "annualTaxAed", "projectValueAed", "gradePercent", "universityGpa", "monthlySalaryAed", "humanitarianYears", "volunteerHours", "humanitarianSupportAed"] as const;
       for (const field of numericFields) {
         const value = body[field];

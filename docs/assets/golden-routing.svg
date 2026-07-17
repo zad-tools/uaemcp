@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Golden Residency official routing</title>
+  <desc id="desc">A privacy-first readiness dossier routes applicants to ICP, GDRFA Dubai, or Abu Dhabi Residents Office.</desc>
+  <style>
+    text{font-family:Dubai,Arial,sans-serif}.label{font-size:16px;letter-spacing:2px;fill:#c8ad62}.title{font-size:34px;font-weight:700;fill:#f3efdf}.small{font-size:16px;fill:#b9c8c0}.node{fill:#10271e;stroke:#c8ad62;stroke-width:1}.route{fill:none;stroke:#65736c;stroke-width:2;stroke-dasharray:8 9}.pulse{fill:#c74636;filter:drop-shadow(0 0 7px #c74636);animation:travel 4.8s ease-in-out infinite}.p2{animation-delay:1.6s}.p3{animation-delay:3.2s}@keyframes travel{0%,12%{opacity:0;transform:translateX(0)}18%{opacity:1}72%{opacity:1;transform:translateX(330px)}80%,100%{opacity:0;transform:translateX(330px)}}
+  </style>
+  <rect width="1200" height="360" fill="#153e2d"/>
+  <path d="M0 70H1200M0 290H1200" stroke="#274c3c"/>
+  <text x="60" y="52" class="label">OPEN EMIRATES INTELLIGENCE / OFFICIAL ROUTING</text>
+  <rect x="60" y="108" width="300" height="150" class="node"/>
+  <text x="88" y="153" class="label">01 / READINESS</text>
+  <text x="88" y="194" class="title">Evidence dossier</text>
+  <text x="88" y="225" class="small">No name · no passport number · nothing stored</text>
+  <path d="M360 183H690" class="route"/><circle cx="360" cy="183" r="7" class="pulse"/>
+  <rect x="690" y="82" width="450" height="76" class="node"/>
+  <rect x="690" y="166" width="450" height="76" class="node"/>
+  <rect x="690" y="250" width="450" height="76" class="node"/>
+  <text x="720" y="113" class="label">FEDERAL</text><text x="720" y="143" class="title">ICP</text>
+  <text x="720" y="197" class="label">DUBAI</text><text x="720" y="227" class="title">GDRFA Dubai</text>
+  <text x="720" y="281" class="label">ABU DHABI</text><text x="720" y="311" class="title">Residents Office</text>
+  <circle cx="360" cy="183" r="7" class="pulse p2"/><circle cx="360" cy="183" r="7" class="pulse p3"/>
+  <text x="60" y="334" class="small">Government channels only / القنوات الحكومية فقط</text>
+</svg>

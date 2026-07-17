@@ -41,4 +41,14 @@ describe("Golden Residency REST contract", () => {
     expect(body.data.matchedEvidence).toHaveLength(4);
     expect(body.meta.stored).toBe(false);
   });
+
+  it("accepts a non-identifying jurisdiction and returns the competent official portal", async () => {
+    const response = await handleRest(new Request("http://localhost/api/v1/golden-residency/assess", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pathway: "entrepreneur", jurisdiction: "dubai", projectValueAed: 500_000 }),
+    }));
+    const body = await response!.json() as any;
+    expect(response?.status).toBe(200);
+    expect(body.data.nextStep).toMatchObject({ authority: "gdrfa_dubai", jurisdiction: "dubai" });
+  });
 });

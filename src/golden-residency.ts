@@ -1,6 +1,7 @@
 export const GOLDEN_RESIDENCY_ICP_URL = "https://icp.gov.ae/en/services/golden-residency/";
 export const GOLDEN_RESIDENCY_UAE_URL = "https://u.ae/en/information-and-services/visa-and-emirates-id/residence-visas/golden-visa";
-export const GOLDEN_RESIDENCY_DUBAI_URL = "https://www.gdrfad.gov.ae/en/services/8ea80da4-f43e-11eb-0320-0050569629e8";
+export const GOLDEN_RESIDENCY_DUBAI_URL = "https://www.gdrfad.gov.ae/en/services/335969f4-8045-11ed-4fe5-0050569629e8";
+export const GOLDEN_RESIDENCY_ABU_DHABI_URL = "https://adro.gov.ae/Visas/Types-of-Visas/Abu-Dhabi-Golden-Visa";
 
 type Localized = Readonly<{ en: string; ar: string }>;
 export const GOLDEN_PATHWAY_IDS = ["public_investor", "real_estate_investor", "entrepreneur", "exceptional_talent", "doctor", "scientist", "inventor", "creative", "executive", "athlete", "priority_specialist", "high_school_student", "university_student", "humanitarian_frontline"] as const;
@@ -8,6 +9,7 @@ export type GoldenPathwayId = typeof GOLDEN_PATHWAY_IDS[number];
 
 export type GoldenReadinessInput = Readonly<{
   pathway: GoldenPathwayId;
+  jurisdiction?: "federal" | "dubai" | "abu_dhabi";
   capitalAed?: number;
   propertyValueAed?: number;
   annualTaxAed?: number;
@@ -91,8 +93,8 @@ export function goldenResidencyCatalogue() {
     talentVariants: talentVariants.map((item) => ({ ...item, title: { ...item.title }, evidence: { ...item.evidence } })),
     authorities: [
       { jurisdiction: { en: "UAE except Dubai", ar: "جميع الإمارات باستثناء دبي" }, authority: { en: "ICP", ar: "الهيئة الاتحادية للهوية والجنسية" }, url: GOLDEN_RESIDENCY_ICP_URL },
-      { jurisdiction: { en: "Dubai", ar: "دبي" }, authority: { en: "GDRFA Dubai", ar: "الإدارة العامة للهوية وشؤون الأجانب – دبي" }, url: "https://www.gdrfad.gov.ae/en/services" },
-      { jurisdiction: { en: "Abu Dhabi", ar: "أبوظبي" }, authority: { en: "Abu Dhabi Residents Office / TAMM", ar: "مكتب أبوظبي للمقيمين / تم" }, url: "https://www.tamm.abudhabi/" },
+      { jurisdiction: { en: "Dubai", ar: "دبي" }, authority: { en: "GDRFA Dubai", ar: "الإدارة العامة للهوية وشؤون الأجانب – دبي" }, url: GOLDEN_RESIDENCY_DUBAI_URL },
+      { jurisdiction: { en: "Abu Dhabi", ar: "أبوظبي" }, authority: { en: "Abu Dhabi Residents Office", ar: "مكتب أبوظبي للمقيمين" }, url: GOLDEN_RESIDENCY_ABU_DHABI_URL },
     ],
     sources: [
       { publisher: "Federal Authority for Identity, Citizenship, Customs & Port Security", url: GOLDEN_RESIDENCY_ICP_URL },
@@ -174,6 +176,12 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
     university_recommendation: { en: "University recommendation or graduation certificate", ar: "توصية الجامعة أو شهادة التخرج" },
     humanitarian_evidence: { en: "Qualifying humanitarian service, hours or financial support", ar: "خدمة أو ساعات تطوع أو دعم مالي إنساني مؤهل" },
   };
+  const jurisdiction = input.jurisdiction ?? "federal";
+  const nextSteps = {
+    federal: { authority: "icp", label: { en: "Continue with ICP", ar: "تابع عبر الهيئة الاتحادية" }, url: GOLDEN_RESIDENCY_ICP_URL },
+    dubai: { authority: "gdrfa_dubai", label: { en: "Open GDRFA Dubai Golden Residency", ar: "افتح الإقامة الذهبية لدى إقامة دبي" }, url: GOLDEN_RESIDENCY_DUBAI_URL },
+    abu_dhabi: { authority: "adro_abu_dhabi", label: { en: "Open Abu Dhabi Residents Office", ar: "افتح مكتب أبوظبي للمقيمين" }, url: GOLDEN_RESIDENCY_ABU_DHABI_URL },
+  } as const;
   const evidenceCount = matched.length + missing.length;
   return {
     kind: "uae_golden_residency_readiness" as const,
@@ -191,7 +199,7 @@ export function assessGoldenResidencyReadiness(input: GoldenReadinessInput) {
       storesPersonalData: false as const,
     },
     decision: "informational_only" as const,
-    nextStep: { label: { en: "Verify with ICP", ar: "تحقق عبر الهيئة" }, url: GOLDEN_RESIDENCY_ICP_URL },
+    nextStep: { jurisdiction, ...nextSteps[jurisdiction] },
     disclaimer: goldenResidencyCatalogue().disclaimer,
   };
 }

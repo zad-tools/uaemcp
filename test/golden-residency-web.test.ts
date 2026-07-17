@@ -9,6 +9,8 @@ describe("Golden Residency interface", () => {
     expect(html).toContain("الإقامة الذهبية");
     expect(html).toContain("/api/v1/golden-residency/assess");
     expect(html).toContain("not an eligibility decision");
+    expect(html).toContain("jurisdictionSelect.id='jurisdiction'");
+    expect(html).toContain("WHERE WILL YOU APPLY?");
     const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
     expect(scripts).toHaveLength(2);
     for (const script of scripts) expect(() => new Function(script)).not.toThrow();

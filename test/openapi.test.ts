@@ -10,4 +10,13 @@ describe("OpenAPI contract", () => {
     expect(operations).toEqual(expect.arrayContaining(["getCoverage", "listSources", "search", "getRecords", "getDatasetSchema", "listRecipes", "listIndicators", "getIndicator", "resolveEntities", "getTileJson", "spatialJoin", "getObservatoryReport", "listObservatoryIncidents", "getObservatorySource", "getIndustryAtlas", "getIndustryChange"]));
     expect(new Set(operations).size).toBe(operations.length);
   });
+
+  it("documents every privacy-bounded Golden Residency input", () => {
+    const document = openApiDocument() as any;
+    const schema = document.paths["/api/v1/golden-residency/assess"].post.requestBody.content["application/json"].schema;
+    expect(schema.additionalProperties).toBe(false);
+    expect(schema.properties.jurisdiction.enum).toEqual(["federal", "dubai", "abu_dhabi"]);
+    expect(schema.properties.pathway.enum).toContain("executive");
+    expect(schema.properties).not.toHaveProperty("passportNumber");
+  });
 });

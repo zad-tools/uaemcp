@@ -51,4 +51,17 @@ describe("Golden Residency readiness navigator", () => {
     const inventor = assessGoldenResidencyReadiness({ pathway: "inventor", professionalRecommendation: true });
     expect(inventor.matchedEvidence[0].label.en).toContain("Ministry of Economy");
   });
+
+  it("routes the next official step by issuing jurisdiction", () => {
+    const dubai = assessGoldenResidencyReadiness({ pathway: "executive", jurisdiction: "dubai", monthlySalaryAed: 50_000 });
+    const abuDhabi = assessGoldenResidencyReadiness({ pathway: "executive", jurisdiction: "abu_dhabi", monthlySalaryAed: 50_000 });
+    const federal = assessGoldenResidencyReadiness({ pathway: "executive", jurisdiction: "federal", monthlySalaryAed: 50_000 });
+
+    expect(dubai.nextStep.authority).toBe("gdrfa_dubai");
+    expect(dubai.nextStep.url).toContain("gdrfad.gov.ae");
+    expect(abuDhabi.nextStep.authority).toBe("adro_abu_dhabi");
+    expect(abuDhabi.nextStep.url).toContain("adro.gov.ae");
+    expect(federal.nextStep.authority).toBe("icp");
+    expect(federal.nextStep.url).toContain("icp.gov.ae");
+  });
 });

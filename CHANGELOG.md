@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.54.0
+
+- Added a non-identifying application-jurisdiction choice to Golden Residency assessments.
+- Routes the official next step to ICP, GDRFA Dubai or the Abu Dhabi Residents Office instead of sending every applicant to one federal page.
+- Verified the current official Golden Residency hubs and retained government-only, no-intermediary guidance.
+- Kept the new jurisdiction flow bilingual, mobile-safe and set in Dubai Font.
+
 ## 1.53.0
 
 - Expanded the Golden Residency Navigator from broad pathway families to 14 practical official routes, including doctors, scientists, inventors, creatives, executives, athletes and priority specialists.

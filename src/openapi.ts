@@ -1,4 +1,5 @@
 import { VERSION } from "./version.js";
+import { GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
 
 const envelope = (schema: Record<string, unknown>): Record<string, unknown> => ({
   type: "object", required: ["ok", "data", "error", "meta"],
@@ -7,6 +8,19 @@ const envelope = (schema: Record<string, unknown>): Record<string, unknown> => (
 
 const parameter = (name: string, required = false, schema: Record<string, unknown> = { type: "string" }): Record<string, unknown> => ({ name, in: "query", required, schema });
 const response = (schema: Record<string, unknown>): Record<string, unknown> => ({ description: "Successful response", content: { "application/json": { schema } } });
+const nonNegative = { type: "number", minimum: 0 };
+const goldenAssessmentSchema = {
+  type: "object", required: ["pathway"], additionalProperties: false,
+  properties: {
+    pathway: { type: "string", enum: [...GOLDEN_PATHWAY_IDS] },
+    jurisdiction: { type: "string", enum: ["federal", "dubai", "abu_dhabi"], default: "federal" },
+    capitalAed: nonNegative, propertyValueAed: nonNegative, annualTaxAed: nonNegative, projectValueAed: nonNegative,
+    innovativeProjectEvidence: { type: "boolean" }, incubatorRecommendation: { type: "boolean" }, professionalRecommendation: { type: "boolean" },
+    attestedDegree: { type: "boolean" }, fiveYearsExperience: { type: "boolean" }, employmentContract: { type: "boolean" }, monthlySalaryAed: nonNegative, validPassportEvidence: { type: "boolean" },
+    gradePercent: { type: "number", minimum: 0, maximum: 100 }, universityGpa: { type: "number", minimum: 0, maximum: 4 }, graduatedWithinTwoYears: { type: "boolean" }, ministryRecommendation: { type: "boolean" }, universityRecommendation: { type: "boolean" },
+    humanitarianYears: nonNegative, volunteerHours: nonNegative, humanitarianSupportAed: nonNegative,
+  },
+};
 
 export function openApiDocument(origin = "http://localhost:8080"): Record<string, unknown> {
   const sourceId = { name: "sourceId", in: "path", required: true, schema: { type: "string" } };
@@ -18,7 +32,7 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     paths: {
       "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
       "/api/v1/golden-residency": { get: { operationId: "getGoldenResidencyPathways", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
-      "/api/v1/golden-residency/assess": { post: { operationId: "assessGoldenResidencyReadiness", tags: ["Intelligence"], requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["pathway"], additionalProperties: false } } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/golden-residency/assess": { post: { operationId: "assessGoldenResidencyReadiness", tags: ["Intelligence"], requestBody: { required: true, content: { "application/json": { schema: goldenAssessmentSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/education": { get: { operationId: "getEducationLedger", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/health-indicators": { get: { operationId: "getHealthIndicators", tags: ["Intelligence"], parameters: [parameter("q"), parameter("limit", false, { type: "integer", minimum: 1, maximum: 200 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/coverage": { get: { operationId: "getCoverage", tags: ["Catalog"], responses: { "200": response(envelope({ $ref: "#/components/schemas/Coverage" })) } } },
