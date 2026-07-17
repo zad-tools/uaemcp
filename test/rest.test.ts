@@ -102,4 +102,13 @@ describe("REST v1", () => {
     const payload = await fetch(`${baseUrl}/api/v1/operations/snapshot-scheduler`).then((response) => response.json());
     expect(payload.data).toMatchObject({ enabled: false, running: false, targets: [] });
   });
+
+  it("publishes the public observatory report, incidents, and source profile", async () => {
+    const report = await fetch(`${baseUrl}/api/v1/observatory`).then((response) => response.json());
+    const incidents = await fetch(`${baseUrl}/api/v1/observatory/incidents?limit=10`).then((response) => response.json());
+    const profile = await fetch(`${baseUrl}/api/v1/observatory/sources/moiat_industrial_licenses`).then((response) => response.json());
+    expect(report.data).toMatchObject({ monitoredSources: 33, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(incidents).toMatchObject({ ok: true, data: expect.any(Array), meta: { limit: 10 } });
+    expect(profile.data).toMatchObject({ source: { id: "moiat_industrial_licenses" }, reliability: { sourceId: "moiat_industrial_licenses" }, incidents: expect.any(Array) });
+  });
 });

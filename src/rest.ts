@@ -54,6 +54,24 @@ export async function handleRest(request: Request): Promise<Response | null> {
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/observatory") {
+      return json(envelope(reliabilityStore().observatoryReport(REGISTRY.list().map((source) => source.id))));
+    }
+    if (request.method === "GET" && path === "/api/v1/observatory/incidents") {
+      const limit = Math.max(1, integer(url.searchParams, "limit", 100, 1000));
+      return json(envelope(reliabilityStore().incidents(optional(url.searchParams, "source_id"), limit), { limit }));
+    }
+    const observatorySourceMatch = path.match(/^\/api\/v1\/observatory\/sources\/([^/]+)$/);
+    if (request.method === "GET" && observatorySourceMatch) {
+      const source = REGISTRY.get(decodeURIComponent(observatorySourceMatch[1]));
+      const limit = Math.max(1, integer(url.searchParams, "limit", 100, 1000));
+      return json(envelope({
+        source,
+        reliability: reliabilityStore().healthHistory(source.id, limit),
+        incidents: reliabilityStore().incidents(source.id, limit),
+        citation: citation(source),
+      }));
+    }
     if (request.method === "GET" && path === "/api/v1/operations/snapshot-scheduler") return json(envelope(snapshotScheduler.status()));
     if (request.method === "GET" && path === "/api/v1/catalog") {
       return json(envelope(REGISTRY.list().map(portalModel), { coverage: coverageSummary() }));
