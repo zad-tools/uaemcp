@@ -70,6 +70,13 @@
 - TileJSON 3.0 metadata for MapLibre and compatible clients
 - Bounded record input, safe property serialization and short public caching
 
+## v1.38 — Multi-language clients — complete
+
+- OpenAPI 3.1 source contract with stable operation identifiers
+- Generated Python, Go, Rust, Java and C# clients alongside TypeScript
+- Per-language package manifests
+- Staleness gate included in the main release check
+
 ## v1.40 — Deeper intelligence
 
 - Cross-source entity resolution
@@ -82,4 +89,4 @@
 - Extract reusable `govmcp-core` contracts
 - Plugin packages for connectors and country registries
 - Signed build and trust provenance
-- Generated Python, Go and Rust clients from stable REST contracts
+- Independently published SDK packages after ecosystem demand is established

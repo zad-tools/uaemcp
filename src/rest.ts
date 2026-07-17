@@ -17,6 +17,7 @@ import { listRecipes, runRecipe, type RecipeId, RECIPE_IDS } from "./intelligenc
 import { landingPage } from "./web.js";
 import { snapshotScheduler } from "./scheduler.js";
 import { encodeVectorTile } from "./vector-tiles.js";
+import { openApiDocument } from "./openapi.js";
 
 type Json = Record<string, unknown>;
 
@@ -48,6 +49,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
 
   try {
     if (request.method === "GET" && path === "/") return new Response(landingPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/operations/snapshot-scheduler") return json(envelope(snapshotScheduler.status()));

@@ -8,6 +8,8 @@ __pycache__/
 .mypy_cache/
 dist/
 build/
+target/
+sdk/rust/Cargo.lock
 node_modules/
 *.egg-info/
 data/*.json

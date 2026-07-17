@@ -78,6 +78,20 @@ const records = await uae.records("moiat_industrial_licenses", { limit: 10 });
 Point `baseUrl` at the hosted endpoint or any self-hosted instance. Structured
 API failures throw `UaemcpClientError` with the HTTP status and public error code.
 
+## Generated SDKs
+
+The repository also ships generated clients for Python, Go, Rust, Java and C#
+under [`sdk/`](sdk/). All clients are generated from the live OpenAPI 3.1
+contract at `/openapi.json`:
+
+```bash
+bun run generate:sdks
+bun run check:sdks
+```
+
+The second command fails when an API change has not been propagated to every
+language. It is included in the main release check.
+
 ## Tools
 
 | Tool | Purpose |

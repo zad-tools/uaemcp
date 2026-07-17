@@ -1,6 +1,6 @@
 {
   "name": "uaemcp",
-  "version": "1.37.0",
+  "version": "1.38.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "license": "MIT",
@@ -24,7 +24,9 @@
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "typecheck": "bunx tsc --noEmit",
-    "check": "bun run typecheck && bun test",
+    "check": "bun run typecheck && bun test && bun run check:sdks",
+    "generate:sdks": "bun scripts/generate-sdks.ts",
+    "check:sdks": "bun scripts/generate-sdks.ts --check",
     "prepublishOnly": "bun run check"
   },
   "dependencies": {

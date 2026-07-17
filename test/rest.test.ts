@@ -19,6 +19,13 @@ describe("REST v1", () => {
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
+  it("serves the SDK-generating OpenAPI contract", async () => {
+    const response = await fetch(`${baseUrl}/openapi.json`);
+    const document = await response.json();
+    expect(response.status).toBe(200);
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.38.0" } });
+  });
+
   it("lists sources using the stable envelope", async () => {
     const response = await fetch(`${baseUrl}/api/v1/sources`);
     const payload = await response.json();
@@ -70,7 +77,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.37.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.38.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });

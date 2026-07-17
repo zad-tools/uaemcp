@@ -45,6 +45,7 @@ it does not mean every UAE portal has a public machine-readable API.
 - Canonical bilingual normalization for all seven emirates and stable entity keys
 - Evidence-backed emirate comparison and snapshot trend analysis
 - Bilingual dashboard, source browser, API playground and typed TypeScript client
+- OpenAPI-generated Python, Go, Rust, Java and C# clients with a staleness gate
 - Docker, Nginx example, contribution, connector, architecture and security guides
 
 ### Partial
@@ -57,14 +58,11 @@ it does not mean every UAE portal has a public machine-readable API.
   freshness SLOs and connector-level traces remain.
 - Website: landing page, catalog and playground exist; benchmark and sponsor
   sections are not yet productized.
-- SDKs: typed TypeScript is shipped; generated Python, Go, Rust, Java and C#
-  clients remain future work.
 
 ### Not yet shipped
 
 - UAE-wide entity resolution and normalized administrative geography
 - Vector tile service and arbitrary cross-source spatial joins
-- Generated multi-language SDKs
 - Multi-replica distributed scheduler coordination
 
 ## Honest product boundary
