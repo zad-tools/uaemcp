@@ -51,7 +51,8 @@ bounded dataset snapshots for repeatable comparisons.
 
 The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
-between English and Arabic with native RTL layout.
+between English and Arabic. Every public application uses Dubai Font with native
+RTL composition.
 
 ## Hosted endpoint
 

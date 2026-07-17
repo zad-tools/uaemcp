@@ -1,6 +1,6 @@
 {
   "name": "uaemcp",
-  "version": "1.49.0",
+  "version": "1.50.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "repository": {

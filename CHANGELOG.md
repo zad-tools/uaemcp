@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.50.0
+
+- Adopted Dubai Font across every public interface in English and Arabic, including RTL-specific typography and matching content-security policies.
+- Completed Arabic methodology, limitation, snapshot-fallback, search-label, loading and error copy for the Health Indicators ledger.
+- Added a regression contract that covers typography and font loading policy across all eight public interface routes.
+
 ## 1.49.0
 
 - Added the official MOHAP Health Core Indicators workbook as the eighth live connector, preserving all source-native values and the visible 2016–2023 series.

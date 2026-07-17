@@ -17,7 +17,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | API design | 9/10 | REST v1, stable envelopes, OpenAPI 3.1, explicit error codes | Some analytical calls have source-specific optional fields |
 | MCP compliance | 9/10 | stdio and Streamable HTTP, 25 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
 | Security | 9/10 | SSRF/DNS classification, redirect validation, budgets, auth, redaction, quotas | Application DNS validation has a documented TOCTOU residual risk |
-| Testing | 9/10 | 167 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
+| Testing | 9/10 | 169 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
 | Documentation | 10/10 | Architecture, API, deployment, MCP, SDK, recipes, security, connectors, FAQ | Must track contract changes each release |
 | Product positioning | 9/10 | Queryable coverage separated from indexed portals | Live breadth remains dependent on official access |
 | Repository structure | 9/10 | Focused `src`, `test`, `docs`, `sdk`, `examples`, `templates` | Future country extraction needs a separate package boundary |

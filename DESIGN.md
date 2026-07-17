@@ -12,12 +12,12 @@ colors:
   muted-ink: "#66736b"
 typography:
   display:
-    fontFamily: "Manrope, Noto Kufi Arabic, sans-serif"
+    fontFamily: "Dubai, Arial, sans-serif"
     fontSize: "clamp(3.75rem, 8vw, 8.25rem)"
     fontWeight: 600
     lineHeight: 0.86
   body:
-    fontFamily: "Manrope, Noto Kufi Arabic, sans-serif"
+    fontFamily: "Dubai, Arial, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.6
@@ -70,8 +70,8 @@ Forest and archival paper establish institutional permanence. Red marks evidence
 
 ## Typography
 
-**Display Font:** Manrope with Noto Kufi Arabic
-**Body Font:** Manrope with Noto Kufi Arabic
+**Display Font:** Dubai
+**Body Font:** Dubai
 **Label/Mono Font:** IBM Plex Mono
 
 **Character:** Large editorial headlines create a public-institution voice. Compact monospaced labels identify sources, methods and machine contracts. Body copy stays below 72 characters per line.

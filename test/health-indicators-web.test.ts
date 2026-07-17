@@ -7,6 +7,8 @@ describe("Health Indicators interface", () => {
     expect(html).toContain("UAE Health Indicators");
     expect(html).toContain("مؤشرات الصحة<br>في الإمارات");
     expect(html).toContain('font-family:"Dubai"');
+    expect(html).toContain("المصدر المباشر غير متاح لهذا الطلب");
+    expect(html).toContain("البحث في المؤشرات");
     expect(html).toContain("Read values carefully.");
     expect(html).toContain("اقرأ القيم بحذر.");
     expect(html).toContain("/api/v1/health-indicators?limit=200");

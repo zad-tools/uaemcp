@@ -1,5 +1,11 @@
 # Roadmap
 
+## v1.50 — Unified civic typography — complete
+
+- Dubai Font across all public evidence applications and both writing directions
+- CSP coverage and automated brand-contract regression tests for every route
+- Arabic runtime methodology and verified-snapshot explanation parity
+
 ## v1.49 — Federal health evidence product — complete
 
 - Official MOHAP Health Core Indicators live connector with bounded XLSX parsing
