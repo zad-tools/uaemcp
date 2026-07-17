@@ -103,14 +103,18 @@ pretends to choose a licence, calculate final fees or guarantee approval.
 
 Requires Bun 1.3 or newer.
 
-Use the published package without cloning the repository:
+The Bun rewrite is currently newer than npm's `latest` tag. Until npm Trusted
+Publishing is connected, run the CI-tested `main` branch directly from GitHub:
 
 ```bash
-bunx uaemcp --version
-bunx uaemcp doctor
-bunx uaemcp                 # stdio MCP server
-bunx uaemcp http            # HTTP server at /mcp
+bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main --version
+bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main doctor
+bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main       # stdio MCP server
+bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP server at /mcp
 ```
+
+The npm badge at the top of this README is the authoritative registry version.
+Use `bunx uaemcp` only after that badge reaches `1.61.1` or newer.
 
 MCP client configuration:
 
@@ -119,7 +123,7 @@ MCP client configuration:
   "mcpServers": {
     "uae-intelligence": {
       "command": "bunx",
-      "args": ["uaemcp"]
+      "args": ["--bun", "github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main"]
     }
   }
 }

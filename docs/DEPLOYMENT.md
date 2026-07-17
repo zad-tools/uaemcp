@@ -53,5 +53,43 @@ bun pm pack --dry-run
 docker build -t uaemcp:release .
 ```
 
+`bun run check` includes a registry-package audit: README-only visual assets must
+stay outside the tarball, required runtime files must be present, and the packed
+archive must remain below 1 MB.
+
+## One-time npm Trusted Publisher setup
+
+The `publish-npm.yml` workflow already uses a GitHub-hosted runner with
+`id-token: write`; it deliberately has no long-lived npm token. Before creating
+the first `v1.61.1` tag, the `uaemcp` package owner must open the package settings
+on npm and add this GitHub Actions trusted publisher:
+
+| Field | Value |
+|---|---|
+| Organization or user | `ahmedvnabil` |
+| Repository | `Open-Emirates-Intelligence-MCP` |
+| Workflow filename | `publish-npm.yml` |
+| Environment | Leave empty |
+| Allowed action | `npm publish` |
+
+The filename includes the extension and is intentionally not the full
+`.github/workflows/` path. npm validates this relationship only when the
+workflow attempts to publish, so recheck capitalization before tagging.
+
+After the publisher is saved, create the release tag only from a clean,
+verified `main` commit:
+
+```bash
+test "$(git branch --show-current)" = main
+test -z "$(git status --porcelain)"
+bun run check
+git tag -s v1.61.1 -m "Open Emirates Intelligence v1.61.1"
+git push origin v1.61.1
+```
+
+That tag publishes the exact tested tarball with provenance and creates the
+matching GitHub Release. Do not create the tag before the trusted publisher is
+saved: npm `latest` currently points to the earlier implementation.
+
 Health checks prove the process is responsive, not that every external portal
 is available. Use the dashboard or health-history endpoints for upstream state.
