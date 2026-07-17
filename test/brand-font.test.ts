@@ -31,6 +31,12 @@ describe("Dubai Font public brand contract", () => {
     }
   });
 
+  it("keeps the tax product typography entirely on Dubai Font", () => {
+    for (const render of [taxServicesPage, taxArchivePage]) {
+      expect(render()).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
+    }
+  });
+
   it("allows the Dubai Font origin in every public interface CSP", async () => {
     for (const [path] of pages) {
       const response = await handleRest(new Request(`http://localhost${path}`));
