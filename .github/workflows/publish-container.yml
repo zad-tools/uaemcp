@@ -67,3 +67,10 @@ jobs:
           subject-name: ${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+      - name: Keep the open-source container public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method PATCH \
+            "/orgs/${GITHUB_REPOSITORY_OWNER}/packages/container/uaemcp" \
+            --field visibility=public
