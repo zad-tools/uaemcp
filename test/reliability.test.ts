@@ -13,6 +13,25 @@ describe("reliability store", () => {
     expect(history.summary).toMatchObject({ uptimeRatio: 0.5, samples: 2 });
   });
 
+  it("builds an observatory report and derives bounded incidents from status transitions", () => {
+    store = new ReliabilityStore(":memory:");
+    store.recordHealth({ source_id: "alpha", status: "ok", message: "healthy", checked_url: "https://a", record_count: 2, latency_ms: 20 }, "2026-01-01T00:00:00Z");
+    store.recordHealth({ source_id: "alpha", status: "down", message: "timeout", checked_url: "https://a", record_count: 0, latency_ms: 5000 }, "2026-01-02T00:00:00Z");
+    store.recordHealth({ source_id: "alpha", status: "ok", message: "recovered", checked_url: "https://a", record_count: 2, latency_ms: 30 }, "2026-01-03T00:00:00Z");
+    store.recordHealth({ source_id: "beta", status: "down", message: "blocked", checked_url: "https://b", record_count: 0, latency_ms: 80 }, "2026-01-03T00:00:00Z");
+
+    expect(store.observatoryReport(["alpha", "beta", "empty"], "2026-01-04T00:00:00Z")).toMatchObject({
+      generatedAt: "2026-01-04T00:00:00Z",
+      monitoredSources: 3,
+      observedSources: 2,
+      currentStatus: { ok: 1, partial: 0, down: 1, unknown: 1 },
+      incidents: { open: 1, recovered: 1, total: 2 },
+    });
+    expect(store.incidents("alpha", 10)).toEqual([
+      expect.objectContaining({ sourceId: "alpha", status: "recovered", startedAt: "2026-01-02T00:00:00Z", endedAt: "2026-01-03T00:00:00Z" }),
+    ]);
+  });
+
   it("stores snapshots and returns record and schema diffs", () => {
     store = new ReliabilityStore(":memory:");
     const first = store.saveSnapshot("s", "d", [{ id: 1, name: "A" }], "2026-01-01T00:00:00Z") as { id: number };

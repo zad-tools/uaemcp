@@ -76,6 +76,69 @@ export class ReliabilityStore {
     };
   }
 
+  incidents(sourceId?: string, limit = 100): Rec[] {
+    const rows = (sourceId
+      ? this.db.query(`SELECT source_id,status,message,latency_ms,checked_at FROM health_checks WHERE source_id=? ORDER BY checked_at ASC,id ASC`).all(sourceId)
+      : this.db.query(`SELECT source_id,status,message,latency_ms,checked_at FROM health_checks ORDER BY source_id ASC,checked_at ASC,id ASC`).all()) as Rec[];
+    const active = new Map<string, Rec>();
+    const incidents: Rec[] = [];
+    for (const row of rows) {
+      const id = String(row.source_id);
+      if (row.status === "ok") {
+        const current = active.get(id);
+        if (current) {
+          incidents.push({ ...current, status: "recovered", endedAt: row.checked_at, durationMs: Math.max(0, Date.parse(String(row.checked_at)) - Date.parse(String(current.startedAt))) });
+          active.delete(id);
+        }
+        continue;
+      }
+      if (!active.has(id)) {
+        active.set(id, {
+          sourceId: id,
+          status: "open",
+          severity: row.status === "down" ? "outage" : "degraded",
+          startedAt: row.checked_at,
+          endedAt: null,
+          message: row.message,
+          latencyMs: Number(row.latency_ms),
+        });
+      }
+    }
+    incidents.push(...active.values());
+    return incidents.sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt))).slice(0, Math.max(1, Math.min(limit, 1000)));
+  }
+
+  observatoryReport(sourceIds: string[], generatedAt = new Date().toISOString()): Rec {
+    const latestRows = this.db.query(`
+      SELECT h.source_id,h.status,h.latency_ms,h.record_count,h.message,h.checked_at
+      FROM health_checks h
+      JOIN (SELECT source_id,MAX(id) AS id FROM health_checks GROUP BY source_id) latest ON latest.id=h.id
+    `).all() as Rec[];
+    const latest = new Map(latestRows.map((row) => [String(row.source_id), row]));
+    const currentStatus = { ok: 0, partial: 0, down: 0, unknown: 0 };
+    for (const sourceId of sourceIds) {
+      const status = String(latest.get(sourceId)?.status ?? "unknown") as keyof typeof currentStatus;
+      currentStatus[status in currentStatus ? status : "unknown"] += 1;
+    }
+    const allChecks = this.db.query(`SELECT status,latency_ms FROM health_checks`).all() as Rec[];
+    const latencies = allChecks.map((row) => Number(row.latency_ms)).filter(Number.isFinite).sort((a, b) => a - b);
+    const openIncidents = this.incidents(undefined, 1000).filter((incident) => incident.status === "open").length;
+    const recoveredIncidents = this.incidents(undefined, 1000).filter((incident) => incident.status === "recovered").length;
+    return {
+      generatedAt,
+      monitoredSources: sourceIds.length,
+      observedSources: latestRows.length,
+      currentStatus,
+      overallUptimeRatio: allChecks.length ? Number((allChecks.filter((row) => row.status === "ok").length / allChecks.length).toFixed(4)) : null,
+      latencyP50Ms: latencies.length ? latencies[Math.floor(latencies.length * 0.5)] : null,
+      incidents: { open: openIncidents, recovered: recoveredIncidents, total: openIncidents + recoveredIncidents },
+      sources: sourceIds.map((id) => {
+        const row = latest.get(id);
+        return row ? { sourceId: id, status: row.status, latencyMs: Number(row.latency_ms), recordCount: Number(row.record_count), message: row.message, checkedAt: row.checked_at } : { sourceId: id, status: "unknown", latencyMs: null, recordCount: null, message: "No health observation recorded yet.", checkedAt: null };
+      }),
+    };
+  }
+
   saveSnapshot(sourceId: string, dataset: string | null, records: Rec[], capturedAt = new Date().toISOString()): Rec {
     const body = canonical(records);
     const schema = inferSchema(records);
