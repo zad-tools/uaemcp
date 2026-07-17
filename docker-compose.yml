@@ -16,6 +16,10 @@ services:
       UAEMCP_ALLOWED_ORIGINS: "https://uaemcp.zad.tools,https://uae-intelligence-mcp.zad.tools"
       UAEMCP_DATABASE_PATH: "/app/data/uaemcp.sqlite"
       UAEMCP_HEALTH_SCAN_INTERVAL_MINUTES: "60"
+      UAEMCP_SNAPSHOT_INTERVAL_MINUTES: "1440"
+      UAEMCP_SNAPSHOT_TARGETS: "moiat_industrial_licenses"
+      UAEMCP_SNAPSHOT_LIMIT: "1000"
+      UAEMCP_SNAPSHOT_RETENTION: "90"
       # Uncomment to enable the write tools (disabled by default):
       # UAEMCP_WRITE_TOKEN: "change-me"
     volumes:
