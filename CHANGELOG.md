@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.59.0
+
+- Added the UAE Founder Pathway as an ordered journey across official business setup, relevant government-backed startup support and entrepreneur Golden Residency readiness.
+- Added strict non-identifying inputs, planning-only output and explicit separation from licensing, programme acceptance and residency eligibility.
+- Added `/founder-pathway`, `POST /api/v1/founder-pathway`, the read-only `uae_founder_pathway` MCP tool, OpenAPI/SDK integration and trust-manifest discovery.
+- Added a bilingual RTL Dubai Font interface and animated README journey.
+- Increased the public registry to 12 products and 30 MCP tools.
+
 ## 1.58.0
 
 - Added the UAE Startup Support Navigator across nine official or government-backed programmes from MBRIF, EDB, Hub71, Dubai SME, Sheraa, Ruwad and Ajman DED.

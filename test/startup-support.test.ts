@@ -22,4 +22,10 @@ describe("UAE Startup Support Navigator", () => {
     expect(result.matches.map((match) => match.programId)).toContain("edb_startup_finance");
     expect(result.caveats.length).toBeGreaterThan(0);
   });
+
+  it("never recommends a local programme from a different requested emirate", () => {
+    const result = matchStartupSupport({ stage: "mvp", supportType: "incubation", emirate: "abu_dhabi" });
+    expect(result.matches.map((match) => match.programId)).not.toContain("dubai_sme");
+    expect(result.matches.every((match) => match.scope === "federal" || match.scope === "abu_dhabi")).toBe(true);
+  });
 });

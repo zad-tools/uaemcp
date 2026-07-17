@@ -25,6 +25,7 @@ const goldenAssessmentSchema = {
 };
 const businessSetupRouteSchema = { type: "object", required: ["emirate", "setupType"], additionalProperties: false, properties: { emirate: { type: "string", enum: [...BUSINESS_EMIRATES] }, setupType: { type: "string", enum: [...BUSINESS_SETUP_TYPES] }, activitySector: { type: "string", enum: [...BUSINESS_ACTIVITY_SECTORS] } } };
 const startupSupportMatchSchema = { type: "object", required: ["stage", "supportType", "emirate"], additionalProperties: false, properties: { stage: { type: "string", enum: [...STARTUP_STAGES] }, supportType: { type: "string", enum: [...STARTUP_SUPPORT_TYPES] }, emirate: { type: "string", enum: [...STARTUP_EMIRATES] } } };
+const founderPathwaySchema = { type: "object", required: ["stage", "emirate", "setupType", "supportType"], additionalProperties: false, properties: { stage: { type: "string", enum: [...STARTUP_STAGES] }, emirate: { type: "string", enum: [...BUSINESS_EMIRATES] }, setupType: { type: "string", enum: [...BUSINESS_SETUP_TYPES] }, supportType: { type: "string", enum: [...STARTUP_SUPPORT_TYPES] }, activitySector: { type: "string", enum: [...BUSINESS_ACTIVITY_SECTORS] } } };
 
 export function openApiDocument(origin = "http://localhost:8080"): Record<string, unknown> {
   const sourceId = { name: "sourceId", in: "path", required: true, schema: { type: "string" } };
@@ -35,6 +36,7 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     tags: [{ name: "Products" }, { name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
     paths: {
       "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
+      "/api/v1/founder-pathway": { post: { operationId: "buildFounderPathway", tags: ["Products"], requestBody: { required: true, content: { "application/json": { schema: founderPathwaySchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/golden-residency": { get: { operationId: "getGoldenResidencyPathways", tags: ["Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/golden-residency/assess": { post: { operationId: "assessGoldenResidencyReadiness", tags: ["Intelligence"], requestBody: { required: true, content: { "application/json": { schema: goldenAssessmentSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/business-setup": { get: { operationId: "getBusinessSetupCatalogue", tags: ["Products"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },

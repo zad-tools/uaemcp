@@ -12,8 +12,10 @@ import { handleRest } from "../src/rest.js";
 import { goldenResidencyPage } from "../src/golden-residency-web.js";
 import { businessSetupPage } from "../src/business-setup-web.js";
 import { startupSupportPage } from "../src/startup-support-web.js";
+import { founderPathwayPage } from "../src/founder-pathway-web.js";
 
 const pages = [
+  ["/founder-pathway", founderPathwayPage],
   ["/startup-support", startupSupportPage],
   ["/business-setup", businessSetupPage],
   ["/golden-residency", goldenResidencyPage],
@@ -58,7 +60,7 @@ describe("Dubai Font public brand contract", () => {
       const response = await handleRest(new Request(`http://localhost${path}`));
       expect(response?.status).toBe(200);
       expect(response?.headers.get("content-security-policy")).toContain("font-src");
-      if (!["/tax-services", "/business-setup", "/startup-support"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
+      if (!["/tax-services", "/business-setup", "/startup-support", "/founder-pathway"].includes(path)) expect(response?.headers.get("content-security-policy")).toContain("https://dubaihumanitarian.ae");
     }
   });
 });

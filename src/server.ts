@@ -35,6 +35,7 @@ import { buildEducationLedger } from "./education-ledger.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
 import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup } from "./business-setup.js";
 import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSupport, startupSupportCatalogue } from "./startup-support.js";
+import { buildFounderPathway } from "./founder-pathway.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -53,6 +54,25 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_founder_pathway",
+    {
+      description: "Build one ordered, privacy-bounded UAE founder journey across official business setup, relevant government-backed startup support and entrepreneur Golden Residency readiness. Planning only; no application, eligibility decision or personal data storage.",
+      inputSchema: {
+        stage: z.enum(STARTUP_STAGES),
+        emirate: z.enum(BUSINESS_EMIRATES),
+        setup_type: z.enum(BUSINESS_SETUP_TYPES),
+        support_type: z.enum(STARTUP_SUPPORT_TYPES),
+        activity_sector: z.enum(BUSINESS_ACTIVITY_SECTORS).optional(),
+      },
+    },
+    async ({ stage, emirate, setup_type, support_type, activity_sector }) => {
+      try {
+        return text(ok(buildFounderPathway({ stage, emirate, setupType: setup_type, supportType: support_type, activitySector: activity_sector }), { decision: "planning_only", stored: false }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_business_setup",

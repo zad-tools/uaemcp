@@ -1,5 +1,12 @@
 # Roadmap
 
+## v1.59 — Founder journey orchestration — complete
+
+- One ordered founder route across competent business setup, relevant startup support and entrepreneur residency readiness
+- Privacy-bounded planning with no identifying fields, submissions or eligibility claims
+- Shared web, REST, MCP, OpenAPI and generated SDK contract
+- Bilingual Dubai Font interface and animated README journey
+
 ## v1.51 — National education evidence — complete
 
 - FCSC-accredited General Education and Higher Education 2023/2024 snapshot

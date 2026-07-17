@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">UAE Founder Pathway</title><desc id="desc">An animated three-step journey from company setup to startup support and residency readiness.</desc>
+  <rect width="1200" height="420" fill="#f2efe7"/><style>text{font-family:Arial,sans-serif;fill:#13261d}.small{font-size:16px;font-weight:700;letter-spacing:3px}.title{font-size:62px;font-weight:700}.num{font-size:62px;font-weight:700}.line{stroke:#13261d;stroke-width:2}.pulse{fill:#ff6847;animation:p 3s ease-in-out infinite}.two{animation-delay:1s}.three{animation-delay:2s}@keyframes p{0%,100%{r:7;opacity:1}45%{r:18;opacity:.2}}@media(prefers-reduced-motion:reduce){.pulse{animation:none}}</style>
+  <text class="small" x="55" y="55">OPEN EMIRATES INTELLIGENCE / 1.59</text><text class="title" x="55" y="130">BUILD HERE. GROW HERE.</text>
+  <line class="line" x1="55" y1="200" x2="1145" y2="200"/><circle class="pulse" cx="120" cy="200" r="7"/><circle class="pulse two" cx="585" cy="200" r="7"/><circle class="pulse three" cx="1060" cy="200" r="7"/>
+  <text class="num" x="75" y="290">01</text><text class="small" x="75" y="325">OFFICIAL SETUP</text><text class="num" x="540" y="290">02</text><text class="small" x="540" y="325">FOUNDER SUPPORT</text><text class="num" x="1015" y="290">03</text><text class="small" x="905" y="325">RESIDENCY READINESS</text>
+  <rect x="55" y="365" width="1090" height="1" fill="#13261d"/><text class="small" x="55" y="398">NO NAME · NO EMAIL · NOTHING STORED · OFFICIAL LINKS FIRST</text>
+</svg>

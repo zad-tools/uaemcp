@@ -12,7 +12,7 @@ class UaemcpClient:
 
     def _get(self, path, params=None):
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None}).replace("%2C", ",")
-        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.58.0"})
+        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.59.0"})
         with urlopen(request, timeout=self.timeout) as response:
             payload = loads(response.read())
         if isinstance(payload, dict) and payload.get("ok") is False:
@@ -21,6 +21,9 @@ class UaemcpClient:
 
     def list_products(self, **params):
         return self._get(f"/api/v1/products", params)
+
+    def build_founder_pathway(self, **params):
+        return self._get(f"/api/v1/founder-pathway", params)
 
     def get_golden_residency_pathways(self, **params):
         return self._get(f"/api/v1/golden-residency", params)

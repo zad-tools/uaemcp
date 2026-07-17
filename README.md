@@ -41,7 +41,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 29 source-cited
+The server keeps the public `uaemcp` contract and extends it to 30 source-cited
 MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -53,6 +53,16 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/founder-pathway"><img src="docs/assets/founder-pathway.svg" alt="Animated UAE Founder Pathway from official setup to support and residency readiness" width="100%"></a>
+</p>
+
+The **UAE Founder Pathway** composes three evidence products into one ordered,
+privacy-bounded journey: route to the competent setup authority, discover
+relevant government-backed support, then prepare entrepreneur Golden Residency
+evidence. It is planning—not licensing, programme acceptance or an eligibility
+decision.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/business-setup"><img src="docs/assets/business-routing.svg" alt="Animated UAE Business Setup Navigator routing across seven emirates" width="100%"></a>
@@ -118,6 +128,7 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+- UAE Founder Pathway: `GET /founder-pathway` — one privacy-bounded journey across official setup, startup support and entrepreneur residency readiness
 - UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
@@ -224,6 +235,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_founder_pathway` | Build one ordered founder journey across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
 | `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
 | `uae_golden_residency` | Explore official Golden Residency pathways or assess non-identifying evidence readiness without determining eligibility |
 | `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |

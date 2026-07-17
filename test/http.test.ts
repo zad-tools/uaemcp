@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.58.0",
+      version: "1.59.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -75,6 +75,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(response.status).toBe(200);
     expect(names.sort()).toEqual([
+      "uae_founder_pathway",
       "uae_products_list",
       "uae_business_setup",
       "uae_startup_support",
@@ -110,9 +111,9 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.meta).toEqual({ total: 11, published: 11 });
+    expect(body.meta).toEqual({ total: 12, published: 12 });
     expect(body.data.map((product: { id: string }) => product.id)).toEqual([
-      "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "founder_pathway", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
   });
 
@@ -124,8 +125,8 @@ describe("Bun HTTP runtime", () => {
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
     const { payload } = await rpc("resources/read", { uri: "uae://products" });
     const body = JSON.parse(payload.result.contents[0].text);
-    expect(body.total).toBe(11);
-    expect(body.products[0].id).toBe("startup_support_navigator");
+    expect(body.total).toBe(12);
+    expect(body.products[0].id).toBe("founder_pathway");
   });
 
   it("exposes the observatory through MCP without triggering upstream probes", async () => {

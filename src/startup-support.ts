@@ -40,7 +40,10 @@ export function matchStartupSupport(input: StartupSupportInput) {
     if (support) reasons.push({ en: `Includes ${input.supportType.replaceAll("_", " ")} support.`, ar: `يتضمن دعم ${input.supportType}.` });
     if (location) reasons.push({ en: program.scope === "federal" ? "Federal UAE scope." : `Relevant to ${program.scope.replaceAll("_", " ")}.`, ar: program.scope === "federal" ? "نطاق اتحادي في الإمارات." : `مرتبط بإمارة ${program.scope}.` });
     return { program, relevance, reasons };
-  }).filter((item) => item.relevance >= 8).sort((a, b) => b.relevance - a.relevance || a.program.id.localeCompare(b.program.id)).slice(0, 6);
+  }).filter((item) => {
+    const locationMatches = input.emirate === "any" || item.program.scope === "federal" || item.program.scope === input.emirate;
+    return locationMatches && item.relevance >= 8;
+  }).sort((a, b) => b.relevance - a.relevance || a.program.id.localeCompare(b.program.id)).slice(0, 6);
   return {
     kind: "uae_startup_support_matches" as const, decision: "discovery_only" as const, stored: false, input: { ...input },
     matches: ranked.map(({ program, relevance, reasons }) => ({ programId: program.id, name: { ...program.name }, operator: { ...program.operator }, scope: program.scope, officialUrl: program.officialUrl, relevance, reasons, summary: { ...program.summary }, eligibilityNotes: program.eligibilityNotes.map((note) => ({ ...note })), eligibilityDetermined: false as const })),
