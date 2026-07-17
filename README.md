@@ -33,7 +33,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 20 source-cited
+The server keeps the public `uaemcp` contract and extends it to 22 source-cited
 MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -88,6 +88,7 @@ Endpoints:
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts
+- FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
 
@@ -102,6 +103,13 @@ Endpoints:
 <p align="center">
   <a href="https://uaemcp.zad.tools/tax-services"><img src="docs/assets/screenshots/tax-service-activity.png" alt="UAE Tax Service Activity 2025" width="100%"></a>
 </p>
+
+<table>
+  <tr>
+    <td width="58%"><a href="https://uaemcp.zad.tools/tax-services/archive"><img src="docs/assets/screenshots/fta-archive-explorer.jpg" alt="FTA Archive Explorer hero"></a></td>
+    <td width="42%"><a href="https://uaemcp.zad.tools/tax-services/archive"><img src="docs/assets/screenshots/fta-archive-data.jpg" alt="FTA Archive Explorer source-native data view"></a></td>
+  </tr>
+</table>
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/places"><img src="docs/assets/screenshots/place-names.png" alt="UAE Place Names Explorer" width="100%"></a>

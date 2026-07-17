@@ -33,6 +33,16 @@ describe("REST v1", () => {
     expect(html).toContain("not revenue");
   });
 
+  it("serves the bilingual source-native FTA archive explorer", async () => {
+    const response = await fetch(`${baseUrl}/tax-services/archive`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(html).toContain("FTA Archive Explorer");
+    expect(html).toContain("/api/v1/tax-services/archive");
+    expect(html).toContain("comparison-status");
+    expect(html).toContain('id="lang"');
+  });
+
   it("serves the public Open Data Observatory interface", async () => {
     const response = await fetch(`${baseUrl}/observatory`);
     const html = await response.text();
@@ -75,7 +85,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.44.1" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.45.0" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -129,11 +139,12 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.44.1" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.45.0" });
     expect(manifest.endpoints.taxServiceActivity).toBe("/tax-services");
     expect(manifest.tools.read).toContain("uae_tax_service_activity");
     expect(manifest.tools.read).toContain("uae_tax_service_archive");
     expect(manifest.endpoints.taxServiceArchive).toBe("/api/v1/tax-services/archive");
+    expect(manifest.endpoints.taxServiceArchivePage).toBe("/tax-services/archive");
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });
