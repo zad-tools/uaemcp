@@ -19,6 +19,13 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "startup_support_navigator", status: "published", access: "public", category: "STARTUPS / SUPPORT", categoryAr: "الشركات الناشئة / الدعم",
+    title: { en: "UAE Startup Support Navigator", ar: "دليل دعم الشركات الناشئة في الإمارات" },
+    description: { en: "Discover relevant official and government-backed accelerators, incubators, finance and market-access programmes by stage and location.", ar: "اكتشف المسرعات والحاضنات وبرامج التمويل والوصول للسوق الرسمية والمدعومة حكوميًا حسب المرحلة والموقع." },
+    webPath: "/startup-support", apiPath: "/api/v1/startup-support", sourceIds: [],
+    evidence: { scope: { en: "Nine primary programme pages from federal, Abu Dhabi, Dubai, Sharjah and Ajman operators, verified 17 July 2026.", ar: "تسع صفحات برامج أولية من جهات اتحادية وفي أبوظبي ودبي والشارقة وعجمان، متحقق منها في 17 يوليو 2026." }, limitations: [{ en: "Relevance is not eligibility, acceptance, funding approval or advice to take debt or give equity.", ar: "الملاءمة ليست أهلية أو قبولًا أو موافقة تمويل أو نصيحة بالاقتراض أو التنازل عن ملكية." }] },
+  },
+  {
     id: "business_setup_navigator", status: "published", access: "public", category: "BUSINESS / SETUP", categoryAr: "الأعمال / التأسيس",
     title: { en: "UAE Business Setup Navigator", ar: "دليل تأسيس الأعمال في الإمارات" },
     description: { en: "Route founders to the competent official mainland or free-zone starting point across all seven emirates without intermediaries or personal-data collection.", ar: "وجّه المؤسسين إلى نقطة البداية الرسمية المختصة في البر الرئيسي أو المناطق الحرة عبر الإمارات السبع دون وسطاء أو جمع بيانات شخصية." },

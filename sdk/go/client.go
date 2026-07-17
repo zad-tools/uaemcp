@@ -13,6 +13,8 @@ func (c *Client) GetGoldenResidencyPathways(ctx context.Context, params url.Valu
 func (c *Client) AssessGoldenResidencyReadiness(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/golden-residency/assess", params) }
 func (c *Client) GetBusinessSetupCatalogue(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/business-setup", params) }
 func (c *Client) RouteBusinessSetup(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/business-setup/route", params) }
+func (c *Client) GetStartupSupportCatalogue(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/startup-support", params) }
+func (c *Client) MatchStartupSupport(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/startup-support/match", params) }
 func (c *Client) GetEducationLedger(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/education", params) }
 func (c *Client) GetHealthIndicators(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/health-indicators", params) }
 func (c *Client) GetCoverage(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/coverage", params) }

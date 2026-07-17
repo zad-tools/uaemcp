@@ -10,6 +10,8 @@ public final class UaemcpClient {
  public String assessGoldenResidencyReadiness(Map<String,String> params) throws Exception {return get("/api/v1/golden-residency/assess",params);}
  public String getBusinessSetupCatalogue(Map<String,String> params) throws Exception {return get("/api/v1/business-setup",params);}
  public String routeBusinessSetup(Map<String,String> params) throws Exception {return get("/api/v1/business-setup/route",params);}
+ public String getStartupSupportCatalogue(Map<String,String> params) throws Exception {return get("/api/v1/startup-support",params);}
+ public String matchStartupSupport(Map<String,String> params) throws Exception {return get("/api/v1/startup-support/match",params);}
  public String getEducationLedger(Map<String,String> params) throws Exception {return get("/api/v1/education",params);}
  public String getHealthIndicators(Map<String,String> params) throws Exception {return get("/api/v1/health-indicators",params);}
  public String getCoverage(Map<String,String> params) throws Exception {return get("/api/v1/coverage",params);}

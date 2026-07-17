@@ -41,8 +41,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 28 source-cited
-MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 29 source-cited
+MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -57,6 +57,16 @@ RTL composition.
 <p align="center">
   <a href="https://uaemcp.zad.tools/business-setup"><img src="docs/assets/business-routing.svg" alt="Animated UAE Business Setup Navigator routing across seven emirates" width="100%"></a>
 </p>
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/startup-support"><img src="docs/assets/startup-support.svg" alt="Animated UAE Startup Support Navigator matching official programmes by stage, support need and emirate" width="100%"></a>
+</p>
+
+The **UAE Startup Support Navigator** matches a founder's current stage, support
+need and location preference against nine official or government-backed
+programmes. It sends no name, email, phone, financial data, pitch deck or
+passport details, and treats every match as discovery—not eligibility,
+acceptance or funding approval.
 
 The **UAE Business Setup Navigator** routes founders to the competent official
 mainland authority or federal free-zone directory across all seven emirates. It
@@ -108,6 +118,7 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+- UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 - UAE Trade Flow Radar: `GET /trade-flow` — bounded Ajman 2023 certificate-of-origin evidence by destination, transport, product code and origin
 - UAE Tax Service Activity: `GET /tax-services` — official FTA 2025 service-activity totals and quarterly evidence, explicitly not revenue or taxpayer counts

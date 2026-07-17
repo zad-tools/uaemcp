@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.58.0
+
+- Added the UAE Startup Support Navigator across nine official or government-backed programmes from MBRIF, EDB, Hub71, Dubai SME, Sheraa, Ruwad and Ajman DED.
+- Added privacy-bounded matching by startup stage, support need and emirate without collecting names, contact details, pitch decks, financial records or passport data.
+- Added `/startup-support`, REST catalogue and matching routes, the read-only `uae_startup_support` MCP tool, OpenAPI/SDK integration and trust-manifest discovery.
+- Added bilingual RTL presentation using locally served Dubai Regular and Dubai Bold, plus an animated README product diagram.
+- Increased the public registry to 11 products and 29 MCP tools.
+
+## 1.57.0
+
+- Added the UAE Business Setup Navigator with official mainland routing across all seven emirates and federal free-zone guidance.
+- Kept setup routing non-identifying and explicitly avoided licence, fee, package or approval claims.
+
 ## 1.56.0
 
 - Routes Dubai and Abu Dhabi dossiers to the published official category page for investors, entrepreneurs, talents, specialists and students.

@@ -9,6 +9,8 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> AssessGoldenResidencyReadiness(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/golden-residency/assess",parameters,cancellationToken);
  public Task<JsonDocument> GetBusinessSetupCatalogue(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/business-setup",parameters,cancellationToken);
  public Task<JsonDocument> RouteBusinessSetup(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/business-setup/route",parameters,cancellationToken);
+ public Task<JsonDocument> GetStartupSupportCatalogue(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/startup-support",parameters,cancellationToken);
+ public Task<JsonDocument> MatchStartupSupport(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/startup-support/match",parameters,cancellationToken);
  public Task<JsonDocument> GetEducationLedger(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/education",parameters,cancellationToken);
  public Task<JsonDocument> GetHealthIndicators(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/health-indicators",parameters,cancellationToken);
  public Task<JsonDocument> GetCoverage(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/coverage",parameters,cancellationToken);

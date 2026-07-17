@@ -34,6 +34,7 @@ import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
 import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
 import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES, businessSetupCatalogue, routeBusinessSetup } from "./business-setup.js";
+import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSupport, startupSupportCatalogue } from "./startup-support.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -64,6 +65,21 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         if (action === "list") return text(ok(businessSetupCatalogue(), { decision: "routing_only", stored: false }));
         if (!emirate || !setup_type) throw new ValidationError("emirate and setup_type are required for route");
         return text(ok(routeBusinessSetup({ emirate, setupType: setup_type, activitySector: activity_sector }), { decision: "routing_only", stored: false }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_startup_support",
+    {
+      description: "Discover current official or government-backed UAE startup support programmes by stage, support need and emirate. Relevance only: never determines eligibility, funding approval or acceptance and stores no personal data.",
+      inputSchema: { action: z.enum(["list", "match"]).default("list"), stage: z.enum(STARTUP_STAGES).optional(), support_type: z.enum(STARTUP_SUPPORT_TYPES).optional(), emirate: z.enum(STARTUP_EMIRATES).optional() },
+    },
+    async ({ action, stage, support_type, emirate }) => {
+      try {
+        if (action === "list") return text(ok(startupSupportCatalogue(), { decision: "discovery_only", stored: false }));
+        if (!stage || !support_type || !emirate) throw new ValidationError("stage, support_type and emirate are required for match");
+        return text(ok(matchStartupSupport({ stage, supportType: support_type, emirate }), { decision: "discovery_only", stored: false }));
       } catch (error) { return text(fail(error)); }
     },
   );
