@@ -277,13 +277,17 @@ function arcgisService(source: Source): string {
 async function fetchArcgis(source: Source, opts: FetchOpts): Promise<FetchResult> {
   const limit = opts.limit ?? 10;
   const layer = opts.dataset ?? String(source.connector_config.default_layer ?? 0);
-  const field = source.connector_config.text_search_field as string | undefined;
+  const configuredFields = Array.isArray(source.connector_config.text_search_fields)
+    ? source.connector_config.text_search_fields.map(String)
+    : source.connector_config.text_search_field ? [String(source.connector_config.text_search_field)] : [];
+  const searchFields = configuredFields.filter((field) => /^[A-Za-z_][A-Za-z0-9_]{0,63}$/.test(field));
   let where = "1=1";
   let clientFiltered = false;
   const warnings: string[] = [];
   if (opts.query) {
-    if (field) {
-      where = `${field} LIKE '%${opts.query.replace(/'/g, "''")}%'`;
+    if (searchFields.length) {
+      const term = opts.query.replace(/'/g, "''");
+      where = searchFields.map((field) => `${field} LIKE '%${term}%'`).join(" OR ");
       clientFiltered = true;
     } else {
       warnings.push("text search not supported for this layer (no search field configured)");
@@ -292,9 +296,10 @@ async function fetchArcgis(source: Source, opts: FetchOpts): Promise<FetchResult
   const url = `${arcgisService(source)}/${layer}/query`;
   const payload = (await getJson(url, { where, outFields: "*", resultRecordCount: Math.min(limit, 1000), resultOffset: opts.offset ?? 0, f: "geojson" })) as Rec;
   const features = Array.isArray(payload.features) ? payload.features : [];
+  const excludedFields = new Set(Array.isArray(source.connector_config.exclude_fields) ? source.connector_config.exclude_fields.map(String) : []);
   const flattened: Rec[] = features.slice(0, limit).map((feat) => {
     const f = (feat ?? {}) as Rec;
-    const rec: Rec = { ...((f.properties as Rec) ?? {}) };
+    const rec: Rec = Object.fromEntries(Object.entries((f.properties as Rec) ?? {}).filter(([field]) => !excludedFields.has(field)));
     if (f.geometry !== undefined) rec._geometry = f.geometry;
     return rec;
   });

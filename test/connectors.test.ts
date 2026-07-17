@@ -112,6 +112,18 @@ describe("arcgis connector", () => {
     const r = await fetchResult(src, { query: "villa", limit: 10 });
     expect(r.data_quality.warnings.some((w) => w.includes("text search not supported"))).toBe(true);
   });
+  it("builds a bounded OR search across configured bilingual ArcGIS fields", async () => {
+    mockGetJson.mockResolvedValue({ features: [] });
+    const source = mkSource({ kind: "arcgis", base_url: "https://x/FeatureServer", connector_config: { text_search_fields: ["wsearch", "englishname"] } });
+    await fetchResult(source, { query: "Dubai's", limit: 5 });
+    expect(mockGetJson.mock.calls[0][1].where).toBe("wsearch LIKE '%Dubai''s%' OR englishname LIKE '%Dubai''s%'");
+  });
+  it("omits source-declared unreliable fields without mutating the remaining ArcGIS record", async () => {
+    mockGetJson.mockResolvedValue({ features: [{ properties: { englishname: "Dubai", descriptioneng: "placeholder", category: "مدينة" }, geometry: null }] });
+    const source = mkSource({ kind: "arcgis", base_url: "https://x/FeatureServer", connector_config: { default_layer: 0, exclude_fields: ["descriptioneng"] } });
+    const result = await fetchResult(source, { limit: 1 });
+    expect(result.records[0]).toEqual({ englishname: "Dubai", category: "مدينة", _geometry: null });
+  });
   it("lists layers", async () => {
     mockGetJson.mockResolvedValue({ layers: [{ id: 0, name: "Districts" }], tables: [{ id: 1, name: "Stats" }] });
     const refs = await listDatasets(src, { limit: 10 });

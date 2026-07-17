@@ -99,8 +99,9 @@ reusable government core remains v2.0.
 - Full API, deployment, recipes, FAQ, coding and threat-model documentation
 - Reproducible local HTTP benchmark and release packaging gates
 
-## v1.41 — Deeper intelligence
+## v1.41 — Deeper intelligence — in progress
 
+- Official FGIC National Gazetteer as a live bilingual geospatial connector
 - Additional sector-specific indicators as queryable sources expand
 - Additional distributed scheduling options for multi-replica deployments
 - More live public connectors, prioritizing datasets with clear reuse licenses

@@ -143,7 +143,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
-| `uae_sources_list` | List the 33 registered official sources |
+| `uae_sources_list` | List the 34 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -176,9 +176,17 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 33 official sources indexed, 3 live record
+Current conservative coverage is 34 official sources indexed, 4 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
+
+The fourth live connector is the official FGIC National Gazetteer. It exposes
+bilingual UAE place names and coordinates through ArcGIS while omitting a known
+placeholder English-description field and retaining FGIC's informational-use disclaimer:
+
+```bash
+curl 'https://uaemcp.zad.tools/api/v1/sources/fgic_national_gazetteer/records?query=%D8%AF%D8%A8%D9%8A&limit=5'
+```
 
 Tool results use `{ ok, data, error, meta }`. Data responses include source,
 license, citation, fetch time, completeness, sample coverage, source trust,

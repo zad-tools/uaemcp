@@ -7,8 +7,21 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 33 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(33);
+  it("lists 34 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(34);
+  });
+
+  it("registers the official FGIC National Gazetteer as a live geospatial source", () => {
+    const source = REGISTRY.get("fgic_national_gazetteer");
+    expect(source).toMatchObject({
+      owner: "Federal Geographic Information Center",
+      kind: "arcgis",
+      access_status: "live",
+      category: "geospatial",
+      connector_config: { default_layer: 0, text_search_fields: ["wsearch", "englishname", "gazetteername", "wotaltah"] },
+    });
+    expect(source.docs_url).toContain("atlas.fgic.gov.ae");
+    expect(source.license).toContain("informational use");
   });
 
   it("gets a known source", () => {

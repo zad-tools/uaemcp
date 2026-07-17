@@ -15,7 +15,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Performance | 9/10 | Bounded fan-out, cache, pagination, streaming HTTP, benchmark gate | External latency is controlled by authorities |
 | Developer experience | 9/10 | Doctor, completions, examples, templates, snippets and six SDKs | SDKs are not independently published yet |
 | API design | 9/10 | REST v1, stable envelopes, OpenAPI 3.1, explicit error codes | Some analytical calls have source-specific optional fields |
-| MCP compliance | 9/10 | stdio and Streamable HTTP, 18 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
+| MCP compliance | 9/10 | stdio and Streamable HTTP, 20 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
 | Security | 9/10 | SSRF/DNS classification, redirect validation, budgets, auth, redaction, quotas | Application DNS validation has a documented TOCTOU residual risk |
 | Testing | 9/10 | 150 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
 | Documentation | 10/10 | Architecture, API, deployment, MCP, SDK, recipes, security, connectors, FAQ | Must track contract changes each release |
@@ -53,8 +53,8 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 
 ## Known boundaries, not hidden incompleteness
 
-- National coverage cannot be manufactured: the registry currently separates 33
-  indexed official portals from three live record connectors. Key-gated,
+- National coverage cannot be manufactured: the registry currently separates 34
+  indexed official portals from four live record connectors. Key-gated,
   blocked and metadata-only sources remain labeled as such.
 - Administrative geography normalizes every emirate and record-supplied area.
   The project does not ship unofficial boundary polygons and call them official.
