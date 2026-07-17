@@ -27,6 +27,15 @@ describe("REST v1", () => {
     expect(html).toContain("/api/v1/observatory");
   });
 
+  it("serves the bilingual UAE Industry Atlas interface", async () => {
+    const response = await fetch(`${baseUrl}/industry-atlas`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(html).toContain("UAE Industry Atlas");
+    expect(html).toContain("أطلس الصناعة في الإمارات");
+    expect(html).toContain("/api/v1/industry-atlas");
+  });
+
   it("serves the SDK-generating OpenAPI contract", async () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();

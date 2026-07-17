@@ -1,4 +1,4 @@
-import { emirateFromRecord } from "./geography.js";
+import { emirateFromRecord, normalizeEmirate } from "./geography.js";
 import { normalizeText } from "./glossary.js";
 
 type RecordValue = Record<string, unknown>;
@@ -28,7 +28,8 @@ function productLabels(record: RecordValue): Array<{ en: string; ar: string }> {
 
 function matches(record: RecordValue, evidence: IndustryAtlasEvidence): boolean {
   const emirate = emirateFromRecord(record);
-  if (evidence.emirate && normalizeText(emirate?.en ?? emirate?.ar ?? "") !== normalizeText(evidence.emirate)) return false;
+  const requestedEmirate = normalizeEmirate(evidence.emirate);
+  if (evidence.emirate && (requestedEmirate ? emirate?.id !== requestedEmirate.id : normalizeText(emirate?.en ?? emirate?.ar ?? "") !== normalizeText(evidence.emirate))) return false;
   if (!evidence.query) return true;
   const haystack = [record.CompanyName, record.AreaNameEN, record.AreaNameAR, ...productLabels(record).flatMap((item) => [item.en, item.ar])]
     .map((value) => normalizeText(String(value ?? ""))).join(" ");

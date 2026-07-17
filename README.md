@@ -33,8 +33,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 19 source-cited
-MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 20 source-cited
+MCP tools, eight resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -86,9 +86,14 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+- UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/observatory"><img src="docs/assets/screenshots/observatory.png" alt="Emirates Open Data Observatory" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/industry-atlas"><img src="docs/assets/screenshots/industry-atlas.png" alt="UAE Industry Atlas" width="100%"></a>
 </p>
 
 ## MCP client configuration
@@ -149,6 +154,7 @@ language. It is included in the main release check.
 | `uae_indicator` | List or calculate explainable national-data indicators |
 | `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
 | `uae_observatory` | Read national reliability, incidents and source profiles |
+| `uae_industry_atlas` | Build a bounded industrial evidence slice by emirate, area and product label |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |

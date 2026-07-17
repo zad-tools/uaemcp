@@ -34,4 +34,13 @@ describe("UAE Industry Atlas", () => {
     expect(atlas.filters).toEqual({ emirate: "Dubai", query: "food" });
     expect(atlas.emirates[0].nameEn).toBe("Dubai");
   });
+
+  it("accepts Arabic emirate aliases", () => {
+    const atlas = buildIndustryAtlas(records, {
+      sourceId: "moiat_industrial_licenses", citation: "official", fetchedAt: "2026-07-17T00:00:00Z",
+      upstreamTotal: null, qualityScore: 0.79, emirate: "أبو ظبي",
+    });
+    expect(atlas.scope.sampleSize).toBe(2);
+    expect(atlas.emirates[0].id).toBe("abu_dhabi");
+  });
 });
