@@ -44,7 +44,7 @@
   "scripts": {
     "dev": "bun --watch src/index.ts http",
     "start": "bun src/index.ts",
-    "test": "bun test --max-concurrency=1",
+    "test": "for file in test/*.test.ts; do bun test \"$file\" || exit 1; done",
     "test:coverage": "bun test --coverage --max-concurrency=1",
     "benchmark": "bun scripts/benchmark.ts",
     "typecheck": "bunx tsc --noEmit",
