@@ -1,0 +1,188 @@
+/**
+ * The registry of official UAE open-data sources.
+ *
+ * Built-in sources are curated and verified against their live endpoints. Users
+ * may add extra metadata-only sources at runtime (write-token gated); those are
+ * persisted to a JSON file and can never override a built-in entry.
+ */
+
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
+import { SourceNotFound, ValidationError } from "./errors.js";
+
+export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "metadata";
+
+export interface Source {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  owner: string;
+  category: string;
+  kind: SourceKind;
+  base_url: string;
+  endpoint: string;
+  docs_url: string;
+  license: string;
+  default_params: Record<string, unknown>;
+  row_path: string[];
+  max_page_size: number | null;
+  notes: string;
+  origin: "built_in" | "custom";
+  /** Connector-specific settings (ODS api_base, ArcGIS service_url, geo fields…). */
+  connector_config: Record<string, unknown>;
+  /** True when the official API exists but needs a registered developer key. */
+  requires_api_key: boolean;
+  /** Provider developer portal, when key-gated. */
+  api_docs: string;
+}
+
+const LICENSE =
+  "Open government data; verify source terms before redistribution.";
+
+function src(p: Partial<Source> & Pick<Source, "id" | "name_en" | "name_ar" | "owner" | "category" | "kind" | "base_url">): Source {
+  return {
+    endpoint: "",
+    docs_url: "",
+    license: LICENSE,
+    default_params: {},
+    row_path: [],
+    max_page_size: null,
+    notes: "",
+    origin: "built_in",
+    connector_config: {},
+    requires_api_key: false,
+    api_docs: "",
+    ...p,
+  };
+}
+
+export function fetchUrl(s: Source): string {
+  return s.endpoint
+    ? s.base_url.replace(/\/+$/, "") + "/" + s.endpoint.replace(/^\/+/, "")
+    : s.base_url;
+}
+
+export function citation(s: Source): string {
+  return s.docs_url || s.base_url;
+}
+
+const BUILT_IN: Source[] = [
+  src({ id: "moiat_industrial_licenses", name_en: "UAE Industrial Licenses", name_ar: "الرخص الصناعية في الإمارات", owner: "Ministry of Industry and Advanced Technology", category: "industry", kind: "http_json", base_url: "https://api.moiat.gov.ae/", endpoint: "/api/OpenDataAPI/GetIndustrialLicensesList", docs_url: "https://moiat.gov.ae/en/open-data", default_params: { LanguageId: 2, PageNumber: 1, PageSize: 10 }, row_path: ["result", "Factories"], max_page_size: 10, notes: "Live official API. Direct phone/email fields are redacted by default.", connector_config: { geo: { lat_field: "Latitude", lon_field: "Longitude" } } }),
+  src({ id: "uae_federal_open_data", name_en: "UAE Federal Open Data Catalogue", name_ar: "فهرس البيانات المفتوحة الاتحادي", owner: "Federal Competitiveness and Statistics Centre", category: "catalogue", kind: "ckan", base_url: "https://opendata.fcsc.gov.ae/", endpoint: "/api/3/action/package_search", docs_url: "https://opendata.fcsc.gov.ae/", default_params: { rows: 10 }, row_path: ["result", "results"], notes: "CKAN portal (package_search + datastore_search). NOTE: currently returns HTTP 403 to server-side clients (WAF / bot mitigation) from most networks — records surface an honest 'source unavailable', never faked." }),
+  src({ id: "dubai_land_department", name_en: "Dubai Land Department Open Data", name_ar: "بيانات دائرة الأراضي والأملاك في دبي", owner: "Dubai Land Department", category: "real_estate", kind: "metadata", base_url: "https://dubailand.gov.ae/", docs_url: "https://dubailand.gov.ae/en/open-data/", requires_api_key: true, api_docs: "https://www.dubaipulse.gov.ae/organisation/dld", notes: "Transaction-level records (sales, rents, valuations) are published through Dubai Pulse as 'dld_transactions' via its key-gated API — see dubai_pulse_catalogue." }),
+  src({ id: "dubai_pulse_catalogue", name_en: "Dubai Pulse Open Data", name_ar: "بيانات دبي المفتوحة", owner: "Digital Dubai", category: "catalogue", kind: "metadata", base_url: "https://www.dubaipulse.gov.ae/", docs_url: "https://www.digitaldubai.ae/apps-services/details/data.dubai", requires_api_key: true, api_docs: "https://www.dubaipulse.gov.ae/", notes: "Official Dubai data platform. Machine API is OAuth2 client-credentials at api.dubaipulse.gov.ae; hosts DLD real-estate transactions, DEWA and RTA. Records require a registered API key+secret." }),
+  src({ id: "abu_dhabi_open_data", name_en: "Abu Dhabi Open Data", name_ar: "بيانات أبوظبي المفتوحة", owner: "Abu Dhabi Government", category: "catalogue", kind: "metadata", base_url: "https://data.abudhabi/", docs_url: "https://data.abudhabi/opendata/", requires_api_key: true, api_docs: "https://data.abudhabi/developers", notes: "Official Abu Dhabi open-data platform with a registered-developer REST API; records require a free developer key." }),
+  src({ id: "bayanat_uae_open_data", name_en: "Bayanat UAE Open Data Portal", name_ar: "بوابة بيانات الإمارات المفتوحة", owner: "UAE Government", category: "national_catalogue", kind: "metadata", base_url: "https://bayanat.ae/", docs_url: "https://bayanat.ae/", notes: "National open-data portal for dataset discovery." }),
+  src({ id: "mof_open_data", name_en: "Ministry of Finance Open Data", name_ar: "البيانات المفتوحة لوزارة المالية", owner: "Ministry of Finance", category: "finance", kind: "metadata", base_url: "https://mof.gov.ae/", docs_url: "https://mof.gov.ae/en/open-data/", notes: "Statistical reports, dashboards, and publication plan." }),
+  src({ id: "moet_open_data", name_en: "Ministry of Economy and Tourism Open Data", name_ar: "البيانات المفتوحة لوزارة الاقتصاد والسياحة", owner: "Ministry of Economy and Tourism", category: "economy", kind: "metadata", base_url: "https://www.moet.gov.ae/", docs_url: "https://www.moet.gov.ae/en/open-data", notes: "Economic indicators, trade and investment open-data surfaces." }),
+  src({ id: "moei_open_data", name_en: "Ministry of Energy and Infrastructure Open Data", name_ar: "البيانات المفتوحة لوزارة الطاقة والبنية التحتية", owner: "Ministry of Energy and Infrastructure", category: "infrastructure", kind: "metadata", base_url: "https://opendata.moei.gov.ae/", docs_url: "https://opendata.moei.gov.ae/", notes: "Energy, infrastructure and geodata surfaces from MOEI." }),
+  src({ id: "cbuae_open_data", name_en: "Central Bank of the UAE Open Data", name_ar: "البيانات المفتوحة لمصرف الإمارات المركزي", owner: "Central Bank of the UAE", category: "finance", kind: "metadata", base_url: "https://www.centralbank.ae/", docs_url: "https://www.centralbank.ae/en/open-data-landing/", notes: "Central-bank open-data landing page." }),
+  src({ id: "ajman_data_portal", name_en: "Ajman Data Portal", name_ar: "بوابة بيانات عجمان", owner: "Government of Ajman", category: "emirate_catalogue", kind: "ods", base_url: "https://data.ajman.ae/", docs_url: "https://data.ajman.ae/pages/homepage/", notes: "OpenDataSoft Explore v2.1 portal (verified live: 211 datasets). Use dataset discovery, then fetch records per dataset.", connector_config: { api_base: "https://data.ajman.ae/api/explore/v2.1" } }),
+  src({ id: "rak_municipality_open_data", name_en: "Ras Al Khaimah Municipality Open Data", name_ar: "البيانات المفتوحة لبلدية رأس الخيمة", owner: "Ras Al Khaimah Municipality", category: "municipality", kind: "metadata", base_url: "https://mun.rak.ae/", docs_url: "https://mun.rak.ae/home/open-data/", notes: "Ras Al Khaimah Municipality open-data surface." }),
+  src({ id: "uae_government_open_data", name_en: "UAE Government Open Data", name_ar: "البيانات الحكومية المفتوحة في الإمارات", owner: "UAE Government Official Portal", category: "policy", kind: "metadata", base_url: "https://u.ae/", docs_url: "https://u.ae/en/about-the-uae/digital-uae/data/open-government-data", notes: "Official UAE government page on open government data." }),
+  src({ id: "moce_open_data", name_en: "Ministry of Community Empowerment Open Data", name_ar: "البيانات المفتوحة لوزارة تمكين المجتمع", owner: "Ministry of Community Empowerment", category: "society", kind: "metadata", base_url: "https://www.moce.gov.ae/", docs_url: "https://www.moce.gov.ae/en/open-data", notes: "Community, non-profit and social-sector open-data references." }),
+  src({ id: "dubai_municipality_open_data", name_en: "Dubai Municipality Open Data", name_ar: "البيانات المفتوحة لبلدية دبي", owner: "Dubai Municipality", category: "municipality", kind: "metadata", base_url: "https://www.dm.gov.ae/", docs_url: "https://www.dm.gov.ae/open-data2/", notes: "Dubai Municipality civic, municipal and city-service datasets." }),
+  src({ id: "dubai_customs_open_data", name_en: "Dubai Customs Open Data", name_ar: "البيانات المفتوحة لجمارك دبي", owner: "Dubai Customs", category: "trade", kind: "metadata", base_url: "https://www.dubaicustoms.gov.ae/", docs_url: "https://www.dubaicustoms.gov.ae/en/OpenData/Pages/default.aspx", notes: "Dubai Customs data registers and open-data publishing surface." }),
+  src({ id: "dubai_police_open_data", name_en: "Dubai Police Open Data", name_ar: "البيانات المفتوحة لشرطة دبي", owner: "Dubai Police", category: "public_safety", kind: "metadata", base_url: "https://www.dubaipolice.gov.ae/", docs_url: "https://www.dubaipolice.gov.ae/app/home/opendata", notes: "Dubai Police open-data portal for public-safety datasets." }),
+  src({ id: "dubai_culture_open_data", name_en: "Dubai Culture Open Data", name_ar: "البيانات المفتوحة لهيئة الثقافة والفنون في دبي", owner: "Dubai Culture and Arts Authority", category: "culture", kind: "metadata", base_url: "https://dubaiculture.gov.ae/", docs_url: "https://dubaiculture.gov.ae/en/about-us/open-data", notes: "Dubai Culture open data for cultural services, libraries and events." }),
+  src({ id: "doh_abu_dhabi_open_data", name_en: "Department of Health Abu Dhabi Open Data", name_ar: "البيانات المفتوحة لدائرة الصحة أبوظبي", owner: "Department of Health Abu Dhabi", category: "health", kind: "metadata", base_url: "https://www.doh.gov.ae/", docs_url: "https://www.doh.gov.ae/resources/opendata", notes: "Abu Dhabi health open-data dashboards and resources." }),
+  src({ id: "abu_dhabi_sdi_open_data", name_en: "Abu Dhabi Spatial Data Infrastructure", name_ar: "البنية التحتية للبيانات المكانية في أبوظبي", owner: "Abu Dhabi Spatial Data Infrastructure", category: "geospatial", kind: "metadata", base_url: "https://sdi.gov.abudhabi/", docs_url: "https://sdi.gov.abudhabi/", notes: "Geospatial data and standards. Dataset licensing varies per layer." }),
+  src({ id: "ajman_ded_open_data", name_en: "Ajman Department of Economic Development Open Data", name_ar: "البيانات المفتوحة لدائرة التنمية الاقتصادية في عجمان", owner: "Ajman Department of Economic Development", category: "economy", kind: "metadata", base_url: "https://www.ajmanded.ae/", docs_url: "https://www.ajmanded.ae/en/open-data/ajded-open-data", notes: "Ajman economic-development open-data for business and public datasets." }),
+  src({ id: "scad_abu_dhabi", name_en: "Statistics Centre Abu Dhabi (SCAD)", name_ar: "مركز الإحصاء - أبوظبي", owner: "Statistics Centre Abu Dhabi", category: "statistics", kind: "metadata", base_url: "https://www.scad.gov.ae/", docs_url: "https://www.scad.gov.ae/", notes: "Official statistics for the Emirate of Abu Dhabi." }),
+  src({ id: "dubai_statistics_center", name_en: "Dubai Statistics Center", name_ar: "مركز دبي للإحصاء", owner: "Dubai Statistics Center", category: "statistics", kind: "metadata", base_url: "https://www.dsc.gov.ae/", docs_url: "https://www.dsc.gov.ae/", notes: "Official statistics for the Emirate of Dubai." }),
+  src({ id: "rta_dubai_open_data", name_en: "Roads and Transport Authority (Dubai) Open Data", name_ar: "البيانات المفتوحة لهيئة الطرق والمواصلات - دبي", owner: "Roads and Transport Authority", category: "transport", kind: "metadata", base_url: "https://www.rta.ae/", docs_url: "https://www.rta.ae/wps/portal/rta/ae/open-data", notes: "Dubai transport, roads and mobility open-data surface." }),
+  src({ id: "dewa_open_data", name_en: "Dubai Electricity and Water Authority Open Data", name_ar: "البيانات المفتوحة لهيئة كهرباء ومياه دبي", owner: "Dubai Electricity and Water Authority", category: "utilities", kind: "metadata", base_url: "https://www.dewa.gov.ae/", docs_url: "https://www.dewa.gov.ae/en/about-us/open-data", notes: "Utilities open data. Automated health checks may be blocked by bot mitigation." }),
+  src({ id: "mohap_open_data", name_en: "Ministry of Health and Prevention Open Data", name_ar: "البيانات المفتوحة لوزارة الصحة ووقاية المجتمع", owner: "Ministry of Health and Prevention", category: "health", kind: "metadata", base_url: "https://mohap.gov.ae/", docs_url: "https://mohap.gov.ae/en/open-data", notes: "Federal health open-data surface." }),
+  src({ id: "tdra_open_data", name_en: "TDRA Open Data", name_ar: "البيانات المفتوحة للهيئة العامة لتنظيم الاتصالات والحكومة الرقمية", owner: "Telecommunications and Digital Government Regulatory Authority", category: "digital", kind: "metadata", base_url: "https://tdra.gov.ae/", docs_url: "https://tdra.gov.ae/en/open-data", notes: "Telecom and digital-government regulator open-data surface." }),
+  src({ id: "fta_open_data", name_en: "Federal Tax Authority Open Data", name_ar: "البيانات المفتوحة للهيئة الاتحادية للضرائب", owner: "Federal Tax Authority", category: "finance", kind: "metadata", base_url: "https://tax.gov.ae/", docs_url: "https://tax.gov.ae/en/open.data.aspx", notes: "Federal tax open-data and statistics surface." }),
+  src({ id: "dha_dubai_open_data", name_en: "Dubai Health Authority Open Data", name_ar: "البيانات المفتوحة لهيئة الصحة بدبي", owner: "Dubai Health Authority", category: "health", kind: "metadata", base_url: "https://www.dha.gov.ae/", docs_url: "https://www.dha.gov.ae/en/open-data", notes: "Dubai health-sector open-data surface." }),
+  src({ id: "ead_abu_dhabi_open_data", name_en: "Environment Agency Abu Dhabi Open Data", name_ar: "البيانات المفتوحة لهيئة البيئة - أبوظبي", owner: "Environment Agency Abu Dhabi", category: "environment", kind: "metadata", base_url: "https://www.ead.gov.ae/", docs_url: "https://www.ead.gov.ae/en/resources/open-data", notes: "Environment, biodiversity and air-quality open-data resources." }),
+  src({ id: "sharjah_open_data", name_en: "Government of Sharjah Open Data", name_ar: "البيانات المفتوحة لحكومة الشارقة", owner: "Government of Sharjah", category: "emirate_catalogue", kind: "metadata", base_url: "https://www.sharjah.gov.ae/", docs_url: "https://www.sharjah.gov.ae/", notes: "Sharjah government portal and open-data entry point." }),
+  src({ id: "dof_dubai_open_data", name_en: "Dubai Department of Finance Open Data", name_ar: "البيانات المفتوحة لدائرة المالية - حكومة دبي", owner: "Dubai Department of Finance", category: "finance", kind: "metadata", base_url: "https://www.dof.gov.ae/", docs_url: "https://www.dof.gov.ae/", notes: "Dubai public-finance open-data surface." }),
+];
+
+const REQUIRED_CUSTOM = ["id", "name_en", "name_ar", "owner", "base_url"] as const;
+
+const STORE_PATH =
+  process.env.UAEMCP_DATA_FILE ?? join(homedir(), ".uaemcp", "custom_sources.json");
+
+export class Registry {
+  private builtIn = new Map<string, Source>();
+  private custom = new Map<string, Source>();
+
+  constructor() {
+    for (const s of BUILT_IN) this.builtIn.set(s.id, s);
+    this.loadCustom();
+  }
+
+  private loadCustom(): void {
+    if (!existsSync(STORE_PATH)) return;
+    try {
+      const raw = JSON.parse(readFileSync(STORE_PATH, "utf-8")) as Partial<Source>[];
+      for (const item of raw) {
+        if (item.id && !this.builtIn.has(item.id)) {
+          this.custom.set(
+            item.id,
+            {
+              connector_config: {},
+              requires_api_key: false,
+              api_docs: "",
+              ...item,
+              origin: "custom",
+            } as Source,
+          );
+        }
+      }
+    } catch {
+      /* ignore a corrupt store */
+    }
+  }
+
+  private persist(): void {
+    mkdirSync(dirname(STORE_PATH), { recursive: true });
+    writeFileSync(
+      STORE_PATH,
+      JSON.stringify([...this.custom.values()], null, 2),
+      "utf-8",
+    );
+  }
+
+  list(): Source[] {
+    return [...this.builtIn.values(), ...this.custom.values()];
+  }
+
+  get(id: string): Source {
+    const s = this.builtIn.get(id) ?? this.custom.get(id);
+    if (!s) throw new SourceNotFound(`unknown source: ${id}`);
+    return s;
+  }
+
+  addMetadataSource(data: Record<string, string>): Source {
+    const missing = REQUIRED_CUSTOM.filter((k) => !data[k]);
+    if (missing.length) {
+      throw new ValidationError(`missing required fields: ${missing.join(", ")}`);
+    }
+    const id = String(data.id).trim();
+    if (this.builtIn.has(id)) {
+      throw new ValidationError(`cannot override built-in source: ${id}`);
+    }
+    const source: Source = src({
+      id,
+      name_en: data.name_en,
+      name_ar: data.name_ar,
+      owner: data.owner,
+      category: data.category || "custom",
+      kind: "metadata",
+      base_url: data.base_url,
+      docs_url: data.docs_url || "",
+      notes: data.notes || "",
+      origin: "custom",
+    });
+    this.custom.set(id, source);
+    this.persist();
+    return source;
+  }
+}
+
+export const REGISTRY = new Registry();

@@ -1,0 +1,17 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+node_modules/
+*.egg-info/
+data/*.json
+!data/.gitkeep
+
+# Local Claude Code machine settings (keep launch.json shared)
+.claude/settings.local.json
