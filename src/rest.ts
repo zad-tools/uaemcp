@@ -28,6 +28,7 @@ import { buildIndustrialChangeReport } from "./industry-change.js";
 import { placesExplorerPage } from "./places-web.js";
 import { buildTaxServiceReport } from "./tax-services.js";
 import { taxServicesPage } from "./tax-services-web.js";
+import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -76,6 +77,10 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
         source_id: source.id, citation: result.citation, fetched_at: result.fetched_at,
         returned_records: result.records.length, data_quality: result.data_quality,
       }));
+    }
+    if (request.method === "GET" && path === "/api/v1/tax-services/archive") {
+      const views = await loadTaxArchiveViews(dependencies.fetchTaxArchiveRecords ?? fetchResult);
+      return json(envelope(buildTaxArchive(views), { source_ids: TAX_ARCHIVE_SPECS.map(([sourceId]) => sourceId), comparison_status: "unavailable" }));
     }
     if (request.method === "GET" && path === "/api/v1/industry-atlas/change") {
       const source = REGISTRY.get("moiat_industrial_licenses");

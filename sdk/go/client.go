@@ -12,6 +12,7 @@ func (c *Client) GetCoverage(ctx context.Context, params url.Values) (map[string
 func (c *Client) GetIndustryAtlas(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas", params) }
 func (c *Client) GetIndustryChange(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/industry-atlas/change", params) }
 func (c *Client) GetTaxServiceActivity2025(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tax-services", params) }
+func (c *Client) GetTaxServiceArchive(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tax-services/archive", params) }
 func (c *Client) ListSources(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources", params) }
 func (c *Client) Search(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/search", params) }
 func (c *Client) GetRecords(ctx context.Context, SourceId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources/" + url.PathEscape(SourceId) + "/records", params) }

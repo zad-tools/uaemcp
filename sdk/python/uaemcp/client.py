@@ -12,7 +12,7 @@ class UaemcpClient:
 
     def _get(self, path, params=None):
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None}).replace("%2C", ",")
-        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.43.0"})
+        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.44.0"})
         with urlopen(request, timeout=self.timeout) as response:
             payload = loads(response.read())
         if isinstance(payload, dict) and payload.get("ok") is False:
@@ -30,6 +30,9 @@ class UaemcpClient:
 
     def get_tax_service_activity2025(self, **params):
         return self._get(f"/api/v1/tax-services", params)
+
+    def get_tax_service_archive(self, **params):
+        return self._get(f"/api/v1/tax-services/archive", params)
 
     def list_sources(self, **params):
         return self._get(f"/api/v1/sources", params)

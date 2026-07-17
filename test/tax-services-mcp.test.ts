@@ -29,6 +29,7 @@ const fixture: FetchResult = {
 beforeAll(() => {
   server = runHttp("127.0.0.1", 0, {
     fetchTaxRecords: async () => fixture,
+    fetchTaxArchiveRecords: async () => fixture,
   });
   baseUrl = server.url.toString().replace(/\/$/, "");
 });
@@ -53,5 +54,20 @@ describe("FTA service activity MCP product", () => {
     expect(body.data.methodology).toBeDefined();
     expect(body.data.limitations).toContain("These are FTA-published service activity counts, not tax revenue, taxpayer totals, company counts, or an economic-growth measure.");
     expect(body.data.source.citation).toBe("https://tax.gov.ae/en/open.data/open.data.aspx");
+  });
+
+  it("keeps the source-native archive identical across MCP and REST", async () => {
+    const response = await fetch(`${baseUrl}/mcp`, {
+      method: "POST",
+      headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "uae_tax_service_archive", arguments: {} } }),
+    });
+    const payload = await response.json();
+    const mcp = JSON.parse(payload.result.content[0].text);
+    const rest = await fetch(`${baseUrl}/api/v1/tax-services/archive`).then((result) => result.json());
+    expect(mcp.data).toEqual(rest.data);
+    expect(mcp.data.comparison).toEqual({ status: "unavailable", missingPeriods: ["2023"] });
+    expect(mcp.data.views.map((view: { period: string }) => view.period)).toEqual(["2017–2022", "2024", "2025"]);
+    expect(mcp.data.views.every((view: { license: string; dataQuality: unknown; lineage: unknown[] }) => view.license && view.dataQuality && view.lineage.length === 1)).toBe(true);
   });
 });

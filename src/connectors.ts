@@ -379,7 +379,14 @@ async function csvDatasets(source: Source): Promise<DatasetRef[]> {
 }
 
 async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> {
-  let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1));
+  const configuredColumns = source.connector_config.columns;
+  let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1), {
+    headerRow: Number(source.connector_config.header_row ?? 1),
+    dataStartRow: Number(source.connector_config.data_start_row ?? Number(source.connector_config.header_row ?? 1) + 1),
+    columns: configuredColumns && typeof configuredColumns === "object" && !Array.isArray(configuredColumns)
+      ? configuredColumns as Record<string, string>
+      : undefined,
+  });
   const configuredRowLimit = Number(source.connector_config.row_limit);
   if (Number.isInteger(configuredRowLimit) && configuredRowLimit > 0) records = records.slice(0, Math.min(configuredRowLimit, 10_000));
   const total = records.length;

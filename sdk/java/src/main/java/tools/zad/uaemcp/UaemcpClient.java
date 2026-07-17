@@ -9,6 +9,7 @@ public final class UaemcpClient {
  public String getIndustryAtlas(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas",params);}
  public String getIndustryChange(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas/change",params);}
  public String getTaxServiceActivity2025(Map<String,String> params) throws Exception {return get("/api/v1/tax-services",params);}
+ public String getTaxServiceArchive(Map<String,String> params) throws Exception {return get("/api/v1/tax-services/archive",params);}
  public String listSources(Map<String,String> params) throws Exception {return get("/api/v1/sources",params);}
  public String search(Map<String,String> params) throws Exception {return get("/api/v1/search",params);}
  public String getRecords(String SourceId, Map<String,String> params) throws Exception {return get("/api/v1/sources/" + enc(SourceId) + "/records",params);}

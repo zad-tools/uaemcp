@@ -153,7 +153,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
-| `uae_sources_list` | List the 35 registered official sources |
+| `uae_sources_list` | List the 37 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -167,6 +167,7 @@ language. It is included in the main release check.
 | `uae_observatory` | Read national reliability, incidents and source profiles |
 | `uae_industry_atlas` | Build a bounded industrial evidence slice (`action=atlas`) or read the honest Change Monitor (`action=change`) |
 | `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
+| `uae_tax_service_archive` | Read the source-native FTA 2017–2022, 2024 and 2025 workbooks without unsafe cross-year comparison |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
@@ -174,6 +175,12 @@ language. It is included in the main release check.
 | `uae_intelligence_recipe` | Run coverage, freshness, history, emirate-comparison and trend recipes |
 | `uae_source_add_metadata` | Add metadata with a write token |
 | `uae_source_add` | Register a custom source for any installed connector (write token required) |
+
+FTA archive REST mirror: `GET /api/v1/tax-services/archive`. It returns the
+2017–2022 selected-services table, the source-native 2024 monthly table, and the
+2025 quarterly table as separate cited views. `comparison.status` is
+`unavailable`: 2023 is missing and the published scopes and schemas are not
+equivalent, so UAEMCP does not manufacture a trend or annual total.
 
 ## Unified catalog and coverage
 
@@ -187,11 +194,11 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 35 official sources indexed, 5 live record
+Current conservative coverage is 37 official sources indexed, 7 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 
-The fourth live connector is the official FGIC National Gazetteer. It exposes
+One live connector is the official FGIC National Gazetteer. It exposes
 bilingual UAE place names and coordinates through ArcGIS while omitting a known
 placeholder English-description field and retaining FGIC's informational-use disclaimer:
 

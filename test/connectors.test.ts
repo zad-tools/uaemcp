@@ -7,6 +7,7 @@ import { getBytes, getJson, getText, postJson } from "../src/http.js";
 import { exportRecords } from "../src/export.js";
 import { parseXlsx } from "../src/xlsx.js";
 import type { Source } from "../src/sources.js";
+import { zipSync, strToU8 } from "fflate";
 
 const mockGetJson = getJson as unknown as ReturnType<typeof vi.fn>;
 const mockGetText = getText as unknown as ReturnType<typeof vi.fn>;
@@ -175,6 +176,37 @@ describe("sparql connector", () => {
 });
 
 describe("xlsx connector", () => {
+  it("reads an official-style table from configured rows and selected columns", async () => {
+    const workbook = zipSync({
+      "[Content_Types].xml": strToU8('<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>'),
+      "xl/worksheets/sheet1.xml": strToU8(`<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+        <row r="1"><c r="A1" t="inlineStr"><is><t>Report title</t></is></c></row>
+        <row r="2"><c r="B2" t="inlineStr"><is><t>Services</t></is></c><c r="C2" t="inlineStr"><is><t>Jan</t></is></c><c r="D2" t="inlineStr"><is><t>Feb</t></is></c><c r="F2" t="inlineStr"><is><t>Mar</t></is></c></row>
+        <row r="3"><c r="B3" t="inlineStr"><is><t>VAT Registration</t></is></c><c r="C3"><v>10</v></c><c r="D3"><v>12</v></c><c r="F3"><v>14</v></c></row>
+      </sheetData></worksheet>`),
+    });
+    mockGetBytes.mockResolvedValue(workbook);
+    const source = mkSource({
+      kind: "xlsx",
+      base_url: "https://example.gov.ae/activity.xlsx",
+      connector_config: { header_row: 2, data_start_row: 3, columns: { Service: "B", Jan: "C", Feb: "D", Mar: "F" } },
+    });
+    const result = await fetchResult(source, { limit: 10 });
+    expect(result.records).toEqual([{ Service: "VAT Registration", Jan: 10, Feb: 12, Mar: 14 }]);
+  });
+  it("uses physical worksheet row numbers when earlier rows are omitted", () => {
+    const workbook = zipSync({
+      "[Content_Types].xml": strToU8('<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>'),
+      "xl/worksheets/sheet1.xml": strToU8('<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="2"><c r="B2" t="inlineStr"><is><t>Service</t></is></c></row><row r="4"><c r="B4" t="inlineStr"><is><t>First published service</t></is></c></row></sheetData></worksheet>'),
+    });
+    expect(parseXlsx(workbook, 1, { headerRow: 2, dataStartRow: 4, columns: { Service: "B" } })).toEqual([{ Service: "First published service" }]);
+  });
+  it("rejects invalid configured row boundaries", () => {
+    const workbook = exportRecords([{ name: "Clinic" }], "xlsx", mkSource({}), null).body;
+    expect(() => parseXlsx(workbook, 1, { headerRow: 0 })).toThrow("positive integer");
+    expect(() => parseXlsx(workbook, 1, { dataStartRow: 1.5 })).toThrow("positive integer");
+  });
+
   it("reads a bounded workbook and redacts contacts", async () => {
     const source = mkSource({ kind: "xlsx", base_url: "https://example.gov.ae/health.xlsx" });
     const workbook = exportRecords([{ name: "Clinic", count: 12, email: "care@example.com" }], "xlsx", source, null).body;

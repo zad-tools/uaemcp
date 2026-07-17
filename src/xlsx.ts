@@ -2,6 +2,11 @@ import { unzipSync } from "fflate";
 import { ValidationError } from "./errors.js";
 
 type Rec = Record<string, unknown>;
+export interface XlsxParseOptions {
+  headerRow?: number;
+  dataStartRow?: number;
+  columns?: Record<string, string>;
+}
 const decoder = new TextDecoder();
 
 function entity(value: string): string {
@@ -40,7 +45,10 @@ function column(reference: string): number {
   return [...letters].reduce((value, char) => value * 26 + char.charCodeAt(0) - 64, 0) - 1;
 }
 
-export function parseXlsx(bytes: Uint8Array, sheet = 1): Rec[] {
+export function parseXlsx(bytes: Uint8Array, sheet = 1, options: XlsxParseOptions = {}): Rec[] {
+  for (const [name, value] of [["headerRow", options.headerRow], ["dataStartRow", options.dataStartRow]] as const) {
+    if (value !== undefined && (!Number.isInteger(value) || value < 1)) throw new ValidationError(`XLSX ${name} must be a positive integer`);
+  }
   zipBudget(bytes);
   const files = unzipSync(bytes);
   const worksheet = files[`xl/worksheets/sheet${sheet}.xml`];
@@ -49,12 +57,13 @@ export function parseXlsx(bytes: Uint8Array, sheet = 1): Rec[] {
   const shared = [...sharedXml.matchAll(/<si(?:\s[^>]*)?>([\s\S]*?)<\/si>/g)].map((match) => texts(match[1]).join(""));
   const xml = decoder.decode(worksheet);
   const matrix: unknown[][] = [];
-  for (const rowMatch of xml.matchAll(/<row(?:\s[^>]*)?>([\s\S]*?)<\/row>/g)) {
+  for (const rowMatch of xml.matchAll(/<row([^>]*)>([\s\S]*?)<\/row>/g)) {
     const row: unknown[] = [];
-    for (const cellMatch of rowMatch[1].matchAll(/<c\s([^>]*)>([\s\S]*?)<\/c>/g)) {
+    const physicalRow = Number(rowMatch[1].match(/\br="(\d+)"/)?.[1] ?? matrix.length + 1);
+    for (const cellMatch of rowMatch[2].matchAll(/<c\s([^>]*)>([\s\S]*?)<\/c>/g)) {
       const attrs = cellMatch[1];
       const body = cellMatch[2];
-      const ref = attrs.match(/\br="([^"]+)"/)?.[1] ?? `A${matrix.length + 1}`;
+      const ref = attrs.match(/\br="([^"]+)"/)?.[1] ?? `A${physicalRow}`;
       const type = attrs.match(/\bt="([^"]+)"/)?.[1] ?? "n";
       const raw = body.match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? texts(body).join("");
       let value: unknown = entity(raw);
@@ -63,10 +72,22 @@ export function parseXlsx(bytes: Uint8Array, sheet = 1): Rec[] {
       else if (type === "b") value = raw === "1";
       row[column(ref)] = value;
     }
-    matrix.push(row);
+    matrix[physicalRow - 1] = row;
   }
-  const headers = (matrix.shift() ?? []).map((value, index) => String(value ?? "").trim() || `column_${index + 1}`);
+  const headerIndex = Math.max(0, (options.headerRow ?? 1) - 1);
+  const dataStartIndex = Math.max(headerIndex + 1, (options.dataStartRow ?? headerIndex + 2) - 1);
+  if (options.columns) {
+    const selected = Object.entries(options.columns).map(([name, reference]) => {
+      if (!name.trim() || !/^[A-Z]+$/i.test(reference)) throw new ValidationError("XLSX column mapping is invalid");
+      return [name.trim(), column(reference)] as const;
+    });
+    if (!selected.length || new Set(selected.map(([name]) => name)).size !== selected.length) throw new ValidationError("XLSX column mapping contains duplicate headers");
+    return matrix.slice(dataStartIndex)
+      .filter((row) => selected.some(([, index]) => row[index] !== undefined && row[index] !== ""))
+      .map((row) => Object.fromEntries(selected.map(([name, index]) => [name, row[index] ?? null])));
+  }
+  const headers = (matrix[headerIndex] ?? []).map((value, index) => String(value ?? "").trim() || `column_${index + 1}`);
   if (!headers.length) return [];
   if (new Set(headers).size !== headers.length) throw new ValidationError("XLSX contains duplicate headers");
-  return matrix.filter((row) => row.some((value) => value !== undefined && value !== "")).map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? null])));
+  return matrix.slice(dataStartIndex).filter((row) => row.some((value) => value !== undefined && value !== "")).map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? null])));
 }

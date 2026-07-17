@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 35 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(35);
+  it("lists 37 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(37);
   });
 
   it("registers the official FGIC National Gazetteer as a live geospatial source", () => {
@@ -28,6 +28,11 @@ describe("Registry", () => {
     expect(REGISTRY.get("fta_service_activity_2025")).toMatchObject({
       owner: "Federal Tax Authority", kind: "xlsx", access_status: "live",
       connector_config: { sheet: 1, row_limit: 10 },
+    });
+    expect(REGISTRY.get("fta_service_activity_2024")).toMatchObject({
+      kind: "xlsx",
+      access_status: "live",
+      connector_config: { header_row: 2, data_start_row: 4, row_limit: 17 },
     });
   });
 

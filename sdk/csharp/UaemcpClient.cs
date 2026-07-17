@@ -8,6 +8,7 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> GetIndustryAtlas(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/industry-atlas",parameters,cancellationToken);
  public Task<JsonDocument> GetIndustryChange(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/industry-atlas/change",parameters,cancellationToken);
  public Task<JsonDocument> GetTaxServiceActivity2025(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/tax-services",parameters,cancellationToken);
+ public Task<JsonDocument> GetTaxServiceArchive(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/tax-services/archive",parameters,cancellationToken);
  public Task<JsonDocument> ListSources(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources",parameters,cancellationToken);
  public Task<JsonDocument> Search(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/search",parameters,cancellationToken);
  public Task<JsonDocument> GetRecords(string SourceId, IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources/" + Uri.EscapeDataString(SourceId) + "/records",parameters,cancellationToken);

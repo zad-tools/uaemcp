@@ -27,6 +27,7 @@ import { coverageIndicator, healthIndicator, industrialDistributionIndicator, li
 import { buildIndustryAtlas } from "./industry-atlas.js";
 import { buildIndustrialChangeReport } from "./industry-change.js";
 import { buildTaxServiceReport } from "./tax-services.js";
+import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-archive.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -58,6 +59,19 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         return text(ok(buildTaxServiceReport(result.records, { citation: result.citation, fetchedAt: result.fetched_at }), {
           ...metaOf(result), source_id: source.id, returned_records: result.records.length,
         }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_tax_service_archive",
+    {
+      description: "Read the official FTA source-native service workbooks for 2017–2022, 2024 and 2025. Cross-year comparison is deliberately unavailable because scopes and schemas differ and 2023 is missing.",
+    },
+    async () => {
+      try {
+        const views = await loadTaxArchiveViews(dependencies.fetchTaxArchiveRecords ?? fetchResult);
+        return text(ok(buildTaxArchive(views), { source_ids: TAX_ARCHIVE_SPECS.map(([sourceId]) => sourceId), comparison_status: "unavailable" }));
       } catch (error) { return text(fail(error)); }
     },
   );
