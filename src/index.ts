@@ -6,6 +6,7 @@ import { SETTINGS } from "./config.js";
 import { buildServer } from "./server.js";
 import { REGISTRY } from "./sources.js";
 import { handleRest } from "./rest.js";
+import { checkRateLimit } from "./rate-limit.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
@@ -24,10 +25,25 @@ function rejectedRequest(request: Request): Response | null {
     return json({ error: { code: "INVALID_HOST", message: "Host is not allowed" } }, 421);
   }
   const origin = request.headers.get("origin");
-  if (origin && SETTINGS.allowedOrigins.length && !SETTINGS.allowedOrigins.includes(origin)) {
+  if (origin && SETTINGS.allowedOrigins.length && !SETTINGS.allowedOrigins.includes("*") && !SETTINGS.allowedOrigins.includes(origin)) {
     return json({ error: { code: "INVALID_ORIGIN", message: "Origin is not allowed" } }, 403);
   }
   return null;
+}
+
+function responseHeaders(request: Request, response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("x-content-type-options", "nosniff");
+  headers.set("x-frame-options", "DENY");
+  headers.set("referrer-policy", "no-referrer");
+  headers.set("x-request-id", request.headers.get("x-request-id") || crypto.randomUUID());
+  const origin = request.headers.get("origin");
+  if (origin && (SETTINGS.allowedOrigins.includes("*") || SETTINGS.allowedOrigins.includes(origin))) {
+    headers.set("access-control-allow-origin", SETTINGS.allowedOrigins.includes("*") ? "*" : origin);
+    headers.set("access-control-expose-headers", "mcp-session-id,mcp-protocol-version,x-request-id");
+    headers.append("vary", "origin");
+  }
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
 export function createFetchHandler(): (request: Request) => Promise<Response> {
@@ -36,25 +52,48 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
     requestCount += 1;
 
     const rejection = rejectedRequest(request);
-    if (rejection) return rejection;
+    if (rejection) return responseHeaders(request, rejection);
+    if (request.method === "OPTIONS") {
+      const headers = new Headers({
+        "access-control-allow-methods": "GET,POST,DELETE,OPTIONS",
+        "access-control-allow-headers": "content-type,accept,mcp-session-id,mcp-protocol-version,x-api-key,x-request-id",
+        "access-control-max-age": "86400",
+      });
+      const origin = request.headers.get("origin");
+      if (origin && (SETTINGS.allowedOrigins.includes("*") || SETTINGS.allowedOrigins.includes(origin))) {
+        headers.set("access-control-allow-origin", SETTINGS.allowedOrigins.includes("*") ? "*" : origin);
+      }
+      return new Response(null, { status: 204, headers });
+    }
+    if (!["/health", "/healthz", "/ready", "/readyz", "/metrics"].includes(path)) {
+      const rate = checkRateLimit(request);
+      if (!rate.allowed) {
+        return responseHeaders(request, json({
+          ok: false,
+          data: null,
+          error: { code: "RATE_LIMITED", message: "Too many requests" },
+          meta: { retryAfter: rate.retryAfter },
+        }, 429));
+      }
+    }
 
     if (path === "/health" || path === "/healthz") {
-      return json({ status: "alive", runtime: "bun" });
+      return responseHeaders(request, json({ status: "alive", runtime: "bun" }));
     }
     if (path === "/ready" || path === "/readyz") {
-      return json({ status: "ready", sources: REGISTRY.list().length });
+      return responseHeaders(request, json({ status: "ready", sources: REGISTRY.list().length }));
     }
     if (path === "/metrics") {
       const uptime = (Date.now() - startedAt) / 1000;
-      return new Response(
+      return responseHeaders(request, new Response(
         `# TYPE uaemcp_http_requests_total counter\nuaemcp_http_requests_total ${requestCount}\n` +
           `# TYPE uaemcp_uptime_seconds gauge\nuaemcp_uptime_seconds ${uptime}\n`,
         { headers: { "content-type": "text/plain; version=0.0.4" } },
-      );
+      ));
     }
     const restResponse = await handleRest(request);
-    if (restResponse) return restResponse;
-    if (path !== "/mcp") return new Response("not found", { status: 404 });
+    if (restResponse) return responseHeaders(request, restResponse);
+    if (path !== "/mcp") return responseHeaders(request, new Response("not found", { status: 404 }));
 
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
@@ -64,7 +103,7 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
     await server.connect(transport);
 
     try {
-      return await transport.handleRequest(request);
+      return responseHeaders(request, await transport.handleRequest(request));
     } catch (error) {
       await transport.close();
       await server.close();

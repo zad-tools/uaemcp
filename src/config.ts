@@ -30,6 +30,7 @@ export interface Settings {
   userAgent: string;
   allowedHosts: string[];
   allowedOrigins: string[];
+  rateLimitPerMinute: number;
 }
 
 export const SETTINGS: Settings = {
@@ -46,6 +47,7 @@ export const SETTINGS: Settings = {
     "Mozilla/5.0 (compatible; UAEMCP/0.1; +https://github.com/)",
   allowedHosts: list("UAEMCP_ALLOWED_HOSTS"),
   allowedOrigins: list("UAEMCP_ALLOWED_ORIGINS"),
+  rateLimitPerMinute: num("UAEMCP_RATE_LIMIT_PER_MINUTE", 120),
 };
 
 export const writesEnabled = (): boolean => Boolean(SETTINGS.writeToken);

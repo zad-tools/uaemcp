@@ -90,6 +90,22 @@ license, citation, fetch time, and quality metadata.
 | `UAEMCP_CACHE_TTL` | `300` | Dashboard cache TTL in seconds |
 | `UAEMCP_MAX_RESPONSE_BYTES` | `5242880` | Maximum upstream response size |
 | `UAEMCP_ALLOW_PRIVATE_HOSTS` | `false` | Allow private upstream hosts |
+| `UAEMCP_ALLOWED_HOSTS` | unset | Comma-separated public host allowlist |
+| `UAEMCP_ALLOWED_ORIGINS` | unset | Browser origin allowlist; use `*` only for fully public reads |
+| `UAEMCP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client public request limit; `0` disables it |
+
+## Hosted public proxy
+
+The same server can be offered as a public MCP endpoint for users who cannot
+self-host. Put it behind Nginx using [`deploy/nginx.conf`](deploy/nginx.conf),
+set the public host/origin allowlists, keep write tools disabled, and expose:
+
+```text
+https://your-domain.example/mcp
+```
+
+The Nginx configuration disables buffering, caching, and compression on `/mcp`
+so Streamable HTTP responses are not delayed or rewritten.
 
 ## Verify
 

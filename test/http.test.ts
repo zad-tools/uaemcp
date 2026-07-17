@@ -97,4 +97,19 @@ describe("Bun HTTP runtime", () => {
       SETTINGS.allowedHosts = previous;
     }
   });
+
+  it("supports allowlisted browser clients and preflight", async () => {
+    const previous = SETTINGS.allowedOrigins;
+    SETTINGS.allowedOrigins = ["https://app.example"];
+    try {
+      const response = await createFetchHandler()(new Request("http://localhost/health", {
+        method: "OPTIONS",
+        headers: { origin: "https://app.example" },
+      }));
+      expect(response.status).toBe(204);
+      expect(response.headers.get("access-control-allow-origin")).toBe("https://app.example");
+    } finally {
+      SETTINGS.allowedOrigins = previous;
+    }
+  });
 });

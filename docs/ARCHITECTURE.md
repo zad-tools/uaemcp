@@ -24,3 +24,5 @@ resource URIs, response envelopes, and REST v1 fields are compatibility surfaces
 - Upstream payloads are size-limited and treated as untrusted.
 - Direct-contact fields are redacted before results leave connectors.
 - Writes require a constant-time token comparison and are disabled by default.
+- Public requests pass a bounded in-memory per-client rate limiter; distributed
+  deployments should enforce a second shared limit at the gateway.
