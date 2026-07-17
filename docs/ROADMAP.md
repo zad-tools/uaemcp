@@ -24,7 +24,7 @@
 - UAE geography normalization
 - Cross-source entity resolution
 - Indicators with methodology, lineage and limitations
-- Scheduled snapshot policies and retention controls
+- Additional distributed scheduling options for multi-replica deployments
 - More live public connectors, prioritizing datasets with clear reuse licenses
 
 ## v2.0 — Government intelligence core

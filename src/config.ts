@@ -11,6 +11,11 @@ function bool(name: string, def: boolean): boolean {
   return ["1", "true", "yes", "on"].includes(v.trim().toLowerCase());
 }
 
+function positiveInt(name: string, def: number, max: number): number {
+  const value = num(name, def);
+  return Number.isInteger(value) && value > 0 ? Math.min(value, max) : def;
+}
+
 function list(name: string): string[] {
   return (process.env[name] ?? "")
     .split(",")
@@ -32,6 +37,11 @@ export interface Settings {
   allowedOrigins: string[];
   rateLimitPerMinute: number;
   databasePath: string;
+  snapshotIntervalMinutes: number;
+  snapshotTargets: string[];
+  snapshotLimit: number;
+  snapshotRetention: number;
+  healthRetention: number;
 }
 
 export const SETTINGS: Settings = {
@@ -50,6 +60,11 @@ export const SETTINGS: Settings = {
   allowedOrigins: list("UAEMCP_ALLOWED_ORIGINS"),
   rateLimitPerMinute: num("UAEMCP_RATE_LIMIT_PER_MINUTE", 120),
   databasePath: process.env.UAEMCP_DATABASE_PATH ?? "data/uaemcp.sqlite",
+  snapshotIntervalMinutes: num("UAEMCP_SNAPSHOT_INTERVAL_MINUTES", 0),
+  snapshotTargets: list("UAEMCP_SNAPSHOT_TARGETS"),
+  snapshotLimit: positiveInt("UAEMCP_SNAPSHOT_LIMIT", 100, 1000),
+  snapshotRetention: positiveInt("UAEMCP_SNAPSHOT_RETENTION", 30, 10_000),
+  healthRetention: positiveInt("UAEMCP_HEALTH_RETENTION", 10_000, 1_000_000),
 };
 
 export const writesEnabled = (): boolean => Boolean(SETTINGS.writeToken);

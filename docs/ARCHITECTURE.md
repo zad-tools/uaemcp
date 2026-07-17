@@ -36,6 +36,8 @@ semantic concepts, provenance, and inference lineage.
 The Bun SQLite store records bounded health observations and explicit dataset
 snapshots. Snapshot creation is a protected write; listing and comparison are
 read operations. Containers mount `/app/data`, so history survives deployments.
+An optional in-process scheduler captures only explicitly configured live
+targets. It deduplicates unchanged content and enforces per-source retention.
 
 Intelligence recipes are application services rather than new one-off connector
 tools. Every recipe returns an answer, methodology, evidence, limitations and

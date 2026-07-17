@@ -49,8 +49,12 @@ export class ReliabilityStore {
   }
 
   recordHealth(result: HealthResult, checkedAt = new Date().toISOString()): void {
-    this.db.query(`INSERT INTO health_checks (source_id,status,latency_ms,record_count,message,checked_at) VALUES (?,?,?,?,?,?)`)
-      .run(result.source_id, result.status, result.latency_ms, result.record_count, result.message, checkedAt);
+    this.db.transaction(() => {
+      this.db.query(`INSERT INTO health_checks (source_id,status,latency_ms,record_count,message,checked_at) VALUES (?,?,?,?,?,?)`)
+        .run(result.source_id, result.status, result.latency_ms, result.record_count, result.message, checkedAt);
+      this.db.query(`DELETE FROM health_checks WHERE source_id=? AND id NOT IN (SELECT id FROM health_checks WHERE source_id=? ORDER BY checked_at DESC,id DESC LIMIT ?)`)
+        .run(result.source_id, result.source_id, SETTINGS.healthRetention);
+    })();
   }
 
   healthHistory(sourceId: string, limit = 100): Rec {
@@ -76,9 +80,17 @@ export class ReliabilityStore {
     const body = canonical(records);
     const schema = inferSchema(records);
     const hash = Bun.hash(body).toString(16);
-    const result = this.db.query(`INSERT INTO snapshots (source_id,dataset,records_json,schema_json,record_count,content_hash,captured_at) VALUES (?,?,?,?,?,?,?)`)
-      .run(sourceId, dataset, body, JSON.stringify(schema), records.length, hash, capturedAt);
-    return { id: Number(result.lastInsertRowid), sourceId, dataset, recordCount: records.length, contentHash: hash, capturedAt };
+    const previous = this.db.query(`SELECT id,captured_at FROM snapshots WHERE source_id=? AND dataset IS ? AND content_hash=? ORDER BY captured_at DESC LIMIT 1`).get(sourceId, dataset, hash) as Rec | null;
+    if (previous) return { id: Number(previous.id), sourceId, dataset, recordCount: records.length, contentHash: hash, capturedAt: previous.captured_at, created: false, unchanged: true };
+    let id = 0;
+    this.db.transaction(() => {
+      const result = this.db.query(`INSERT INTO snapshots (source_id,dataset,records_json,schema_json,record_count,content_hash,captured_at) VALUES (?,?,?,?,?,?,?)`)
+        .run(sourceId, dataset, body, JSON.stringify(schema), records.length, hash, capturedAt);
+      id = Number(result.lastInsertRowid);
+      this.db.query(`DELETE FROM snapshots WHERE source_id=? AND dataset IS ? AND id NOT IN (SELECT id FROM snapshots WHERE source_id=? AND dataset IS ? ORDER BY captured_at DESC,id DESC LIMIT ?)`)
+        .run(sourceId, dataset, sourceId, dataset, SETTINGS.snapshotRetention);
+    })();
+    return { id, sourceId, dataset, recordCount: records.length, contentHash: hash, capturedAt, created: true, unchanged: false };
   }
 
   listSnapshots(sourceId: string, dataset: string | null, limit = 20): Rec[] {

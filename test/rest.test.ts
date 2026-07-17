@@ -75,4 +75,9 @@ describe("REST v1", () => {
     expect(result.data.methodology).toBeObject();
     expect(result.data.limitations).toBeArray();
   });
+
+  it("exposes safe snapshot scheduler status", async () => {
+    const payload = await fetch(`${baseUrl}/api/v1/operations/snapshot-scheduler`).then((response) => response.json());
+    expect(payload.data).toMatchObject({ enabled: false, running: false, targets: [] });
+  });
 });

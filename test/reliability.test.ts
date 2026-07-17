@@ -22,4 +22,15 @@ describe("reliability store", () => {
     expect(diff.recordDiff).toMatchObject({ added: 2, removed: 1 });
     expect(diff.schemaDiff.addedFields).toContain("value");
   });
+
+  it("deduplicates unchanged snapshots and enforces retention", () => {
+    store = new ReliabilityStore(":memory:");
+    const first = store.saveSnapshot("source", null, [{ value: 1 }], "2026-01-01T00:00:00Z") as { id: number };
+    const duplicate = store.saveSnapshot("source", null, [{ value: 1 }], "2026-01-02T00:00:00Z");
+    expect(duplicate).toMatchObject({ id: first.id, created: false, unchanged: true });
+    for (let value = 2; value <= 35; value += 1) {
+      store.saveSnapshot("source", null, [{ value }], `2026-02-${String(Math.min(value, 28)).padStart(2, "0")}T00:00:00Z`);
+    }
+    expect(store.listSnapshots("source", null, 100)).toHaveLength(30);
+  });
 });

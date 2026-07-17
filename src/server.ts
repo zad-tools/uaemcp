@@ -21,6 +21,7 @@ import { capabilitiesFor, coverageSummary, datasetModel, portalModel } from "./c
 import { SERVER_NAME, VERSION } from "./version.js";
 import { reliabilityStore } from "./reliability.js";
 import { listRecipes, runRecipe } from "./intelligence.js";
+import { snapshotScheduler } from "./scheduler.js";
 
 type Json = Record<string, unknown>;
 
@@ -288,6 +289,13 @@ export function buildServer(): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "snapshot_scheduler_status",
+    "uae://operations/snapshot-scheduler",
+    { title: "Snapshot scheduler status", description: "Current schedule, targets, retention and latest run results.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json(snapshotScheduler.status()) }] }),
+  );
 
   server.registerResource(
     "intelligence_recipes",

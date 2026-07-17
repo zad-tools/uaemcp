@@ -6,7 +6,7 @@ Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
 The server keeps the public `uaemcp` contract and extends it to 14 source-cited
-MCP tools, five resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
+MCP tools, six resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
 connectors, geo queries, aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
 bounded dataset snapshots for repeatable comparisons.
@@ -129,6 +129,15 @@ license, citation, fetch time, and quality metadata.
 | `UAEMCP_ALLOWED_ORIGINS` | unset | Browser origin allowlist; use `*` only for fully public reads |
 | `UAEMCP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client public request limit; `0` disables it |
 | `UAEMCP_DATABASE_PATH` | `data/uaemcp.sqlite` | Durable health-history and snapshot database |
+| `UAEMCP_HEALTH_RETENTION` | `10000` | Maximum stored health checks per source |
+| `UAEMCP_SNAPSHOT_RETENTION` | `30` | Maximum changed snapshots per source/dataset |
+| `UAEMCP_SNAPSHOT_INTERVAL_MINUTES` | `0` | Snapshot schedule; `0` disables it |
+| `UAEMCP_SNAPSHOT_TARGETS` | unset | Comma-separated `source` or `source@dataset` targets |
+| `UAEMCP_SNAPSHOT_LIMIT` | `100` | Records captured per scheduled target |
+
+The scheduler starts with the HTTP server, runs immediately and then at the
+configured interval. Identical payloads are deduplicated. Inspect its state at
+`GET /api/v1/operations/snapshot-scheduler`.
 
 ## Hosted public proxy
 

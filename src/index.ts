@@ -7,6 +7,7 @@ import { buildServer } from "./server.js";
 import { REGISTRY } from "./sources.js";
 import { handleRest } from "./rest.js";
 import { checkRateLimit } from "./rate-limit.js";
+import { snapshotScheduler } from "./scheduler.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
@@ -118,6 +119,7 @@ export async function runStdio(): Promise<void> {
 
 export function runHttp(host = SETTINGS.host, port = SETTINGS.port): Bun.Server<unknown> {
   const server = Bun.serve({ hostname: host, port, fetch: createFetchHandler() });
+  snapshotScheduler.start();
   process.stderr.write(`uaemcp http listening on ${server.url}mcp\n`);
   return server;
 }
