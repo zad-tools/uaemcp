@@ -166,6 +166,8 @@ describe("REST v1", () => {
     expect(manifest.endpoints.taxServiceActivity).toBe("/tax-services");
     expect(manifest.tools.read).toContain("uae_tax_service_activity");
     expect(manifest.tools.read).toContain("uae_tax_service_archive");
+    expect(manifest.tools.read).toContain("uae_place_names");
+    expect(manifest.endpoints).toMatchObject({ placeNames: "/places", placeNamesApi: "/api/v1/places" });
     expect(manifest.endpoints.taxServiceArchive).toBe("/api/v1/tax-services/archive");
     expect(manifest.endpoints.taxServiceArchivePage).toBe("/tax-services/archive");
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
