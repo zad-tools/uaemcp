@@ -3,24 +3,23 @@
 UAEMCP exposes the same read-oriented tools through two transports:
 
 - **Hosted Streamable HTTP:** `https://uaemcp.zad.tools/mcp`
-- **Local stdio with Bun:** `bunx --bun github:zad-tools/uaemcp#main`
+- **Local stdio with Bun:** `bunx --bun uaemcp@latest`
 
 Use hosted HTTP for the shortest setup. Use stdio when the client launches local
 servers and Bun 1.3 or newer is installed. The hosted endpoint is public and
 does not require an API key; tool calls are still subject to the gateway's rate
 limit.
 
-> **npm status:** npm `latest` is still `0.2.2`, not this Bun rewrite. Do not use
-> `bunx uaemcp` until Trusted Publishing is connected and the npm badge reports
-> `1.75.0` or newer. The GitHub command below runs the CI-tested `main` branch,
-> so pin a commit instead of `#main` when reproducibility matters.
+> **npm status:** npm `latest` is the signed Bun release published from GitHub
+> Actions through Trusted Publishing with provenance. Use `uaemcp@1.75.1` instead
+> of `@latest` when reproducibility matters.
 
 ## Quick matrix
 
 | Client | Hosted HTTP | Bun GitHub stdio | Where to add it |
 | --- | --- | --- | --- |
 | Claude Desktop / Claude.ai | Add a custom remote connector with the hosted URL | Add the JSON below as a local developer MCP server | Settings → Connectors for remote; Developer settings for local |
-| Claude Code | `claude mcp add --transport http uae-intelligence https://uaemcp.zad.tools/mcp` | `claude mcp add uae-intelligence -- bunx --bun github:zad-tools/uaemcp#main` | CLI; verify with `/mcp` |
+| Claude Code | `claude mcp add --transport http uae-intelligence https://uaemcp.zad.tools/mcp` | `claude mcp add uae-intelligence -- bunx --bun uaemcp@latest` | CLI; verify with `/mcp` |
 | Cursor | Remote entry below | stdio entry below | `.cursor/mcp.json` or the user MCP settings |
 | VS Code | HTTP entry below | stdio entry below | `.vscode/mcp.json` or **MCP: Open User Configuration** |
 | Cline | Use its MCP Servers UI if the installed version offers Streamable HTTP | Add the stdio command in its MCP Servers UI | Cline → MCP Servers; field names vary by Cline version |
@@ -43,7 +42,7 @@ Claude Desktop:
   "mcpServers": {
     "uae-intelligence": {
       "command": "bunx",
-      "args": ["--bun", "github:zad-tools/uaemcp#main"]
+      "args": ["--bun", "uaemcp@latest"]
     }
   }
 }
@@ -79,7 +78,7 @@ Local stdio:
   "mcpServers": {
     "uae-intelligence": {
       "command": "bunx",
-      "args": ["--bun", "github:zad-tools/uaemcp#main"]
+      "args": ["--bun", "uaemcp@latest"]
     }
   }
 }
@@ -113,7 +112,7 @@ Local stdio:
     "uaeIntelligence": {
       "type": "stdio",
       "command": "bunx",
-      "args": ["--bun", "github:zad-tools/uaemcp#main"]
+      "args": ["--bun", "uaemcp@latest"]
     }
   }
 }
@@ -140,7 +139,7 @@ Local stdio:
 ```toml
 [mcp_servers.uae-intelligence]
 command = "bunx"
-args = ["--bun", "github:zad-tools/uaemcp#main"]
+args = ["--bun", "uaemcp@latest"]
 ```
 
 Restart Codex after editing the configuration and check that the server's tools
@@ -182,7 +181,7 @@ Product counts can change, so the test does not require a fixed count.
 | Symptom | Check |
 | --- | --- |
 | No tools appear | Restart the client, confirm the server is enabled, and refresh/reset its MCP tool cache. |
-| `bunx` is not found | Install Bun 1.3+, then run `bun --version` and `bunx --bun github:zad-tools/uaemcp#main doctor` in a terminal. GUI apps may need an absolute path to `bunx` when their `PATH` differs from the shell. |
+| `bunx` is not found | Install Bun 1.3+, then run `bun --version` and `bunx --bun uaemcp@latest doctor` in a terminal. GUI apps may need an absolute path to `bunx` when their `PATH` differs from the shell. |
 | Local server exits immediately | Run the exact `bunx` command in a terminal. MCP stdio reserves stdout for protocol messages; inspect client logs or stderr for diagnostics. |
 | Hosted connection fails | Check `https://uaemcp.zad.tools/ready`. A healthy process does not guarantee that every upstream UAE portal is available. |
 | Client reports an HTTP or SSE mismatch | Select **Streamable HTTP**, not a legacy SSE-only mode. The UAEMCP endpoint is `/mcp`; a REST route such as `/api/v1` is not an MCP endpoint. |

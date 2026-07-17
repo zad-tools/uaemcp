@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.75.1 — 2026-07-18
+
+- Updated every local MCP client recipe to use the signed npm release through Bun instead of the moving GitHub branch.
+- Added a release gate that proves the GHCR image is publicly readable without registry credentials.
+- Enabled public packages for the `zad-tools` organization and published `ghcr.io/zad-tools/uaemcp` for anonymous multi-architecture pulls.
+
 ## 1.75.0 — 2026-07-18
 
 - Added MOHRE Employment by Gender over the ministry's official 2020–2024 workbook: ten validated annual male/female ratio observations.
