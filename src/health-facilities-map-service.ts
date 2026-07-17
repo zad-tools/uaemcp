@@ -12,6 +12,7 @@ let liveCache: Readonly<{ expiresAt: number; result: FetchResult }> | null = nul
 
 export async function loadHealthFacilitiesMap(fetcher: Fetcher = fetchResult, options: HealthFacilitiesMapOptions = {}) {
   const source = REGISTRY.get(SOURCE_ID);
+  if (fetcher === fetchResult) return snapshot(options);
   if (fetcher === fetchResult && Date.now() < retryAt) return snapshot(options, "MOHAP GIS workbook fetch is temporarily in backoff after an upstream failure.");
   try {
     const cached = fetcher === fetchResult && liveCache && Date.now() < liveCache.expiresAt ? liveCache.result : null;
@@ -25,11 +26,12 @@ export async function loadHealthFacilitiesMap(fetcher: Fetcher = fetchResult, op
   }
 }
 
-function snapshot(options: HealthFacilitiesMapOptions, upstreamError: string) {
+function snapshot(options: HealthFacilitiesMapOptions, upstreamError?: string) {
   const report = buildHealthFacilitiesMap(MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT, { ...options, citation: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.source, fetchedAt: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retrievedAt });
+  const complete = MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retainedRows === MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.sourceRows;
   return {
-    data: { ...report, limitations: [...report.limitations, "The live MOHAP workbook was unavailable; this response uses a small retained snapshot and is not representative of all 15,326 published rows."] },
-    meta: { source_id: SOURCE_ID, citation: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.source, fetched_at: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retrievedAt, delivery: "verified_snapshot", partial: true, upstream_error: upstreamError, sha256: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.sha256, source_rows: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.sourceRows, returned_records: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retainedRows },
+    data: { ...report, limitations: [...report.limitations, complete ? "This response uses a release-pinned, SHA-256 verified copy of all 15,326 published workbook rows." : "This response uses a retained subset and is not representative of all published rows."] },
+    meta: { source_id: SOURCE_ID, citation: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.source, fetched_at: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retrievedAt, delivery: "verified_snapshot", partial: !complete, ...(upstreamError ? { upstream_error: upstreamError } : {}), sha256: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.sha256, source_rows: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.sourceRows, returned_records: MOHAP_HEALTH_FACILITIES_MAP_SNAPSHOT_META.retainedRows },
   } as const;
 }
 

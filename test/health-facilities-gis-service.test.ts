@@ -12,10 +12,10 @@ describe("MOHAP Health Facilities GIS service", () => {
     expect(loaded.meta).toMatchObject({ source_id: "mohap_health_facilities_gis_2026", delivery: "live", partial: false, source_rows: 1 });
   });
 
-  it("uses a small verified snapshot when the official workbook is unavailable", async () => {
+  it("uses the complete verified snapshot when the official workbook is unavailable", async () => {
     const loaded = await loadHealthFacilitiesMap(async () => { throw new Error("blocked"); });
     expect(loaded.data.features.length).toBeGreaterThan(0);
-    expect(loaded.meta).toMatchObject({ delivery: "verified_snapshot", partial: true, upstream_error: "blocked" });
-    expect(loaded.data.limitations.join(" ")).toContain("small retained snapshot");
+    expect(loaded.meta).toMatchObject({ delivery: "verified_snapshot", partial: false, upstream_error: "blocked", source_rows: 15326, returned_records: 15326 });
+    expect(loaded.data.limitations.join(" ")).toContain("all 15,326 published workbook rows");
   });
 });
