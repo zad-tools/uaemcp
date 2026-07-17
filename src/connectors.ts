@@ -24,6 +24,14 @@ export interface DataQuality {
   confidence: number;
   warnings: string[];
   validation: Record<string, unknown>;
+  completeness: number;
+  freshness: { status: "current" | "stale" | "unknown"; observed_at: string | null };
+  source_trust: "official_registry" | "custom_source";
+  coverage: { returned: number; upstream_total: number | null; ratio: number | null };
+  schema_stability: { status: "stable" | "changed" | "unknown"; compared_to: string | null };
+  last_successful_sync: string | null;
+  record_count_trend: { status: "up" | "down" | "unchanged" | "unknown"; change: number | null };
+  quality_score: number;
 }
 
 export interface DatasetRef {
@@ -86,8 +94,18 @@ function coerceRecords(node: unknown): Rec[] {
 }
 
 function scoreConfidence(records: Rec[], total: number | null, clientFiltered: boolean): DataQuality {
+  const populated = records.reduce((count, record) => count + Object.values(record).filter((value) => value !== null && value !== undefined && value !== "").length, 0);
+  const cells = records.reduce((count, record) => count + Object.keys(record).length, 0);
+  const completeness = cells ? Number((populated / cells).toFixed(3)) : 0;
+  const coverageRatio = total && total > 0 ? Number(Math.min(1, records.length / total).toFixed(3)) : null;
   if (records.length === 0) {
-    return { confidence: 0, warnings: ["no records returned"], validation: { records_out: 0, upstream_total: total } };
+    return {
+      confidence: 0, warnings: ["no records returned"], validation: { records_out: 0, upstream_total: total },
+      completeness, freshness: { status: "unknown", observed_at: null }, source_trust: "official_registry",
+      coverage: { returned: 0, upstream_total: total, ratio: coverageRatio },
+      schema_stability: { status: "unknown", compared_to: null }, last_successful_sync: null,
+      record_count_trend: { status: "unknown", change: null }, quality_score: 0,
+    };
   }
   let confidence = total !== null ? 0.9 : 0.7;
   const warnings: string[] = [];
@@ -95,15 +113,24 @@ function scoreConfidence(records: Rec[], total: number | null, clientFiltered: b
     confidence -= 0.1;
     warnings.push("results filtered client-side; upstream total may differ");
   }
+  const boundedConfidence = Math.max(0, Math.min(1, Number(confidence.toFixed(3))));
   return {
-    confidence: Math.max(0, Math.min(1, Number(confidence.toFixed(3)))),
+    confidence: boundedConfidence,
     warnings,
     validation: { records_out: records.length, upstream_total: total },
+    completeness,
+    freshness: { status: "unknown", observed_at: null },
+    source_trust: "official_registry",
+    coverage: { returned: records.length, upstream_total: total, ratio: coverageRatio },
+    schema_stability: { status: "unknown", compared_to: null },
+    last_successful_sync: utcNow(),
+    record_count_trend: { status: "unknown", change: null },
+    quality_score: Number((boundedConfidence * 0.7 + completeness * 0.3).toFixed(3)),
   };
 }
 
 function result(source: Source, records: Rec[], extra: Partial<FetchResult> = {}): FetchResult {
-  return {
+  const output = {
     records,
     source_id: source.id,
     fetched_at: utcNow(),
@@ -115,6 +142,8 @@ function result(source: Source, records: Rec[], extra: Partial<FetchResult> = {}
     data_quality: scoreConfidence(records, extra.total ?? null, false),
     ...extra,
   };
+  output.data_quality.source_trust = source.origin === "built_in" ? "official_registry" : "custom_source";
+  return output;
 }
 
 /** Envelope `meta` block for record endpoints/tools. */

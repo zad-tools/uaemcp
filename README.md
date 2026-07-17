@@ -113,7 +113,9 @@ connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 
 Tool results use `{ ok, data, error, meta }`. Data responses include source,
-license, citation, fetch time, and quality metadata.
+license, citation, fetch time, completeness, sample coverage, source trust,
+freshness, schema stability, record-count trend and a composite quality score.
+Unknown measurements stay explicitly `unknown` until history can prove them.
 
 ## Configuration
 
@@ -163,3 +165,4 @@ docker compose up --build
 
 MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 Connector authors should start with [docs/CONNECTORS.md](docs/CONNECTORS.md).
+The requirement-by-requirement status is tracked in [docs/COMPLETENESS.md](docs/COMPLETENESS.md).

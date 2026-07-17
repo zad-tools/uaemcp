@@ -31,6 +31,12 @@ describe("http_json connector", () => {
     expect(r.records[0].ContactEmail).toBe("[redacted-open-data-contact]");
     expect(r.records[0].Latitude).toBe("24.1");
     expect(r.data_quality.confidence).toBeGreaterThan(0);
+    expect(r.data_quality.completeness).toBeGreaterThan(0);
+    expect(r.data_quality.source_trust).toBe("official_registry");
+    expect(r.data_quality.coverage).toEqual({ returned: 1, upstream_total: null, ratio: null });
+    expect(r.data_quality.quality_score).toBeGreaterThan(0);
+    expect(r.data_quality.freshness.status).toBe("unknown");
+    expect(r.data_quality.schema_stability.status).toBe("unknown");
     expect(r.fetched_at).toMatch(/Z$/);
   });
   it("client-side query filter is flagged", async () => {
@@ -199,7 +205,13 @@ describe("connector plugin registry", () => {
       fetch: async (source) => ({
         records: [{ plugin: true }], source_id: source.id, fetched_at: "2026-01-01T00:00:00Z",
         citation: source.base_url, license: source.license, dataset: null, total: 1, fields: [],
-        data_quality: { confidence: 1, warnings: [], validation: { records_out: 1 } },
+        data_quality: {
+          confidence: 1, warnings: [], validation: { records_out: 1 }, completeness: 1,
+          freshness: { status: "unknown", observed_at: null }, source_trust: "custom_source",
+          coverage: { returned: 1, upstream_total: 1, ratio: 1 },
+          schema_stability: { status: "unknown", compared_to: null }, last_successful_sync: "2026-01-01T00:00:00Z",
+          record_count_trend: { status: "unknown", change: null }, quality_score: 1,
+        },
       }),
       datasets: async () => [{ id: "one", title_en: "One", title_ar: "واحد", records_count: 1, theme: "test", modified: "", has_geo: false }],
     });

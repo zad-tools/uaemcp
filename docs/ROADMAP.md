@@ -27,6 +27,13 @@
 - Safe XLSX extraction budget and SPARQL update/SERVICE rejection
 - Third verified live official source from MOHAP, reported as published
 
+## v1.32 — Quality contract — complete
+
+- Backwards-compatible quality metadata on every built-in live connector
+- Completeness, sample coverage and source-trust classification
+- Honest freshness, schema-stability and record-trend states
+- Composite quality score without inventing unavailable history
+
 ## v1.40 — Deeper intelligence
 
 - UAE geography normalization
