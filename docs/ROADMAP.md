@@ -77,10 +77,16 @@
 - Per-language package manifests
 - Staleness gate included in the main release check
 
+## v1.39 — Explainable indicators — complete
+
+- Four versioned indicators with formulas, evidence, limitations and citations
+- Stored API-health and dataset-stability scoring with honest null states
+- Bilingual normalized entity resolution across two bounded source samples
+- Explicit field mappings, confidence and one-to-many output limits
+
 ## v1.40 — Deeper intelligence
 
-- Cross-source entity resolution
-- Indicators with methodology, lineage and limitations
+- Additional sector-specific indicators as queryable sources expand
 - Additional distributed scheduling options for multi-replica deployments
 - More live public connectors, prioritizing datasets with clear reuse licenses
 

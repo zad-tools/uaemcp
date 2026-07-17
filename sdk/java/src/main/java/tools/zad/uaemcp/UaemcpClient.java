@@ -11,6 +11,9 @@ public final class UaemcpClient {
  public String getRecords(String SourceId, Map<String,String> params) throws Exception {return get("/api/v1/sources/" + enc(SourceId) + "/records",params);}
  public String getDatasetSchema(String SourceId, Map<String,String> params) throws Exception {return get("/api/v1/sources/" + enc(SourceId) + "/schema",params);}
  public String listRecipes(Map<String,String> params) throws Exception {return get("/api/v1/intelligence/recipes",params);}
+ public String listIndicators(Map<String,String> params) throws Exception {return get("/api/v1/intelligence/indicators",params);}
+ public String getIndicator(String IndicatorId, Map<String,String> params) throws Exception {return get("/api/v1/intelligence/indicators/" + enc(IndicatorId) + "",params);}
  public String getTileJson(String SourceId, Map<String,String> params) throws Exception {return get("/api/v1/sources/" + enc(SourceId) + "/tilejson",params);}
  public String spatialJoin(Map<String,String> params) throws Exception {return get("/api/v1/spatial/join",params);}
+ public String resolveEntities(Map<String,String> params) throws Exception {return get("/api/v1/entities/resolve",params);}
 }

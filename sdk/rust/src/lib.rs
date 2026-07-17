@@ -10,6 +10,9 @@ impl UaemcpClient {
  pub async fn get_records(&self, source_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/sources/{}/records", urlencoding::encode(source_id)), params).await }
  pub async fn get_dataset_schema(&self, source_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/sources/{}/schema", urlencoding::encode(source_id)), params).await }
  pub async fn list_recipes(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/recipes"), params).await }
+ pub async fn list_indicators(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/indicators"), params).await }
+ pub async fn get_indicator(&self, indicator_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/intelligence/indicators/{}", urlencoding::encode(indicator_id)), params).await }
  pub async fn get_tile_json(&self, source_id: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/sources/{}/tilejson", urlencoding::encode(source_id)), params).await }
  pub async fn spatial_join(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/spatial/join"), params).await }
+ pub async fn resolve_entities(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/entities/resolve"), params).await }
 }

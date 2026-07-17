@@ -14,5 +14,8 @@ func (c *Client) Search(ctx context.Context, params url.Values) (map[string]any,
 func (c *Client) GetRecords(ctx context.Context, SourceId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources/" + url.PathEscape(SourceId) + "/records", params) }
 func (c *Client) GetDatasetSchema(ctx context.Context, SourceId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources/" + url.PathEscape(SourceId) + "/schema", params) }
 func (c *Client) ListRecipes(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/intelligence/recipes", params) }
+func (c *Client) ListIndicators(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/intelligence/indicators", params) }
+func (c *Client) GetIndicator(ctx context.Context, IndicatorId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/intelligence/indicators/" + url.PathEscape(IndicatorId) + "", params) }
 func (c *Client) GetTileJson(ctx context.Context, SourceId string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/sources/" + url.PathEscape(SourceId) + "/tilejson", params) }
 func (c *Client) SpatialJoin(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/spatial/join", params) }
+func (c *Client) ResolveEntities(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/entities/resolve", params) }

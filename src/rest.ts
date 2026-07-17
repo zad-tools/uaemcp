@@ -18,6 +18,8 @@ import { landingPage } from "./web.js";
 import { snapshotScheduler } from "./scheduler.js";
 import { encodeVectorTile } from "./vector-tiles.js";
 import { openApiDocument } from "./openapi.js";
+import { resolveEntities } from "./entity-resolution.js";
+import { coverageIndicator, healthIndicator, INDICATOR_IDS, industrialDistributionIndicator, listIndicators, stabilityIndicator, type IndicatorId } from "./indicators.js";
 
 type Json = Record<string, unknown>;
 
@@ -96,7 +98,34 @@ export async function handleRest(request: Request): Promise<Response | null> {
         lineage: [{ operation: "fetch_pair", connectors: [leftSource.kind, rightSource.kind] }, { operation: "point_radius_spatial_join", radius_km: radiusKm }],
       }));
     }
+    if (request.method === "GET" && path === "/api/v1/entities/resolve") {
+      const leftSource = REGISTRY.get(optional(url.searchParams, "left_source") ?? "");
+      const rightSource = REGISTRY.get(optional(url.searchParams, "right_source") ?? "");
+      const leftFields = (optional(url.searchParams, "left_fields") ?? "").split(",").map((field) => field.trim()).filter(Boolean);
+      const rightFields = (optional(url.searchParams, "right_fields") ?? "").split(",").map((field) => field.trim()).filter(Boolean);
+      const limit = Math.max(1, integer(url.searchParams, "limit", 100, 200));
+      const maxMatches = Math.max(1, integer(url.searchParams, "max_matches", 500, 5000));
+      const [left, right] = await Promise.all([
+        fetchResult(leftSource, { dataset: optional(url.searchParams, "left_dataset"), limit }),
+        fetchResult(rightSource, { dataset: optional(url.searchParams, "right_dataset"), limit }),
+      ]);
+      const resolved = resolveEntities(left.records, leftFields, right.records, rightFields, maxMatches);
+      return json(envelope(resolved, { citations: [citation(leftSource), citation(rightSource)], lineage: [{ operation: "fetch_pair" }, { operation: "bilingual_normalized_exact_resolution", left_fields: leftFields, right_fields: rightFields }] }));
+    }
     if (request.method === "GET" && path === "/api/v1/intelligence/dashboard-summary") return json(envelope(await buildDashboardSummary({ recordHistory: true })));
+    if (request.method === "GET" && path === "/api/v1/intelligence/indicators") return json(envelope(listIndicators()));
+    const indicatorMatch = path.match(/^\/api\/v1\/intelligence\/indicators\/([^/]+)$/);
+    if (request.method === "GET" && indicatorMatch) {
+      const indicator = decodeURIComponent(indicatorMatch[1]) as IndicatorId;
+      if (!INDICATOR_IDS.includes(indicator)) throw new ValidationError(`indicator must be one of ${INDICATOR_IDS.join(", ")}`);
+      if (indicator === "open_data_coverage") return json(envelope(coverageIndicator()));
+      if (indicator === "api_health_score") return json(envelope(healthIndicator(reliabilityStore())));
+      const source = REGISTRY.get(optional(url.searchParams, "source_id") ?? "moiat_industrial_licenses");
+      const dataset = optional(url.searchParams, "dataset") ?? null;
+      if (indicator === "dataset_stability") return json(envelope(stabilityIndicator(source, reliabilityStore().listSnapshots(source.id, dataset, 100))));
+      const records = (await fetchResult(source, { dataset, query: optional(url.searchParams, "query"), limit: Math.max(1, integer(url.searchParams, "limit", 100, 1000)) })).records;
+      return json(envelope(industrialDistributionIndicator(source, records)));
+    }
     if (request.method === "GET" && path === "/api/v1/intelligence/recipes") return json(envelope(listRecipes()));
     const recipeMatch = path.match(/^\/api\/v1\/intelligence\/recipes\/([^/]+)$/);
     if (request.method === "GET" && recipeMatch) {

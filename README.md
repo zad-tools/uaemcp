@@ -5,7 +5,7 @@ Official UAE open data over the Model Context Protocol, running on Bun.
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 16 source-cited
+The server keeps the public `uaemcp` contract and extends it to 18 source-cited
 MCP tools, six resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -105,6 +105,8 @@ language. It is included in the main release check.
 | `uae_search` | Search the bilingual catalog |
 | `uae_source_geo` | Return spatially filtered GeoJSON |
 | `uae_spatial_join` | Join two bounded point datasets by radius |
+| `uae_indicator` | List or calculate explainable national-data indicators |
+| `uae_entity_resolve` | Resolve normalized entities across two bounded sources |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |

@@ -48,7 +48,7 @@ export function normalizeGeography(record: Rec): Rec {
 export function resolveEntityKey(record: Rec, fields: string[]): string {
   const parts = fields.map((field) => {
     const value = record[field];
-    const emirate = /emirate|إمارة|الامارة|الإمارة/i.test(field) ? normalizeEmirate(value) : null;
+    const emirate = normalizeEmirate(value);
     return emirate?.id ?? normalizeText(String(value ?? ""));
   });
   return `uae_${Bun.hash(parts.join("\u001f")).toString(16)}`;

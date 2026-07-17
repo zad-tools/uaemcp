@@ -12,7 +12,7 @@ class UaemcpClient:
 
     def _get(self, path, params=None):
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None}).replace("%2C", ",")
-        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.38.0"})
+        request = Request(self.base_url + path + (("?" + query) if query else ""), headers={"Accept": "application/json", "User-Agent": "uaemcp-python/1.39.0"})
         with urlopen(request, timeout=self.timeout) as response:
             payload = loads(response.read())
         if isinstance(payload, dict) and payload.get("ok") is False:
@@ -37,8 +37,17 @@ class UaemcpClient:
     def list_recipes(self, **params):
         return self._get(f"/api/v1/intelligence/recipes", params)
 
+    def list_indicators(self, **params):
+        return self._get(f"/api/v1/intelligence/indicators", params)
+
+    def get_indicator(self, indicator_id, **params):
+        return self._get(f"/api/v1/intelligence/indicators/{quote(str(indicator_id), safe='')}", params)
+
     def get_tile_json(self, source_id, **params):
         return self._get(f"/api/v1/sources/{quote(str(source_id), safe='')}/tilejson", params)
 
     def spatial_join(self, **params):
         return self._get(f"/api/v1/spatial/join", params)
+
+    def resolve_entities(self, **params):
+        return self._get(f"/api/v1/entities/resolve", params)

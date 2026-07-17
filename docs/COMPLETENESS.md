@@ -44,14 +44,16 @@ it does not mean every UAE portal has a public machine-readable API.
 - Standards-readable Mapbox Vector Tiles with TileJSON discovery
 - Canonical bilingual normalization for all seven emirates and stable entity keys
 - Evidence-backed emirate comparison and snapshot trend analysis
+- Explainable coverage, API-health, dataset-stability and industrial indicators
+- Cross-source bilingual entity resolution with explicit field mappings
 - Bilingual dashboard, source browser, API playground and typed TypeScript client
 - OpenAPI-generated Python, Go, Rust, Java and C# clients with a staleness gate
 - Docker, Nginx example, contribution, connector, architecture and security guides
 
 ### Partial
 
-- Intelligence: five recipes exist; cross-source joins and broader domain
-  indicators remain.
+- Intelligence: five recipes, four indicators and entity/spatial joins exist;
+  broader sector indicators depend on additional queryable official datasets.
 - GIS: point extraction, spatial filters, nearest ranking, point-radius joins and
   vector tiles exist; administrative-boundary joins remain.
 - Observability: request metrics and persisted source health exist; per-dataset

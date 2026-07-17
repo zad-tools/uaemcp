@@ -6,6 +6,7 @@ const READ_TOOLS = [
   "uae_source_records", "uae_dataset_schema", "uae_search", "uae_source_geo",
   "uae_source_aggregate", "uae_market_snapshot", "uae_dashboard_summary", "uae_intelligence_recipe",
   "uae_spatial_join",
+  "uae_indicator", "uae_entity_resolve",
 ];
 
 export function trustManifest(): Record<string, unknown> {

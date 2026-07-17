@@ -10,6 +10,9 @@ public sealed class UaemcpClient {
  public Task<JsonDocument> GetRecords(string SourceId, IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources/" + Uri.EscapeDataString(SourceId) + "/records",parameters,cancellationToken);
  public Task<JsonDocument> GetDatasetSchema(string SourceId, IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources/" + Uri.EscapeDataString(SourceId) + "/schema",parameters,cancellationToken);
  public Task<JsonDocument> ListRecipes(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/intelligence/recipes",parameters,cancellationToken);
+ public Task<JsonDocument> ListIndicators(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/intelligence/indicators",parameters,cancellationToken);
+ public Task<JsonDocument> GetIndicator(string IndicatorId, IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/intelligence/indicators/" + Uri.EscapeDataString(IndicatorId) + "",parameters,cancellationToken);
  public Task<JsonDocument> GetTileJson(string SourceId, IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/sources/" + Uri.EscapeDataString(SourceId) + "/tilejson",parameters,cancellationToken);
  public Task<JsonDocument> SpatialJoin(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/spatial/join",parameters,cancellationToken);
+ public Task<JsonDocument> ResolveEntities(IReadOnlyDictionary<string,string?>? parameters=null, CancellationToken cancellationToken=default)=>Get("/api/v1/entities/resolve",parameters,cancellationToken);
 }

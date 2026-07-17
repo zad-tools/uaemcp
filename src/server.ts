@@ -22,6 +22,8 @@ import { SERVER_NAME, VERSION } from "./version.js";
 import { reliabilityStore } from "./reliability.js";
 import { listRecipes, runRecipe } from "./intelligence.js";
 import { snapshotScheduler } from "./scheduler.js";
+import { resolveEntities } from "./entity-resolution.js";
+import { coverageIndicator, healthIndicator, industrialDistributionIndicator, listIndicators, stabilityIndicator } from "./indicators.js";
 
 type Json = Record<string, unknown>;
 
@@ -39,6 +41,44 @@ function text(payload: Json) {
 
 export function buildServer(): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_indicator",
+    {
+      description: "List or calculate a methodology-backed UAE data indicator with evidence, limitations and citations.",
+      inputSchema: { indicator: z.enum(["open_data_coverage", "api_health_score", "dataset_stability", "industrial_distribution"]).optional(), source_id: z.string().optional(), dataset: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(100) },
+    },
+    async ({ indicator, source_id, dataset, query, limit }) => {
+      try {
+        if (!indicator) return text(ok(listIndicators()));
+        if (indicator === "open_data_coverage") return text(ok(coverageIndicator()));
+        if (indicator === "api_health_score") return text(ok(healthIndicator(reliabilityStore())));
+        const source = REGISTRY.get(source_id ?? "moiat_industrial_licenses");
+        if (indicator === "dataset_stability") return text(ok(stabilityIndicator(source, reliabilityStore().listSnapshots(source.id, dataset ?? null, 100))));
+        const records = (await fetchResult(source, { dataset, query, limit })).records;
+        return text(ok(industrialDistributionIndicator(source, records)));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_entity_resolve",
+    {
+      description: "Resolve matching entities across two bounded source samples using explicit bilingual-normalized exact field mappings.",
+      inputSchema: {
+        left_source: z.string(), right_source: z.string(), left_fields: z.array(z.string()).min(1), right_fields: z.array(z.string()).min(1),
+        left_dataset: z.string().optional(), right_dataset: z.string().optional(), limit: z.number().int().min(1).max(200).default(100), max_matches: z.number().int().min(1).max(5000).default(500),
+      },
+    },
+    async ({ left_source, right_source, left_fields, right_fields, left_dataset, right_dataset, limit, max_matches }) => {
+      try {
+        const leftSource = REGISTRY.get(left_source); const rightSource = REGISTRY.get(right_source);
+        const [left, right] = await Promise.all([fetchResult(leftSource, { dataset: left_dataset, limit }), fetchResult(rightSource, { dataset: right_dataset, limit })]);
+        const resolved = resolveEntities(left.records, left_fields, right.records, right_fields, max_matches);
+        return text(ok(resolved, { citations: [citation(leftSource), citation(rightSource)], lineage: [{ operation: "fetch_pair" }, { operation: "bilingual_normalized_exact_resolution", left_fields, right_fields }] }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_spatial_join",

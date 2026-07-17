@@ -23,7 +23,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.38.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.39.0" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -77,7 +77,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.38.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.39.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });
@@ -89,6 +89,13 @@ describe("REST v1", () => {
     expect(result.data.recipe).toBe("source_coverage");
     expect(result.data.methodology).toBeObject();
     expect(result.data.limitations).toBeArray();
+  });
+
+  it("publishes explainable indicators", async () => {
+    const list = await fetch(`${baseUrl}/api/v1/intelligence/indicators`).then((response) => response.json());
+    const coverage = await fetch(`${baseUrl}/api/v1/intelligence/indicators/open_data_coverage`).then((response) => response.json());
+    expect(list.data).toHaveLength(4);
+    expect(coverage.data).toMatchObject({ indicator: "open_data_coverage", value: 9.09, methodology: expect.any(Object), limitations: expect.any(Array) });
   });
 
   it("exposes safe snapshot scheduler status", async () => {
