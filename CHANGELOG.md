@@ -5,6 +5,7 @@
 - Unified every public interface on same-origin Dubai Regular and Dubai Bold assets, removing direct third-party font requests from page markup.
 - Restricted public page content-security policies to the trusted local font route and removed unused Google font imports.
 - Added GET and HEAD font delivery contracts so browsers, reverse proxies and deployment probes observe the same production behavior.
+- Reduced the npm release archive from 4.50 MB to about 200 KB by excluding README-only visual assets, with a release gate that verifies required runtime and documentation files remain present.
 
 ## 1.61.0
 
