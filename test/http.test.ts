@@ -35,6 +35,8 @@ describe("Bun HTTP runtime", () => {
     expect(ready.status).toBe("ready");
     expect(ready.sources).toBe(33);
     expect(metrics).toContain("uaemcp_http_requests_total");
+    expect(metrics).toContain("uaemcp_http_responses_total{outcome=\"success\"}");
+    expect(metrics).toContain("uaemcp_http_request_duration_seconds_sum");
   });
 
   it("initializes MCP and preserves the public tool contract", async () => {
@@ -60,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.39.0",
+      version: "1.40.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();

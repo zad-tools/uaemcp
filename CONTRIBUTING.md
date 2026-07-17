@@ -14,8 +14,8 @@ bun src/index.ts http
 
 ## Adding a connector
 
-1. Add the connector strategy in `src/connectors.ts`.
-2. Route it through the connector dispatch functions.
+1. Copy `templates/connector-plugin.ts` or implement the public `Connector` contract.
+2. Register it with `registerConnector`; MCP and REST routing require no edits.
 3. Validate and bound every upstream response.
 4. Preserve provenance and pass records through PII redaction.
 5. Add offline tests with mocked upstream responses.
@@ -31,3 +31,7 @@ into an empty successful result.
 - Include tests before implementation changes.
 - Run `bun run check` and build the Docker image.
 - Do not commit secrets, production logs, or generated source data.
+
+The complete project conventions are in `docs/CODING_STANDARDS.md`; architecture
+and trust-boundary decisions are in `docs/ARCHITECTURE.md` and
+`docs/THREAT_MODEL.md`.

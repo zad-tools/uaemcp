@@ -1,0 +1,1 @@
+{"UAEMCP client":{"scope":"typescript,javascript","prefix":"uaemcp-client","body":["import { UaemcpClient } from \"uaemcp\";","","const uae = new UaemcpClient({ baseUrl: \"${1:http://127.0.0.1:8080}\" });","const results = await uae.search(\"${2:عقارات دبي}\", { deep: true });","$0"],"description":"Create a typed UAEMCP REST client"}}

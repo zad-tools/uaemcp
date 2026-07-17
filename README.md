@@ -35,6 +35,14 @@ bun install
 bun src/index.ts stdio
 ```
 
+The installed CLI also provides deployment diagnostics and shell completion:
+
+```bash
+uaemcp doctor
+source <(uaemcp completion zsh)
+uaemcp --help
+```
+
 For Streamable HTTP:
 
 ```bash
@@ -182,9 +190,15 @@ so Streamable HTTP responses are not delayed or rewritten.
 
 ```bash
 bun run check
+bun run benchmark
 docker compose up --build
 ```
 
 MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 Connector authors should start with [docs/CONNECTORS.md](docs/CONNECTORS.md).
+See [docs/API.md](docs/API.md), [docs/RECIPES.md](docs/RECIPES.md),
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), [docs/FAQ.md](docs/FAQ.md), and the
+[runnable examples](examples/README.md) for the complete developer path.
+The security review is in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md), and the
+evidence-backed release audit is in [docs/COMPLETENESS.md](docs/COMPLETENESS.md).
 The requirement-by-requirement status is tracked in [docs/COMPLETENESS.md](docs/COMPLETENESS.md).

@@ -1,6 +1,6 @@
 {
   "name": "uaemcp",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "description": "Open Emirates Intelligence on Bun — official UAE open data over MCP.",
   "author": "Ahmed Morsy <vacrom414@gmail.com>",
   "license": "MIT",
@@ -15,6 +15,23 @@
   },
   "files": [
     "src",
+    "docs",
+    "examples",
+    "templates",
+    "sdk/csharp/*.cs",
+    "sdk/csharp/*.csproj",
+    "sdk/go/*.go",
+    "sdk/go/go.mod",
+    "sdk/java/pom.xml",
+    "sdk/java/src/**/*.java",
+    "sdk/python/pyproject.toml",
+    "sdk/python/uaemcp/*.py",
+    "sdk/rust/Cargo.toml",
+    "sdk/rust/src/**/*.rs",
+    ".vscode/uaemcp.code-snippets",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
@@ -23,11 +40,12 @@
     "start": "bun src/index.ts",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
+    "benchmark": "bun scripts/benchmark.ts",
     "typecheck": "bunx tsc --noEmit",
     "check": "bun run typecheck && bun test && bun run check:sdks",
     "generate:sdks": "bun scripts/generate-sdks.ts",
     "check:sdks": "bun scripts/generate-sdks.ts --check",
-    "prepublishOnly": "bun run check"
+    "prepublishOnly": "bun run check && bun run benchmark"
   },
   "dependencies": {
     "@maplibre/geojson-vt": "6.1.1",

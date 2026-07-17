@@ -1,5 +1,11 @@
 # Roadmap
 
+The original transformation plan used milestones v0.3, v0.4, v0.5, v1.0 and
+v2.0. This Bun rewrite began after the inherited package version, so the shipped
+mapping is: v0.3 catalog → v1.29, v0.4 reliability → v1.30–1.33, v0.5 semantic
+intelligence → v1.34–1.36, v1.0 production platform → v1.37–1.40. The long-term
+reusable government core remains v2.0.
+
 ## v1.29 — Catalog foundation
 
 - Unified portal and organization models
@@ -84,7 +90,16 @@
 - Bilingual normalized entity resolution across two bounded source samples
 - Explicit field mappings, confidence and one-to-many output limits
 
-## v1.40 — Deeper intelligence
+## v1.40 — Complete developer platform — complete
+
+- Bilingual responsive website with every required product section
+- Live source registry, connector gallery, dataset browser and safe API workbench
+- CLI help, version, doctor and bash/zsh/fish completion
+- Runnable examples, connector and application templates, VS Code snippets
+- Full API, deployment, recipes, FAQ, coding and threat-model documentation
+- Reproducible local HTTP benchmark and release packaging gates
+
+## v1.41 — Deeper intelligence
 
 - Additional sector-specific indicators as queryable sources expand
 - Additional distributed scheduling options for multi-replica deployments
@@ -96,3 +111,12 @@
 - Plugin packages for connectors and country registries
 - Signed build and trust provenance
 - Independently published SDK packages after ecosystem demand is established
+
+## Decision record for proposed work
+
+| Proposal | Why / benefit | Risk | Migration | Performance impact | Security impact |
+| --- | --- | --- | --- | --- | --- |
+| More licensed live connectors | Queryable evidence, not portal counts, is the product moat | Authority schemas and terms change | Additive registry entries; no API break | More upstream fan-out; keep per-source budgets | Review license, key isolation and egress host |
+| Shared scheduler coordination | Prevent duplicate snapshots across replicas | Adds operational dependency and leader failure modes | Keep current single-process default; add an optional coordinator | Removes duplicate work; coordinator adds a small lease call | Lease credentials require secret isolation |
+| Extract `govmcp-core` | Reuse proven contracts for another country without cloning the server | Premature abstraction can weaken UAE-specific semantics | Preserve `uaemcp` as the compatibility facade | Neutral; packages may improve lazy loading | Trust manifests must identify registry and operator separately |
+| Independent SDK packages | Native dependency management and discoverability | Six release pipelines can drift | Generate from the same OpenAPI contract and release together | No server impact | Signed provenance and token isolation per registry |

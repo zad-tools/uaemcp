@@ -21,7 +21,7 @@ resource URIs, response envelopes, and REST v1 fields are compatibility surfaces
 
 ## Unified catalog
 
-The compatibility `Source` remains public, while the v0.3 catalog exposes the
+The compatibility `Source` remains public, while the unified catalog exposes the
 clearer hierarchy `Organization -> Portal -> Dataset -> Resource`. Portal models
 declare connector type, access status, capabilities, license verification status,
 and official links. Dataset/resource objects are discovered lazily from upstream

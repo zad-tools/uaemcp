@@ -8,9 +8,15 @@ import { REGISTRY } from "./sources.js";
 import { handleRest } from "./rest.js";
 import { checkRateLimit } from "./rate-limit.js";
 import { snapshotScheduler } from "./scheduler.js";
+import { completionScript, doctorReport, formatDoctor, helpText, parseCli } from "./cli.js";
+import { VERSION } from "./version.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
+let successfulResponses = 0;
+let failedResponses = 0;
+let requestDurationMs = 0;
+let maxRequestDurationMs = 0;
 
 function json(payload: unknown, status = 200): Response {
   return Response.json(payload, {
@@ -48,9 +54,8 @@ function responseHeaders(request: Request, response: Response): Response {
 }
 
 export function createFetchHandler(): (request: Request) => Promise<Response> {
-  return async (request) => {
+  const dispatch = async (request: Request): Promise<Response> => {
     const path = new URL(request.url).pathname.replace(/\/$/, "") || "/";
-    requestCount += 1;
 
     const rejection = rejectedRequest(request);
     if (rejection) return responseHeaders(request, rejection);
@@ -88,6 +93,14 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
       const uptime = (Date.now() - startedAt) / 1000;
       return responseHeaders(request, new Response(
         `# TYPE uaemcp_http_requests_total counter\nuaemcp_http_requests_total ${requestCount}\n` +
+          `# TYPE uaemcp_http_responses_total counter\n` +
+          `uaemcp_http_responses_total{outcome="success"} ${successfulResponses}\n` +
+          `uaemcp_http_responses_total{outcome="failure"} ${failedResponses}\n` +
+          `# TYPE uaemcp_http_request_duration_seconds summary\n` +
+          `uaemcp_http_request_duration_seconds_count ${successfulResponses + failedResponses}\n` +
+          `uaemcp_http_request_duration_seconds_sum ${requestDurationMs / 1000}\n` +
+          `# TYPE uaemcp_http_request_duration_seconds_max gauge\n` +
+          `uaemcp_http_request_duration_seconds_max ${maxRequestDurationMs / 1000}\n` +
           `# TYPE uaemcp_uptime_seconds gauge\nuaemcp_uptime_seconds ${uptime}\n`,
         { headers: { "content-type": "text/plain; version=0.0.4" } },
       ));
@@ -111,6 +124,23 @@ export function createFetchHandler(): (request: Request) => Promise<Response> {
       throw error;
     }
   };
+  return async (request) => {
+    requestCount += 1;
+    const started = performance.now();
+    try {
+      const response = await dispatch(request);
+      if (response.status >= 400) failedResponses += 1;
+      else successfulResponses += 1;
+      return response;
+    } catch (error) {
+      failedResponses += 1;
+      throw error;
+    } finally {
+      const duration = performance.now() - started;
+      requestDurationMs += duration;
+      maxRequestDurationMs = Math.max(maxRequestDurationMs, duration);
+    }
+  };
 }
 
 export async function runStdio(): Promise<void> {
@@ -125,20 +155,15 @@ export function runHttp(host = SETTINGS.host, port = SETTINGS.port): Bun.Server<
 }
 
 async function main(args = Bun.argv.slice(2)): Promise<void> {
-  const mode = args[0] && !args[0].startsWith("-") ? args[0] : "stdio";
-  if (mode === "stdio") return runStdio();
-  if (mode === "http") {
-    const hostIndex = args.indexOf("--host");
-    const portIndex = args.indexOf("--port");
-    const host = hostIndex >= 0 ? args[hostIndex + 1] : SETTINGS.host;
-    const port = portIndex >= 0 ? Number(args[portIndex + 1]) : SETTINGS.port;
-    if (!host || !Number.isInteger(port) || port <= 0 || port > 65_535) {
-      throw new Error("invalid --host or --port");
-    }
-    runHttp(host, port);
-    return;
-  }
-  throw new Error(`unknown mode: ${mode}\nusage: uaemcp [stdio|http]`);
+  const command = parseCli(args);
+  if (command.command === "stdio") return runStdio();
+  if (command.command === "http") return void runHttp(command.host ?? SETTINGS.host, command.port ?? SETTINGS.port);
+  if (command.command === "help") return void process.stdout.write(`${helpText()}\n`);
+  if (command.command === "version") return void process.stdout.write(`${VERSION}\n`);
+  if (command.command === "completion") return void process.stdout.write(`${completionScript(command.shell)}\n`);
+  const report = doctorReport();
+  process.stdout.write(command.json ? `${JSON.stringify(report, null, 2)}\n` : `${formatDoctor(report)}\n`);
+  if (!report.ok) process.exitCode = 1;
 }
 
 if (import.meta.main) {

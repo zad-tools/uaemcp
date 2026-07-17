@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UAEMCP map</title><link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet"><style>html,body,#map{height:100%;margin:0}</style></head><body><div id="map"></div><script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script><script>
+const base = "http://127.0.0.1:8080";
+const sourceId = "moiat_industrial_licenses";
+const map = new maplibregl.Map({container:"map",center:[54.4,24.4],zoom:5,style:{version:8,sources:{uae:{type:"vector",url:base+"/api/v1/sources/"+sourceId+"/tilejson"}},layers:[{id:"uae",source:"uae","source-layer":"records",type:"circle",paint:{"circle-radius":4,"circle-color":"#087443"}}]}});
+map.addControl(new maplibregl.NavigationControl());
+</script></body></html>
