@@ -8,6 +8,7 @@
 - Reduced the npm release archive from 4.50 MB to about 200 KB by excluding README-only visual assets, with a release gate that verifies required runtime and documentation files remain present.
 - Made the pre-release Bun quickstart truthful by installing the tested GitHub branch while npm `latest` remains on the earlier implementation, and documented the exact token-free Trusted Publisher handoff.
 - Added a complete open-source contribution surface: conduct and support policies, structured bug/source/connector forms, a trust-focused pull-request checklist, repository labels and private vulnerability reporting.
+- Added Bun-native Dependabot updates, weekly CodeQL analysis, least-privilege CI permissions and a mandatory dependency audit in every local and hosted release check.
 
 ## 1.61.0
 

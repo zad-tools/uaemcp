@@ -53,9 +53,10 @@ bun pm pack --dry-run
 docker build -t uaemcp:release .
 ```
 
-`bun run check` includes a registry-package audit: README-only visual assets must
-stay outside the tarball, required runtime files must be present, and the packed
-archive must remain below 1 MB.
+`bun run check` starts with `bun audit` and fails on known dependency
+vulnerabilities. It also includes a registry-package audit: README-only visual
+assets must stay outside the tarball, required runtime files must be present,
+and the packed archive must remain below 1 MB.
 
 ## One-time npm Trusted Publisher setup
 
