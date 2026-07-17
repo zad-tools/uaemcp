@@ -1,5 +1,14 @@
 # Roadmap
 
+## v1.66 — UAE Evidence Studio — complete
+
+- Stateless composition of two to five official evidence pillars
+- Source-native period, unit, scope, delivery, citation and limitation on every card
+- Parallel retrieval with explicit unavailable states and no false zero
+- No LLM, cross-evidence aggregation, ranking or composite score
+- Bilingual Dubai Font studio with local print, Markdown and JSON exports
+- REST, MCP tool, methodology resource, OpenAPI and generated SDK support
+
 ## v1.65 — National health facilities evidence — complete
 
 - 950 official aggregate MOHAP rows covering 2015–2024 and all seven emirates

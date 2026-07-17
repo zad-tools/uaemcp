@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.66.0
+
+- Added UAE Evidence Studio to compose two to five existing official evidence pillars into one bilingual source-cited dossier.
+- Added `/evidence-studio`, `POST /api/v1/evidence-dossier`, `uae_evidence_dossier` and `uae://evidence-studio/methodology`.
+- Added parallel source loading with isolated unavailable states; missing evidence is never shown as zero.
+- Preserved each fact's period, unit, scope, delivery mode, citation and limitations while disabling ranking, cross-evidence aggregation and composite scoring.
+- Added local print, Markdown and JSON exports with no account, personal-data collection, generative model or server-side storage.
+- Added an animated README workflow visual and a regression fix for the National Brief emirate selector.
+
 ## 1.65.0
 
 - Added the UAE Health Facilities Atlas over 950 official MOHAP aggregate rows covering 2015–2024.

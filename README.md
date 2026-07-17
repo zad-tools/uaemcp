@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 35 source-cited
-MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 36 source-cited
+MCP tools, ten resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -54,6 +54,18 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/evidence-studio"><img src="docs/assets/evidence-studio-motion.svg" alt="Animated UAE Evidence Studio composing source-native evidence into one dossier" width="100%"></a>
+</p>
+
+The **UAE Evidence Studio** turns two to five existing official evidence pillars
+into one bilingual research dossier. Every card keeps its period, unit, scope,
+delivery mode, citation and limitations. It uses no generative model, stores no
+question or selection, and never adds unlike units, ranks pillars or invents a
+composite score. Use the [hosted studio](https://uaemcp.zad.tools/evidence-studio),
+`POST /api/v1/evidence-dossier`, or the `uae_evidence_dossier` MCP tool; print or
+download Markdown and JSON locally in the browser.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/national-brief"><img src="docs/assets/national-brief-motion.svg" alt="Animated UAE National Evidence Brief showing four separate source-cited pillars" width="100%"></a>
@@ -155,7 +167,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.65.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.66.0` or newer.
 
 MCP client configuration:
 
@@ -196,7 +208,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.65.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.66.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -222,6 +234,7 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+- UAE Evidence Studio: `GET /evidence-studio` — compose two to five official evidence pillars into a source-cited dossier; API at `POST /api/v1/evidence-dossier`
 - UAE Founder Pathway: `GET /founder-pathway` — build, track, print and export a privacy-bounded action dossier across official setup, startup support and entrepreneur residency readiness
 - UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
 - UAE Industry Atlas: `GET /industry-atlas` — bounded industrial-establishment evidence by emirate, area and product label
@@ -332,7 +345,11 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_evidence_dossier` | Compose two to five official evidence pillars into one bilingual source-cited dossier without ranking, composite scoring or storage |
 | `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
+| `uae_business_setup` | Route founders to the competent official mainland or free-zone starting point without collecting personal data |
+| `uae_startup_support` | Discover relevant official and government-backed startup programmes without claiming eligibility or acceptance |
+| `uae_national_evidence_brief` | Read four national evidence pillars side by side without false aggregation or scoring |
 | `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
 | `uae_health_facilities_atlas` | Explore official 2015–2024 aggregate facility counts by year, emirate, sector, category and type without inferring capacity or quality |
 | `uae_golden_residency` | Explore official Golden Residency pathways or assess non-identifying evidence readiness without determining eligibility |
@@ -353,7 +370,10 @@ language. It is included in the main release check.
 | `uae_tax_service_activity` | Read the official FTA 2025 service-activity report with methodology and explicit non-revenue limits |
 | `uae_tax_service_archive` | Read the source-native FTA 2017–2022, 2024 and 2025 workbooks without unsafe cross-year comparison |
 | `uae_trade_flow_radar` | Analyze bounded Ajman export and re-export certificate records without presenting counts as trade value |
+| `uae_ajman_business_evidence` | Read three bounded Ajman licence-data views while keeping their populations separate |
+| `uae_ajman_urban_evidence` | Read six Ajman building, rent and road series in their original units |
 | `uae_health_indicators` | Search official MOHAP health indicators while preserving the workbook's published values and limits |
+| `uae_place_names` | Search the official bilingual National Gazetteer with source-published coordinates and boundary disclaimers |
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |

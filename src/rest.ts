@@ -55,6 +55,9 @@ import { buildFounderPathway, type FounderPathwayInput } from "./founder-pathway
 import { founderPathwayPage } from "./founder-pathway-web.js";
 import { nationalBriefPage } from "./national-brief-web.js";
 import { loadNationalEvidenceBrief } from "./national-brief-service.js";
+import { evidenceStudioPage } from "./evidence-studio-web.js";
+import { loadEvidenceDossier, type EvidenceDossierOptions } from "./evidence-dossier-service.js";
+import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS, type EvidencePillarId } from "./evidence-dossier.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -125,12 +128,37 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/startup-support") return new Response(startupSupportPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/founder-pathway") return new Response(founderPathwayPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/national-brief") return new Response(nationalBriefPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/evidence-studio") return new Response(evidenceStudioPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "POST" && path === "/api/v1/evidence-dossier") {
+      const length = Number(request.headers.get("content-length") ?? 0);
+      if (length > 4_096) throw new ValidationError("request body is too large");
+      const body = await request.json().catch(() => { throw new ValidationError("body must be valid JSON"); }) as EvidenceDossierOptions & Record<string, unknown>;
+      const allowed = new Set(["template", "question", "language", "pillars", "query", "emirate", "healthFacilitiesLimit", "healthIndicatorsLimit", "industryLimit"]);
+      if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some((key) => !allowed.has(key))) throw new ValidationError("only bounded, non-identifying evidence fields are accepted");
+      if (typeof body.question !== "string" || body.question.trim().length < 1 || body.question.trim().length > 200) throw new ValidationError("question must contain 1-200 characters");
+      if (!EVIDENCE_DOSSIER_TEMPLATES.includes(body.template as typeof EVIDENCE_DOSSIER_TEMPLATES[number])) throw new ValidationError("template is invalid");
+      if (body.language !== "en" && body.language !== "ar") throw new ValidationError("language must be en or ar");
+      if (!Array.isArray(body.pillars) || body.pillars.length < 2 || body.pillars.length > 5 || new Set(body.pillars).size !== body.pillars.length || body.pillars.some((id) => typeof id !== "string" || !EVIDENCE_PILLAR_IDS.includes(id as EvidencePillarId))) throw new ValidationError("pillars must contain 2-5 unique supported ids");
+      if (body.query !== undefined && (typeof body.query !== "string" || body.query.trim().length > 100)) throw new ValidationError("query must contain at most 100 characters");
+      if (body.emirate !== undefined && (typeof body.emirate !== "string" || !BUSINESS_EMIRATES.includes(body.emirate as typeof BUSINESS_EMIRATES[number]))) throw new ValidationError("emirate is invalid");
+      for (const [key, maximum] of [["healthFacilitiesLimit", 200], ["healthIndicatorsLimit", 50], ["industryLimit", 100]] as const) {
+        const value = body[key];
+        if (value !== undefined && (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > maximum)) throw new ValidationError(`${key} must be an integer from 1 to ${maximum}`);
+      }
+      const result = await loadEvidenceDossier({ ...body, question: body.question.trim(), pillars: body.pillars as EvidencePillarId[] }, {
+        fetchHealthFacilitiesRecords: dependencies.fetchHealthFacilitiesRecords,
+        fetchHealthIndicatorsRecords: dependencies.fetchHealthRecords,
+        fetchIndustryRecords: dependencies.fetchIndustryRecords,
+        fetchTaxRecords: dependencies.fetchTaxRecords,
+      });
+      return json(envelope(result.data, { ...result.meta, stored: false }));
     }
     if (request.method === "GET" && path === "/api/v1/national-brief") {
       const positive = (key: string, fallback: number, max: number) => {

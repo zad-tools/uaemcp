@@ -26,6 +26,16 @@ describe("REST v1", () => {
     expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
   });
 
+  it("serves the bilingual stateless UAE Evidence Studio", async () => {
+    const response = await fetch(`${baseUrl}/evidence-studio`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(html).toContain("UAE Evidence Studio");
+    expect(html).toContain("استوديو الأدلة الإماراتية");
+    expect(html).toContain("/api/v1/evidence-dossier");
+    expect(response.headers.get("content-security-policy")).toContain("font-src 'self'");
+  });
+
   it("serves the bilingual FTA service activity interface", async () => {
     const response = await fetch(`${baseUrl}/tax-services`);
     const html = await response.text();
@@ -98,8 +108,9 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.65.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.66.0" } });
     expect(document.paths["/api/v1/founder-pathway"].post.operationId).toBe("buildFounderPathway");
+    expect(document.paths["/api/v1/evidence-dossier"].post.operationId).toBe("buildEvidenceDossier");
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -153,7 +164,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.65.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.66.0" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");
     expect(manifest.endpoints.founderPathway).toBe("/founder-pathway");

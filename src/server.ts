@@ -42,6 +42,8 @@ import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES, matchStartupSu
 import { buildFounderPathway } from "./founder-pathway.js";
 import { buildPlaceNamesProduct } from "./places.js";
 import { loadNationalEvidenceBrief } from "./national-brief-service.js";
+import { loadEvidenceDossier } from "./evidence-dossier-service.js";
+import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-dossier.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -233,6 +235,35 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
       try {
         const product = await loadAjmanUrbanProduct(dependencies.fetchAjmanUrbanRecords ?? fetchResult, limit);
         return text(ok(product.data, product.meta));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_evidence_dossier",
+    {
+      description: "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. Keeps periods and units separate, reports unavailable evidence explicitly, and never produces a ranking or composite score.",
+      inputSchema: {
+        template: z.enum(EVIDENCE_DOSSIER_TEMPLATES).default("research_dossier"),
+        question: z.string().trim().min(1).max(200),
+        language: z.enum(["en", "ar"]).default("en"),
+        pillars: z.array(z.enum(EVIDENCE_PILLAR_IDS)).min(2).max(5).refine((items) => new Set(items).size === items.length, "pillar ids must be unique"),
+        query: z.string().trim().max(100).optional(),
+        emirate: z.enum(BUSINESS_EMIRATES).optional(),
+        healthFacilitiesLimit: z.number().int().min(1).max(200).default(50),
+        healthIndicatorsLimit: z.number().int().min(1).max(50).default(12),
+        industryLimit: z.number().int().min(1).max(100).default(50),
+      },
+    },
+    async ({ template, question, language, pillars, query, emirate, healthFacilitiesLimit, healthIndicatorsLimit, industryLimit }) => {
+      try {
+        const result = await loadEvidenceDossier({ template, question, language, pillars, query, emirate, healthFacilitiesLimit, healthIndicatorsLimit, industryLimit }, {
+          fetchHealthFacilitiesRecords: dependencies.fetchHealthFacilitiesRecords,
+          fetchHealthIndicatorsRecords: dependencies.fetchHealthRecords,
+          fetchIndustryRecords: dependencies.fetchIndustryRecords,
+          fetchTaxRecords: dependencies.fetchTaxRecords,
+        });
+        return text(ok(result.data, { ...result.meta, stored: false }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -687,6 +718,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "evidence_studio_methodology",
+    "uae://evidence-studio/methodology",
+    { title: "UAE Evidence Studio methodology", description: "Composition rules, supported pillars and prohibited cross-source interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ pillars: EVIDENCE_PILLAR_IDS, templates: EVIDENCE_DOSSIER_TEMPLATES, minimumPillars: 2, maximumPillars: 5, stored: false, usesGenerativeModel: false, crossEvidenceAggregation: false, compositeScore: false, ranking: false, unavailableMeansZero: false }) }] }),
+  );
 
   server.registerResource(
     "health_facilities_atlas_methodology",

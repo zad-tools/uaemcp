@@ -5,6 +5,7 @@ impl UaemcpClient {
  pub fn new(base_url: &str) -> Self { Self { base_url: base_url.trim_end_matches('/').into(), http: reqwest::Client::new() } }
  async fn get(&self, path: &str, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.http.get(format!("{}{}",self.base_url,path)).query(params).send().await?.error_for_status()?.json().await }
  pub async fn list_products(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/products"), params).await }
+ pub async fn build_evidence_dossier(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/evidence-dossier"), params).await }
  pub async fn get_national_evidence_brief(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/national-brief"), params).await }
  pub async fn search_place_names(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/places"), params).await }
  pub async fn build_founder_pathway(&self, params: &[(&str,&str)]) -> Result<Value, reqwest::Error> { self.get(&format!("/api/v1/founder-pathway"), params).await }

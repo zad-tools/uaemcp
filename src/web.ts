@@ -72,5 +72,7 @@ document.querySelector('#run').addEventListener('click',async()=>{const out=docu
 document.querySelector('#loadDatasets').addEventListener('click',async()=>{const source=document.querySelector('#datasetSource').value,q=document.querySelector('#datasetQuery').value.trim();state.datasetView={kind:'loading'};renderDatasetView();try{const rows=await loadJson('/api/v1/sources/'+encodeURIComponent(source)+'/datasets?limit=25'+(q?'&query='+encodeURIComponent(q):''));state.datasetView={kind:'result',rows};renderDatasetView()}catch(error){state.datasetView={kind:'error',message:error.message};renderDatasetView()}});
 const observer=new IntersectionObserver(entries=>entries.forEach(entry=>entry.isIntersecting&&entry.target.classList.add('visible')),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 boot();
-</script></body></html>`;
+</script></body></html>`
+    .replaceAll("Sixteen public applications", "Seventeen public applications")
+    .replaceAll("ستة عشر تطبيقًا عامًا", "سبعة عشر تطبيقًا عامًا");
 }

@@ -19,6 +19,13 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "evidence_studio", status: "published", access: "public", category: "RESEARCH / DOSSIER", categoryAr: "البحث / ملف الأدلة",
+    title: { en: "UAE Evidence Studio", ar: "استوديو الأدلة الإماراتية" },
+    description: { en: "Compose selected official evidence into one bilingual, printable and downloadable dossier with every source boundary intact.", ar: "اجمع الأدلة الرسمية المختارة في ملف واحد ثنائي اللغة قابل للطباعة والتنزيل مع الحفاظ على حدود كل مصدر." },
+    webPath: "/evidence-studio", apiPath: "/api/v1/evidence-dossier", sourceIds: ["fcsc_unified_uae_numbers_2025", "mohap_health_facilities_2024", "mohap_health_core_indicators_2024", "moiat_industrial_licenses", "fta_service_activity_2025"],
+    evidence: { scope: { en: "A stateless composition of two to five existing official evidence pillars.", ar: "تركيب بلا تخزين لمحورين إلى خمسة محاور من الأدلة الرسمية القائمة." }, limitations: [{ en: "Different periods and units remain separate; no ranking, composite score or generative narrative is produced.", ar: "تبقى الفترات والوحدات المختلفة منفصلة، ولا يُنتج ترتيب أو مؤشر مركب أو سرد مولّد." }] },
+  },
+  {
     id: "founder_pathway", status: "published", access: "public", category: "FOUNDER / JOURNEY", categoryAr: "المؤسس / الرحلة",
     title: { en: "UAE Founder Pathway", ar: "مسار المؤسس في الإمارات" },
     description: { en: "Build, track, print and export one source-linked action dossier across official setup, startup support and entrepreneur residency readiness.", ar: "ابنِ وتابع واطبع وصدّر ملف تنفيذ واحدًا مرتبطًا بالمصادر عبر التأسيس الرسمي ودعم الشركات الناشئة وجاهزية إقامة رائد الأعمال." },
