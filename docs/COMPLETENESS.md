@@ -15,9 +15,9 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Performance | 9/10 | Bounded fan-out, cache, pagination, streaming HTTP, benchmark gate | External latency is controlled by authorities |
 | Developer experience | 9/10 | Doctor, completions, examples, templates, snippets and six SDKs | SDKs are not independently published yet |
 | API design | 9/10 | REST v1, stable envelopes, OpenAPI 3.1, explicit error codes | Some analytical calls have source-specific optional fields |
-| MCP compliance | 9/10 | stdio and Streamable HTTP, 26 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
+| MCP compliance | 9/10 | stdio and Streamable HTTP, 27 tools, resources and prompts | Compatibility must be retested on each SDK upgrade |
 | Security | 9/10 | SSRF/DNS classification, redirect validation, budgets, auth, redaction, quotas | Application DNS validation has a documented TOCTOU residual risk |
-| Testing | 9/10 | 175 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
+| Testing | 9/10 | 183 offline/runtime tests plus SDK and browser verification | Live authorities are intentionally not a deterministic CI gate |
 | Documentation | 10/10 | Architecture, API, deployment, MCP, SDK, recipes, security, connectors, FAQ | Must track contract changes each release |
 | Product positioning | 9/10 | Queryable coverage separated from indexed portals | Live breadth remains dependent on official access |
 | Repository structure | 9/10 | Focused `src`, `test`, `docs`, `sdk`, `examples`, `templates` | Future country extraction needs a separate package boundary |
@@ -27,7 +27,7 @@ It does not mean every UAE authority publishes an unrestricted machine API.
 | Requirement | Status | Authoritative evidence |
 | --- | --- | --- |
 | Bun-only MCP with stdio and Streamable HTTP | Complete | `src/index.ts`, runtime integration tests |
-| Preserve the original tool contract | Complete | 26 additive tools and compatibility assertions in `test/http.test.ts` |
+| Preserve the original tool contract | Complete | 27 additive tools and compatibility assertions in `test/http.test.ts` |
 | Organization, portal, dataset, resource and capability models | Complete | `src/catalog.ts`, `test/catalog.test.ts` |
 | Endpoint, connector, schema, indicator, query, snapshot, transformation, lineage, license and quality concepts | Complete | public catalog/results, connector and intelligence modules |
 | Plugin connectors | Complete | registry plus 13 built-in kinds and plugin tests |

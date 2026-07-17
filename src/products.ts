@@ -19,6 +19,13 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "golden_residency_navigator", status: "published", access: "public", category: "RESIDENCY / READINESS", categoryAr: "الإقامة / الجاهزية",
+    title: { en: "UAE Golden Residency Navigator", ar: "دليل الإقامة الذهبية في الإمارات" },
+    description: { en: "Map non-identifying evidence to current official pathway requirements without promises, intermediaries or stored personal data.", ar: "اربط أدلتك غير التعريفية بمتطلبات المسارات الرسمية الحالية دون وعود أو وسطاء أو تخزين بيانات شخصية." },
+    webPath: "/golden-residency", apiPath: "/api/v1/golden-residency", sourceIds: ["icp_golden_residency"],
+    evidence: { scope: { en: "Current ICP and u.ae pathway requirements verified on 17 July 2026.", ar: "متطلبات المسارات الحالية من الهيئة والمنصة الرسمية، متحقق منها في 17 يوليو 2026." }, limitations: [{ en: "Informational readiness only; the competent authority makes the final decision and requirements can change.", ar: "جاهزية معلوماتية فقط؛ القرار النهائي للجهة المختصة وقد تتغير المتطلبات." }] },
+  },
+  {
     id: "education_ledger",
     status: "published",
     access: "public",

@@ -9,8 +9,10 @@ import { tradeFlowPage } from "../src/trade-flow-web.js";
 import { landingPage } from "../src/web.js";
 import { educationLedgerPage } from "../src/education-ledger-web.js";
 import { handleRest } from "../src/rest.js";
+import { goldenResidencyPage } from "../src/golden-residency-web.js";
 
 const pages = [
+  ["/golden-residency", goldenResidencyPage],
   ["/", landingPage],
   ["/observatory", observatoryPage],
   ["/industry-atlas", industryAtlasPage],

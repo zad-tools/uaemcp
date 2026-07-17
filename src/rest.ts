@@ -37,6 +37,8 @@ import { healthIndicatorsPage } from "./health-indicators-web.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
 import { educationLedgerPage } from "./education-ledger-web.js";
+import { assessGoldenResidencyReadiness, goldenResidencyCatalogue, type GoldenReadinessInput } from "./golden-residency.js";
+import { goldenResidencyPage } from "./golden-residency-web.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -79,12 +81,38 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/trade-flow") return new Response(tradeFlowPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/health-indicators") return new Response(healthIndicatorsPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/education") return new Response(educationLedgerPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/golden-residency") return new Response(goldenResidencyPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src https://dubaihumanitarian.ae; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/golden-residency") {
+      const catalogue = goldenResidencyCatalogue();
+      return json(envelope(catalogue, { decision: "informational_only", verified_at: catalogue.verifiedAt, source_ids: ["icp_golden_residency"] }));
+    }
+    if (request.method === "POST" && path === "/api/v1/golden-residency/assess") {
+      const length = Number(request.headers.get("content-length") ?? 0);
+      if (length > 8_192) throw new ValidationError("request body is too large");
+      const body = await request.json().catch(() => { throw new ValidationError("body must be valid JSON"); }) as GoldenReadinessInput;
+      const allowed = new Set(["public_investor", "real_estate_investor", "entrepreneur", "exceptional_talent", "high_school_student", "university_student", "humanitarian_frontline"]);
+      if (!body || typeof body !== "object" || !allowed.has(body.pathway)) throw new ValidationError("pathway is invalid");
+      const allowedFields = new Set(["pathway", "capitalAed", "propertyValueAed", "annualTaxAed", "projectValueAed", "innovativeProjectEvidence", "incubatorRecommendation", "gradePercent", "universityGpa", "graduatedWithinTwoYears", "ministryRecommendation", "universityRecommendation", "professionalRecommendation", "humanitarianYears", "volunteerHours", "humanitarianSupportAed"]);
+      if (Object.keys(body).some((key) => !allowedFields.has(key))) throw new ValidationError("only non-identifying readiness fields are accepted");
+      const numericFields = ["capitalAed", "propertyValueAed", "annualTaxAed", "projectValueAed", "gradePercent", "universityGpa", "humanitarianYears", "volunteerHours", "humanitarianSupportAed"] as const;
+      for (const field of numericFields) {
+        const value = body[field];
+        if (value !== undefined && (typeof value !== "number" || !Number.isFinite(value) || value < 0)) throw new ValidationError(`${field} must be a non-negative finite number`);
+      }
+      const booleanFields = ["innovativeProjectEvidence", "incubatorRecommendation", "graduatedWithinTwoYears", "ministryRecommendation", "universityRecommendation", "professionalRecommendation"] as const;
+      for (const field of booleanFields) {
+        if (body[field] !== undefined && typeof body[field] !== "boolean") throw new ValidationError(`${field} must be a boolean`);
+      }
+      if (body.gradePercent !== undefined && body.gradePercent > 100) throw new ValidationError("gradePercent must not exceed 100");
+      if (body.universityGpa !== undefined && body.universityGpa > 4) throw new ValidationError("universityGpa must not exceed 4");
+      return json(envelope(assessGoldenResidencyReadiness(body), { decision: "informational_only", stored: false, verified_at: "2026-07-17" }));
     }
     if (request.method === "GET" && path === "/api/v1/health-indicators") {
       const limit = Math.max(1, integer(url.searchParams, "limit", 100, 200));

@@ -19,7 +19,7 @@ describe("REST v1", () => {
     expect(html).toContain("Open Emirates Intelligence");
     expect(html).toContain('id="productLedger"');
     expect(html).toContain("/api/v1/products");
-    expect(html).toContain('<strong>26</strong><span data-en="Focused tools');
+    expect(html).toContain('<strong>27</strong><span data-en="Focused tools');
     const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
     expect(script).toBeDefined();
     expect(() => new Function(script ?? "")).not.toThrow();
@@ -98,7 +98,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.51.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.52.0" } });
   });
 
   it("lists sources using the stable envelope", async () => {
@@ -106,8 +106,8 @@ describe("REST v1", () => {
     const payload = await response.json();
     expect(response.status).toBe(200);
     expect(payload.ok).toBe(true);
-    expect(payload.data).toHaveLength(39);
-    expect(payload.meta.total).toBe(39);
+    expect(payload.data).toHaveLength(40);
+    expect(payload.meta.total).toBe(40);
   });
 
   it("returns structured errors", async () => {
@@ -152,7 +152,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.51.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.52.0" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");
     expect(manifest.tools.read).toContain("uae_products_list");
@@ -180,7 +180,7 @@ describe("REST v1", () => {
     const list = await fetch(`${baseUrl}/api/v1/intelligence/indicators`).then((response) => response.json());
     const coverage = await fetch(`${baseUrl}/api/v1/intelligence/indicators/open_data_coverage`).then((response) => response.json());
     expect(list.data).toHaveLength(4);
-    expect(coverage.data).toMatchObject({ indicator: "open_data_coverage", value: 20.51, methodology: expect.any(Object), limitations: expect.any(Array) });
+    expect(coverage.data).toMatchObject({ indicator: "open_data_coverage", value: 20, methodology: expect.any(Object), limitations: expect.any(Array) });
   });
 
   it("exposes safe snapshot scheduler status", async () => {
@@ -194,7 +194,7 @@ describe("REST v1", () => {
     const report = await fetch(`${baseUrl}/api/v1/observatory`).then((response) => response.json());
     const incidents = await fetch(`${baseUrl}/api/v1/observatory/incidents?limit=10`).then((response) => response.json());
     const profile = await fetch(`${baseUrl}/api/v1/observatory/sources/moiat_industrial_licenses`).then((response) => response.json());
-    expect(report.data).toMatchObject({ monitoredSources: 39, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(report.data).toMatchObject({ monitoredSources: 40, currentStatus: expect.any(Object), incidents: expect.any(Object) });
     expect(incidents).toMatchObject({ ok: true, data: expect.any(Array), meta: { limit: 10 } });
     expect(profile.data).toMatchObject({ source: { id: "moiat_industrial_licenses" }, reliability: { sourceId: "moiat_industrial_licenses" }, incidents: expect.any(Array) });
     const markdown = await fetch(`${baseUrl}/api/v1/observatory/report.md`);

@@ -2,6 +2,7 @@ import { coverageSummary } from "./catalog.js";
 import { SERVER_NAME, VERSION } from "./version.js";
 
 const READ_TOOLS = [
+  "uae_golden_residency",
   "uae_education_ledger",
   "uae_health_indicators",
   "uae_products_list",
@@ -20,7 +21,7 @@ export function trustManifest(): Record<string, unknown> {
     schemaVersion: "1.0",
     operator: { name: "Ahmed Morsy", contact: "vacrom414@gmail.com" },
     server: { name: SERVER_NAME, version: VERSION, runtime: "bun", license: "MIT" },
-    endpoints: { mcp: "/mcp", rest: "/api/v1", products: "/api/v1/products", educationLedger: "/education", educationLedgerApi: "/api/v1/education", healthIndicators: "/health-indicators", healthIndicatorsApi: "/api/v1/health-indicators", observatory: "/observatory", industryAtlas: "/industry-atlas", tradeFlowRadar: "/trade-flow", tradeFlowApi: "/api/v1/trade-flow", taxServiceActivity: "/tax-services", taxServiceArchivePage: "/tax-services/archive", taxServiceArchive: "/api/v1/tax-services/archive", health: "/health", metrics: "/metrics" },
+    endpoints: { mcp: "/mcp", rest: "/api/v1", products: "/api/v1/products", goldenResidency: "/golden-residency", goldenResidencyApi: "/api/v1/golden-residency", educationLedger: "/education", educationLedgerApi: "/api/v1/education", healthIndicators: "/health-indicators", healthIndicatorsApi: "/api/v1/health-indicators", observatory: "/observatory", industryAtlas: "/industry-atlas", tradeFlowRadar: "/trade-flow", tradeFlowApi: "/api/v1/trade-flow", taxServiceActivity: "/tax-services", taxServiceArchivePage: "/tax-services/archive", taxServiceArchive: "/api/v1/tax-services/archive", health: "/health", metrics: "/metrics" },
     tools: {
       read: [...READ_TOOLS, "uae_dataset_snapshot:list", "uae_dataset_snapshot:diff"],
       write: ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"],

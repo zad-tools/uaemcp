@@ -32,6 +32,7 @@ import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { buildEducationLedger } from "./education-ledger.js";
+import { assessGoldenResidencyReadiness, goldenResidencyCatalogue } from "./golden-residency.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -50,6 +51,29 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_golden_residency",
+    {
+      description: "Explore current official UAE Golden Residency pathways or assess non-identifying evidence readiness. Informational only: never determines eligibility, submits an application, stores personal data, or guarantees approval.",
+      inputSchema: {
+        action: z.enum(["list", "assess"]).default("list"),
+        pathway: z.enum(["public_investor", "real_estate_investor", "entrepreneur", "exceptional_talent", "high_school_student", "university_student", "humanitarian_frontline"]).optional(),
+        capital_aed: z.number().nonnegative().optional(), property_value_aed: z.number().nonnegative().optional(), annual_tax_aed: z.number().nonnegative().optional(), project_value_aed: z.number().nonnegative().optional(),
+        innovative_project_evidence: z.boolean().optional(), incubator_recommendation: z.boolean().optional(), professional_recommendation: z.boolean().optional(),
+        grade_percent: z.number().min(0).max(100).optional(), university_gpa: z.number().min(0).max(4).optional(), graduated_within_two_years: z.boolean().optional(), ministry_recommendation: z.boolean().optional(), university_recommendation: z.boolean().optional(),
+        humanitarian_years: z.number().nonnegative().optional(), volunteer_hours: z.number().nonnegative().optional(), humanitarian_support_aed: z.number().nonnegative().optional(),
+      },
+    },
+    async (input) => {
+      try {
+        if (input.action === "list") return text(ok(goldenResidencyCatalogue(), { decision: "informational_only", source_id: "icp_golden_residency" }));
+        if (!input.pathway) throw new ValidationError("pathway is required for assess");
+        const assessment = assessGoldenResidencyReadiness({ pathway: input.pathway, capitalAed: input.capital_aed, propertyValueAed: input.property_value_aed, annualTaxAed: input.annual_tax_aed, projectValueAed: input.project_value_aed, innovativeProjectEvidence: input.innovative_project_evidence, incubatorRecommendation: input.incubator_recommendation, professionalRecommendation: input.professional_recommendation, gradePercent: input.grade_percent, universityGpa: input.university_gpa, graduatedWithinTwoYears: input.graduated_within_two_years, ministryRecommendation: input.ministry_recommendation, universityRecommendation: input.university_recommendation, humanitarianYears: input.humanitarian_years, volunteerHours: input.volunteer_hours, humanitarianSupportAed: input.humanitarian_support_aed });
+        return text(ok(assessment, { decision: "informational_only", stored: false, source_id: "icp_golden_residency" }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_education_ledger",

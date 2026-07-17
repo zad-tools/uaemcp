@@ -7,9 +7,9 @@ describe("public product registry", () => {
   it("publishes every evidence product with bilingual copy and working route contracts", async () => {
     const products = listProducts();
     const paths = Object.keys((openApiDocument().paths ?? {}) as Record<string, unknown>);
-    expect(products).toHaveLength(8);
+    expect(products).toHaveLength(9);
     expect(products.map((product) => product.id)).toEqual([
-      "education_ledger", "health_indicators", "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "golden_residency_navigator", "education_ledger", "health_indicators", "trade_flow_radar", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
     for (const product of products) {
       expect(product).toMatchObject({ status: "published", access: "public" });

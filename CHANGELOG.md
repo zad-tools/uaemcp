@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.52.0
+
+- Added the UAE Golden Residency Navigator using current ICP and u.ae pathway requirements verified on 17 July 2026.
+- Added a privacy-bounded readiness assessment that accepts no names, passport numbers, contact details or unknown fields and never claims eligibility or guarantees approval.
+- Added `/golden-residency`, `GET /api/v1/golden-residency`, `POST /api/v1/golden-residency/assess`, and the read-only `uae_golden_residency` MCP tool.
+- Added bilingual RTL presentation using Dubai Font, official authority routing, anti-intermediary warnings, OpenAPI/SDK integration and a dated metadata source.
+- Increased the honest registry to 40 indexed official sources and 27 MCP tools while keeping the live-connector count at eight.
+
 ## 1.51.0
 
 - Added the UAE Education Ledger with FCSC-accredited 2023/2024 national student and educational-personnel totals, explicit female/male reconciliation, and bounded derived ratios.
