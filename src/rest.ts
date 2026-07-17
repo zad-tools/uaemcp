@@ -8,10 +8,12 @@ import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
 import { citation, REGISTRY } from "./sources.js";
-import { coverageSummary, portalModel } from "./catalog.js";
+import { coverageSummary, datasetModel, portalModel } from "./catalog.js";
 import { inferSchema } from "./schema.js";
 import { trustManifest } from "./manifest.js";
 import { VERSION } from "./version.js";
+import { reliabilityStore } from "./reliability.js";
+import { listRecipes, runRecipe, type RecipeId, RECIPE_IDS } from "./intelligence.js";
 
 type Json = Record<string, unknown>;
 
@@ -70,24 +72,66 @@ export async function handleRest(request: Request): Promise<Response | null> {
       const data = await buildSearch(q, { limit, deep });
       return json(envelope(data, data.counts as Json));
     }
-    if (request.method === "GET" && path === "/api/v1/intelligence/dashboard-summary") return json(envelope(await buildDashboardSummary()));
+    if (request.method === "GET" && path === "/api/v1/intelligence/dashboard-summary") return json(envelope(await buildDashboardSummary({ recordHistory: true })));
+    if (request.method === "GET" && path === "/api/v1/intelligence/recipes") return json(envelope(listRecipes()));
+    const recipeMatch = path.match(/^\/api\/v1\/intelligence\/recipes\/([^/]+)$/);
+    if (request.method === "GET" && recipeMatch) {
+      const recipe = decodeURIComponent(recipeMatch[1]) as RecipeId;
+      if (!RECIPE_IDS.includes(recipe)) throw new ValidationError(`recipe must be one of ${RECIPE_IDS.join(", ")}`);
+      const sourceId = optional(url.searchParams, "source_id");
+      const datasets = recipe === "dataset_freshness" && sourceId
+        ? await listDatasets(REGISTRY.get(sourceId), { query: optional(url.searchParams, "query"), limit: Math.max(1, integer(url.searchParams, "limit", 100, 100)) })
+        : undefined;
+      return json(envelope(runRecipe({
+        recipe, sourceId, datasets,
+        fromSnapshot: integer(url.searchParams, "from_snapshot", 0, Number.MAX_SAFE_INTEGER) || undefined,
+        toSnapshot: integer(url.searchParams, "to_snapshot", 0, Number.MAX_SAFE_INTEGER) || undefined,
+      }, reliabilityStore())));
+    }
     if (request.method === "GET" && path === "/api/v1/intelligence/market-snapshot") {
       return json(envelope(await buildMarketSnapshot(url.searchParams.get("topic") || "industry", Math.max(1, integer(url.searchParams, "limit", 100, 200)))));
     }
 
-    const match = path.match(/^\/api\/v1\/sources\/([^/]+)(?:\/(health|datasets|records|schema|geo|aggregate|export))?$/);
+    if (request.method === "GET" && path === "/api/v1/snapshots/diff") {
+      const from = integer(url.searchParams, "from", 0, Number.MAX_SAFE_INTEGER);
+      const to = integer(url.searchParams, "to", 0, Number.MAX_SAFE_INTEGER);
+      if (!from || !to) throw new ValidationError("from and to are required");
+      return json(envelope(reliabilityStore().diffSnapshots(from, to)));
+    }
+
+    const snapshotMatch = path.match(/^\/api\/v1\/sources\/([^/]+)\/snapshots$/);
+    if (snapshotMatch) {
+      const source = REGISTRY.get(decodeURIComponent(snapshotMatch[1]));
+      const dataset = optional(url.searchParams, "dataset") ?? null;
+      if (request.method === "GET") return json(envelope(reliabilityStore().listSnapshots(source.id, dataset, Math.max(1, integer(url.searchParams, "limit", 20, 100)))));
+      if (request.method === "POST") {
+        requireWrite(request.headers.get("x-api-key"));
+        const result = await fetchResult(source, { dataset, limit: Math.max(1, integer(url.searchParams, "limit", 100, 1000)) });
+        return json(envelope(reliabilityStore().saveSnapshot(source.id, dataset, result.records), {
+          citation: citation(source), fetched_at: result.fetched_at,
+          lineage: [{ operation: "fetch", connector: source.kind }, { operation: "snapshot", version: VERSION }],
+        }), 201);
+      }
+    }
+
+    const match = path.match(/^\/api\/v1\/sources\/([^/]+)(?:\/(health|health-history|datasets|records|schema|geo|aggregate|export))?$/);
     if (!match || request.method !== "GET") return null;
     const source = REGISTRY.get(decodeURIComponent(match[1]));
     const action = match[2];
     if (!action) return json(envelope(source));
-    if (action === "health") return json(envelope(await checkHealth(source)));
+    if (action === "health") {
+      const health = await checkHealth(source);
+      reliabilityStore().recordHealth(health);
+      return json(envelope(health));
+    }
+    if (action === "health-history") return json(envelope(reliabilityStore().healthHistory(source.id, Math.max(1, integer(url.searchParams, "limit", 100, 1000)))));
 
     const query = optional(url.searchParams, "query");
     const dataset = optional(url.searchParams, "dataset");
     const offset = integer(url.searchParams, "offset", 0, Number.MAX_SAFE_INTEGER);
     if (action === "datasets") {
       const limit = Math.max(1, integer(url.searchParams, "limit", 50, 100));
-      const data = await listDatasets(source, { query, limit, offset });
+      const data = (await listDatasets(source, { query, limit, offset })).map((dataset) => datasetModel(dataset, source));
       return json(envelope(data, { source_id: source.id, kind: source.kind, citation: citation(source), count: data.length, limit, offset }));
     }
 

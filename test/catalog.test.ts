@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { capabilitiesFor, coverageSummary, portalModel } from "../src/catalog.js";
+import { capabilitiesFor, coverageSummary, datasetModel, portalModel } from "../src/catalog.js";
 import { REGISTRY } from "../src/sources.js";
 
 describe("unified catalog", () => {
@@ -22,5 +22,12 @@ describe("unified catalog", () => {
       blockedConnectors: 1,
       keyRequiredPortals: 3,
     });
+  });
+
+  it("adds dataset-level license, freshness and capabilities", () => {
+    const dataset = datasetModel({ id: "d", title_en: "D", title_ar: "", records_count: 1, theme: "", modified: "2026-01-01T00:00:00Z", has_geo: true }, REGISTRY.get("ajman_data_portal"), Date.parse("2026-01-10T00:00:00Z"));
+    expect(dataset.type).toBe("dataset");
+    expect(dataset.license).toBeDefined();
+    expect(dataset.freshness).toMatchObject({ ageDays: 9, status: "current" });
   });
 });

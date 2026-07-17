@@ -10,6 +10,7 @@
 import { SETTINGS } from "./config.js";
 import { checkHealth, type HealthResult } from "./connectors.js";
 import { citation, REGISTRY, type Source } from "./sources.js";
+import { reliabilityStore } from "./reliability.js";
 
 let cache: { at: number; value: DashboardSummary } | null = null;
 
@@ -63,7 +64,7 @@ function withTimeout(source: Source): Promise<HealthResult> {
 }
 
 export async function buildDashboardSummary(
-  opts: { useCache?: boolean; now?: number } = {},
+  opts: { useCache?: boolean; now?: number; recordHistory?: boolean } = {},
 ): Promise<DashboardSummary> {
   const useCache = opts.useCache ?? true;
   const now = opts.now ?? Date.now();
@@ -74,6 +75,7 @@ export async function buildDashboardSummary(
   const started = Date.now();
   const sources = REGISTRY.list();
   const checks = await Promise.all(sources.map((s) => withTimeout(s)));
+  if (opts.recordHistory) checks.forEach((check) => reliabilityStore().recordHealth(check));
 
   const statusCounts: Record<string, number> = {};
   const categoryCounts: Record<string, number> = {};

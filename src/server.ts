@@ -1,5 +1,5 @@
 /**
- * The MCP server: 12 tools + resources + prompt templates over the official SDK.
+ * The MCP server: focused tools + resources + prompt templates over the official SDK.
  *
  * Every data-returning tool wraps results in { ok, data, error, meta } with full
  * provenance. Read tools are open; the write tool requires a token.
@@ -11,14 +11,16 @@ import { aggregate, type Metric } from "./aggregate.js";
 import { requireWrite } from "./auth.js";
 import { checkHealth, fetchResult, listDatasets, metaOf } from "./connectors.js";
 import { buildDashboardSummary } from "./dashboard.js";
-import { UaemcpError } from "./errors.js";
+import { UaemcpError, ValidationError } from "./errors.js";
 import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
 import { citation, REGISTRY } from "./sources.js";
 import { inferSchema } from "./schema.js";
-import { capabilitiesFor, coverageSummary, portalModel } from "./catalog.js";
+import { capabilitiesFor, coverageSummary, datasetModel, portalModel } from "./catalog.js";
 import { SERVER_NAME, VERSION } from "./version.js";
+import { reliabilityStore } from "./reliability.js";
+import { listRecipes, runRecipe } from "./intelligence.js";
 
 type Json = Record<string, unknown>;
 
@@ -61,7 +63,65 @@ export function buildServer(): McpServer {
     async ({ source_id }) => {
       try {
         const s = REGISTRY.get(source_id);
-        return text(ok(await checkHealth(s), { citation: citation(s) }));
+        const health = await checkHealth(s);
+        reliabilityStore().recordHealth(health);
+        return text(ok(health, { citation: citation(s) }));
+      } catch (e) {
+        return text(fail(e));
+      }
+    },
+  );
+
+  server.registerTool(
+    "uae_intelligence_recipe",
+    {
+      description: "Run an evidence-backed analytical recipe. Results include methodology, evidence, limitations and citations.",
+      inputSchema: {
+        recipe: z.enum(["source_coverage", "dataset_freshness", "historical_comparison"]),
+        source_id: z.string().optional(), query: z.string().optional(),
+        limit: z.number().int().min(1).max(100).default(100),
+        from_snapshot: z.number().int().positive().optional(), to_snapshot: z.number().int().positive().optional(),
+      },
+    },
+    async ({ recipe, source_id, query, limit, from_snapshot, to_snapshot }) => {
+      try {
+        const datasets = recipe === "dataset_freshness" && source_id ? await listDatasets(REGISTRY.get(source_id), { query, limit }) : undefined;
+        return text(ok(runRecipe({ recipe, sourceId: source_id, datasets, fromSnapshot: from_snapshot, toSnapshot: to_snapshot }, reliabilityStore())));
+      } catch (e) { return text(fail(e)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_dataset_snapshot",
+    {
+      description: "Create, list, or diff historical dataset snapshots. create is a protected write action; list and diff are open reads.",
+      inputSchema: {
+        action: z.enum(["create", "list", "diff"]),
+        source_id: z.string().optional(),
+        dataset: z.string().optional(),
+        limit: z.number().int().min(1).max(1000).default(100),
+        from_snapshot: z.number().int().positive().optional(),
+        to_snapshot: z.number().int().positive().optional(),
+        token: z.string().optional(),
+      },
+    },
+    async ({ action, source_id, dataset, limit, from_snapshot, to_snapshot, token }) => {
+      try {
+        const store = reliabilityStore();
+        if (action === "diff") {
+          if (!from_snapshot || !to_snapshot) throw new ValidationError("from_snapshot and to_snapshot are required");
+          return text(ok(store.diffSnapshots(from_snapshot, to_snapshot)));
+        }
+        if (!source_id) throw new ValidationError("source_id is required");
+        const source = REGISTRY.get(source_id);
+        if (action === "list") return text(ok(store.listSnapshots(source.id, dataset ?? null, Math.min(limit, 100))));
+        requireWrite(token);
+        const result = await fetchResult(source, { dataset, limit });
+        return text(ok(store.saveSnapshot(source.id, dataset ?? null, result.records), {
+          citation: citation(source),
+          fetched_at: result.fetched_at,
+          lineage: [{ operation: "fetch", connector: source.kind }, { operation: "snapshot", version: VERSION }],
+        }));
       } catch (e) {
         return text(fail(e));
       }
@@ -77,7 +137,7 @@ export function buildServer(): McpServer {
     async ({ source_id, query, limit, offset }) => {
       try {
         const s = REGISTRY.get(source_id);
-        const datasets = await listDatasets(s, { query, limit, offset });
+        const datasets = (await listDatasets(s, { query, limit, offset })).map((dataset) => datasetModel(dataset, s));
         return text(ok(datasets, { source_id: s.id, kind: s.kind, count: datasets.length }));
       } catch (e) {
         return text(fail(e));
@@ -197,7 +257,7 @@ export function buildServer(): McpServer {
     { description: "Concurrent, cached health snapshot across all sources (fast, never stalls)." },
     async () => {
       try {
-        return text(ok(await buildDashboardSummary()));
+        return text(ok(await buildDashboardSummary({ recordHistory: true })));
       } catch (e) {
         return text(fail(e));
       }
@@ -228,6 +288,13 @@ export function buildServer(): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "intelligence_recipes",
+    "uae://intelligence/recipes",
+    { title: "UAE intelligence recipes", description: "Evidence-backed analytical recipes and their requirements.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ recipes: listRecipes() }) }] }),
+  );
 
   server.registerResource(
     "catalog_summary",

@@ -15,7 +15,10 @@ COPY --from=install /app/node_modules ./node_modules
 COPY package.json bun.lock ./
 COPY src ./src
 
+RUN mkdir -p /app/data && chown bun:bun /app/data
+
 USER bun
+VOLUME ["/app/data"]
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \

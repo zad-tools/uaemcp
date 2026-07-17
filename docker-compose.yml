@@ -14,5 +14,11 @@ services:
       # allow-listed or the /mcp endpoint returns 421 (DNS-rebinding protection).
       UAEMCP_ALLOWED_HOSTS: "uaemcp.zad.tools,uae-intelligence-mcp.zad.tools,127.0.0.1,127.0.0.1:8088,localhost"
       UAEMCP_ALLOWED_ORIGINS: "https://uaemcp.zad.tools,https://uae-intelligence-mcp.zad.tools"
+      UAEMCP_DATABASE_PATH: "/app/data/uaemcp.sqlite"
       # Uncomment to enable the write tools (disabled by default):
       # UAEMCP_WRITE_TOKEN: "change-me"
+    volumes:
+      - uaemcp-data:/app/data
+
+volumes:
+  uaemcp-data:

@@ -60,7 +60,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.29.0",
+      version: "1.30.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -79,6 +79,7 @@ describe("Bun HTTP runtime", () => {
       "uae_source_datasets",
       "uae_source_records",
       "uae_dataset_schema",
+      "uae_dataset_snapshot", "uae_intelligence_recipe",
       "uae_search",
       "uae_source_geo",
       "uae_source_aggregate",

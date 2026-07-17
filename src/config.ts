@@ -31,6 +31,7 @@ export interface Settings {
   allowedHosts: string[];
   allowedOrigins: string[];
   rateLimitPerMinute: number;
+  databasePath: string;
 }
 
 export const SETTINGS: Settings = {
@@ -48,6 +49,7 @@ export const SETTINGS: Settings = {
   allowedHosts: list("UAEMCP_ALLOWED_HOSTS"),
   allowedOrigins: list("UAEMCP_ALLOWED_ORIGINS"),
   rateLimitPerMinute: num("UAEMCP_RATE_LIMIT_PER_MINUTE", 120),
+  databasePath: process.env.UAEMCP_DATABASE_PATH ?? "data/uaemcp.sqlite",
 };
 
 export const writesEnabled = (): boolean => Boolean(SETTINGS.writeToken);

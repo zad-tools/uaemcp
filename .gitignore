@@ -11,6 +11,9 @@ build/
 node_modules/
 *.egg-info/
 data/*.json
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
 !data/.gitkeep
 
 # Local Claude Code machine settings (keep launch.json shared)

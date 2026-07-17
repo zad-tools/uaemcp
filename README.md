@@ -5,10 +5,11 @@ Official UAE open data over the Model Context Protocol, running on Bun.
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract: 12 source-cited MCP tools, four
-resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
+The server keeps the public `uaemcp` contract and extends it to 14 source-cited
+MCP tools, five resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
 connectors, geo queries, aggregation, PII redaction, SSRF protection, and
-health/readiness/Prometheus endpoints.
+health/readiness/Prometheus endpoints. Bun SQLite stores health history and
+bounded dataset snapshots for repeatable comparisons.
 
 ## Hosted endpoint
 
@@ -74,6 +75,8 @@ Endpoints:
 | `uae_source_aggregate` | Group and aggregate records |
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
+| `uae_dataset_snapshot` | Create, list and compare historical snapshots |
+| `uae_intelligence_recipe` | Run evidence-backed coverage, freshness or historical recipes |
 | `uae_source_add_metadata` | Add metadata with a write token |
 
 ## Unified catalog and coverage
@@ -84,6 +87,9 @@ The project does not present every indexed portal as live data. Use:
 - `GET /api/v1/catalog` for explicit portal, organization, connector, license and capability models.
 - `GET /.well-known/uaemcp.json` for the operator and trust manifest.
 - `GET /api/v1/sources/{sourceId}/schema` or `uae_dataset_schema` before aggregation.
+- `GET /api/v1/sources/{sourceId}/health-history` for uptime and latency history.
+- `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
+- `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
 Current conservative coverage is 32 official portals indexed, 2 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
@@ -107,6 +113,7 @@ license, citation, fetch time, and quality metadata.
 | `UAEMCP_ALLOWED_HOSTS` | unset | Comma-separated public host allowlist |
 | `UAEMCP_ALLOWED_ORIGINS` | unset | Browser origin allowlist; use `*` only for fully public reads |
 | `UAEMCP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client public request limit; `0` disables it |
+| `UAEMCP_DATABASE_PATH` | `data/uaemcp.sqlite` | Durable health-history and snapshot database |
 
 ## Hosted public proxy
 

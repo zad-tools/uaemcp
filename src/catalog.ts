@@ -1,5 +1,6 @@
 import type { Source } from "./sources.js";
 import { REGISTRY } from "./sources.js";
+import type { DatasetRef } from "./connectors.js";
 
 export interface Capabilities {
   metadata: true;
@@ -9,7 +10,7 @@ export interface Capabilities {
   geo: boolean;
   aggregation: boolean;
   schema: boolean;
-  history: false;
+  history: boolean;
   realtime: false;
   export: string[];
   queryLanguage: "text" | "ckan" | "opendatasoft" | "arcgis" | null;
@@ -27,7 +28,7 @@ export function capabilitiesFor(source: Source): Capabilities {
     geo: records,
     aggregation: records,
     schema: records,
-    history: false,
+    history: records,
     realtime: false,
     export: records ? ["json", "csv", "geojson", "xlsx"] : [],
     queryLanguage,
@@ -46,6 +47,20 @@ export function portalModel(source: Source): Record<string, unknown> {
     capabilities: capabilitiesFor(source),
     license: { statement: source.license, status: "unverified", url: source.docs_url || source.base_url },
     links: { portal: source.base_url, documentation: source.docs_url || null, apiDocumentation: source.api_docs || null },
+  };
+}
+
+export function datasetModel(dataset: DatasetRef, source: Source, now = Date.now()): Record<string, unknown> {
+  const modifiedAt = dataset.modified && Number.isFinite(Date.parse(dataset.modified)) ? new Date(dataset.modified).toISOString() : null;
+  const freshnessDays = modifiedAt ? Math.max(0, Math.floor((now - Date.parse(modifiedAt)) / 86_400_000)) : null;
+  const capabilities = capabilitiesFor(source);
+  return {
+    ...dataset,
+    type: "dataset",
+    portalId: source.id,
+    capabilities: { ...capabilities, geo: capabilities.geo && dataset.has_geo },
+    license: { statement: source.license, status: "unverified", url: source.docs_url || source.base_url },
+    freshness: { modifiedAt, ageDays: freshnessDays, status: freshnessDays === null ? "unknown" : freshnessDays > 365 ? "stale" : "current" },
   };
 }
 
