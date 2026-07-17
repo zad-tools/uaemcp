@@ -22,6 +22,7 @@ import { resolveEntities } from "./entity-resolution.js";
 import { observatoryPage } from "./observatory-web.js";
 import { healthScanScheduler } from "./health-scheduler.js";
 import { coverageIndicator, healthIndicator, INDICATOR_IDS, industrialDistributionIndicator, listIndicators, stabilityIndicator, type IndicatorId } from "./indicators.js";
+import { buildIndustryAtlas } from "./industry-atlas.js";
 
 type Json = Record<string, unknown>;
 
@@ -47,7 +48,13 @@ function integer(params: URLSearchParams, key: string, fallback: number, max: nu
 
 const optional = (params: URLSearchParams, key: string): string | undefined => params.get(key) || undefined;
 
-export async function handleRest(request: Request): Promise<Response | null> {
+export interface RestDependencies {
+  fetchIndustryRecords: typeof fetchResult;
+}
+
+const REST_DEFAULTS: RestDependencies = { fetchIndustryRecords: fetchResult };
+
+export async function handleRest(request: Request, dependencies: RestDependencies = REST_DEFAULTS): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, "") || "/";
 
@@ -57,6 +64,20 @@ export async function handleRest(request: Request): Promise<Response | null> {
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
+    if (request.method === "GET" && path === "/api/v1/industry-atlas") {
+      const source = REGISTRY.get("moiat_industrial_licenses");
+      const requestedLimit = Math.max(1, integer(url.searchParams, "limit", 500, 1000));
+      const result = await dependencies.fetchIndustryRecords(source, { limit: requestedLimit });
+      const data = buildIndustryAtlas(result.records, {
+        sourceId: source.id, citation: result.citation, fetchedAt: result.fetched_at,
+        upstreamTotal: result.total, qualityScore: result.data_quality.quality_score,
+        emirate: optional(url.searchParams, "emirate"), query: optional(url.searchParams, "q"),
+      });
+      return json(envelope(data, {
+        source_id: source.id, citation: result.citation, fetched_at: result.fetched_at,
+        requested_limit: requestedLimit, returned_records: result.records.length, data_quality: result.data_quality,
+      }));
+    }
     if (request.method === "GET" && path === "/api/v1/observatory") {
       return json(envelope(reliabilityStore().observatoryReport(REGISTRY.list().map((source) => source.id))));
     }
