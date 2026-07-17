@@ -1,13 +1,13 @@
 import { aggregate, type Metric } from "./aggregate.js";
 import { requireWrite } from "./auth.js";
-import { checkHealth, fetchResult, listDatasets, metaOf } from "./connectors.js";
+import { checkHealth, connectorKinds, fetchResult, listDatasets, metaOf } from "./connectors.js";
 import { buildDashboardSummary } from "./dashboard.js";
 import { UaemcpError, SourceNotFound, Unauthorized, ValidationError } from "./errors.js";
 import { exportRecords, FORMATS, type ExportFormat } from "./export.js";
 import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
-import { citation, REGISTRY } from "./sources.js";
+import { citation, REGISTRY, type CustomSourceInput } from "./sources.js";
 import { coverageSummary, datasetModel, portalModel } from "./catalog.js";
 import { inferSchema } from "./schema.js";
 import { trustManifest } from "./manifest.js";
@@ -62,8 +62,9 @@ export async function handleRest(request: Request): Promise<Response | null> {
     }
     if (path === "/api/v1/sources" && request.method === "POST") {
       requireWrite(request.headers.get("x-api-key"));
-      const body = await request.json() as Record<string, string>;
-      return json(envelope(REGISTRY.addMetadataSource(body)), 201);
+      const body = await request.json() as CustomSourceInput;
+      if (!connectorKinds().includes(String(body.kind ?? "metadata"))) throw new ValidationError(`connector is not installed: ${body.kind}`);
+      return json(envelope(REGISTRY.addSource(body)), 201);
     }
 
     if (request.method === "GET" && path === "/api/v1/search") {

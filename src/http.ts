@@ -72,6 +72,13 @@ export async function getJson(
   }
 }
 
+export async function getText(url: string, params?: Record<string, unknown>, timeoutMs?: number): Promise<string> {
+  const resp = await request(url, { params, timeoutMs });
+  const text = await resp.text();
+  if (text.length > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`source response too large: ${url}`);
+  return text;
+}
+
 export async function probe(url: string, timeoutMs?: number): Promise<void> {
   await request(url, { timeoutMs });
 }

@@ -11,7 +11,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { SourceNotFound, ValidationError } from "./errors.js";
 
-export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "metadata";
+export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "csv" | "metadata";
 export type AccessStatus = "live" | "blocked" | "key_required" | "metadata_only";
 
 export interface Source {
@@ -37,6 +37,14 @@ export interface Source {
   /** Provider developer portal, when key-gated. */
   api_docs: string;
   access_status: AccessStatus;
+}
+
+export interface CustomSourceInput {
+  id: string; name_en: string; name_ar: string; owner: string; base_url: string;
+  kind?: SourceKind; category?: string; endpoint?: string; docs_url?: string;
+  license?: string; notes?: string; row_path?: string[];
+  default_params?: Record<string, unknown>; connector_config?: Record<string, unknown>;
+  max_page_size?: number | null;
 }
 
 const LICENSE =
@@ -113,16 +121,18 @@ const STORE_PATH =
 export class Registry {
   private builtIn = new Map<string, Source>();
   private custom = new Map<string, Source>();
+  private storePath: string;
 
-  constructor() {
+  constructor(storePath = STORE_PATH) {
+    this.storePath = storePath;
     for (const s of BUILT_IN) this.builtIn.set(s.id, s);
     this.loadCustom();
   }
 
   private loadCustom(): void {
-    if (!existsSync(STORE_PATH)) return;
+    if (!existsSync(this.storePath)) return;
     try {
-      const raw = JSON.parse(readFileSync(STORE_PATH, "utf-8")) as Partial<Source>[];
+      const raw = JSON.parse(readFileSync(this.storePath, "utf-8")) as Partial<Source>[];
       for (const item of raw) {
         if (item.id && !this.builtIn.has(item.id)) {
           this.custom.set(
@@ -144,9 +154,9 @@ export class Registry {
   }
 
   private persist(): void {
-    mkdirSync(dirname(STORE_PATH), { recursive: true });
+    mkdirSync(dirname(this.storePath), { recursive: true });
     writeFileSync(
-      STORE_PATH,
+      this.storePath,
       JSON.stringify([...this.custom.values()], null, 2),
       "utf-8",
     );
@@ -163,24 +173,45 @@ export class Registry {
   }
 
   addMetadataSource(data: Record<string, string>): Source {
+    return this.addSource({
+      id: data.id, name_en: data.name_en, name_ar: data.name_ar, owner: data.owner,
+      base_url: data.base_url, category: data.category, docs_url: data.docs_url,
+      notes: data.notes, kind: "metadata",
+    });
+  }
+
+  addSource(data: CustomSourceInput): Source {
     const missing = REQUIRED_CUSTOM.filter((k) => !data[k]);
     if (missing.length) {
       throw new ValidationError(`missing required fields: ${missing.join(", ")}`);
     }
     const id = String(data.id).trim();
+    if (!/^[a-z0-9][a-z0-9_-]{1,63}$/.test(id)) throw new ValidationError("source id must be 2-64 lowercase letters, digits, _ or -");
     if (this.builtIn.has(id)) {
       throw new ValidationError(`cannot override built-in source: ${id}`);
     }
+    let baseUrl: URL;
+    try { baseUrl = new URL(data.base_url); } catch { throw new ValidationError("base_url must be a valid URL"); }
+    if (!["http:", "https:"].includes(baseUrl.protocol)) throw new ValidationError("base_url must use http or https");
+    const kind = String(data.kind ?? "metadata") as SourceKind;
+    if (!/^[a-z][a-z0-9_-]{1,31}$/.test(kind)) throw new ValidationError("invalid connector kind");
     const source: Source = src({
       id,
       name_en: data.name_en,
       name_ar: data.name_ar,
       owner: data.owner,
       category: data.category || "custom",
-      kind: "metadata",
-      base_url: data.base_url,
+      kind,
+      base_url: baseUrl.toString(),
+      endpoint: data.endpoint || "",
       docs_url: data.docs_url || "",
+      license: data.license || LICENSE,
       notes: data.notes || "",
+      row_path: data.row_path ?? [],
+      default_params: data.default_params ?? {},
+      connector_config: data.connector_config ?? {},
+      max_page_size: data.max_page_size ?? null,
+      access_status: kind === "metadata" ? "metadata_only" : "live",
       origin: "custom",
     });
     this.custom.set(id, source);

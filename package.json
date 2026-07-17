@@ -10,7 +10,8 @@
   },
   "exports": {
     ".": "./src/client.ts",
-    "./server": "./src/server.ts"
+    "./server": "./src/server.ts",
+    "./connectors": "./src/connectors.ts"
   },
   "files": [
     "src",

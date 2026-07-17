@@ -9,13 +9,13 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { z } from "zod";
 import { aggregate, type Metric } from "./aggregate.js";
 import { requireWrite } from "./auth.js";
-import { checkHealth, fetchResult, listDatasets, metaOf } from "./connectors.js";
+import { checkHealth, connectorKinds, fetchResult, listDatasets, metaOf } from "./connectors.js";
 import { buildDashboardSummary } from "./dashboard.js";
 import { UaemcpError, ValidationError } from "./errors.js";
 import * as geo from "./geo.js";
 import { buildSearch } from "./search.js";
 import { buildMarketSnapshot } from "./snapshot.js";
-import { citation, REGISTRY } from "./sources.js";
+import { citation, REGISTRY, type CustomSourceInput } from "./sources.js";
 import { inferSchema } from "./schema.js";
 import { capabilitiesFor, coverageSummary, datasetModel, portalModel } from "./catalog.js";
 import { SERVER_NAME, VERSION } from "./version.js";
@@ -39,6 +39,29 @@ function text(payload: Json) {
 
 export function buildServer(): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_source_add",
+    {
+      description: "[WRITE — requires token] Register a custom source using a built-in or installed connector plugin.",
+      inputSchema: {
+        id: z.string(), name_en: z.string(), name_ar: z.string(), owner: z.string(), base_url: z.string(),
+        kind: z.string().default("metadata"), endpoint: z.string().optional(), docs_url: z.string().optional(),
+        category: z.string().optional(), license: z.string().optional(), notes: z.string().optional(),
+        row_path: z.array(z.string()).optional(), default_params: z.record(z.unknown()).optional(),
+        connector_config: z.record(z.unknown()).optional(), max_page_size: z.number().int().positive().optional(),
+        token: z.string().optional(),
+      },
+    },
+    async ({ token, ...data }) => {
+      try {
+        requireWrite(token);
+        if (!connectorKinds().includes(data.kind)) throw new ValidationError(`connector is not installed: ${data.kind}`);
+        return text(ok(REGISTRY.addSource(data as CustomSourceInput)));
+      }
+      catch (e) { return text(fail(e)); }
+    },
+  );
 
   server.registerTool(
     "uae_sources_list",

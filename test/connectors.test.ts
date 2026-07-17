@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 
-vi.mock("../src/http.js", () => ({ getJson: vi.fn(), probe: vi.fn() }));
+vi.mock("../src/http.js", () => ({ getJson: vi.fn(), getText: vi.fn(), probe: vi.fn() }));
 
-import { fetchResult, listDatasets } from "../src/connectors.js";
-import { getJson } from "../src/http.js";
+import { connectorCapabilities, connectorKinds, fetchResult, listDatasets, parseDelimited, registerConnector } from "../src/connectors.js";
+import { getJson, getText } from "../src/http.js";
 import type { Source } from "../src/sources.js";
 
 const mockGetJson = getJson as unknown as ReturnType<typeof vi.fn>;
+const mockGetText = getText as unknown as ReturnType<typeof vi.fn>;
 
 function mkSource(p: Partial<Source>): Source {
   return {
@@ -17,7 +18,7 @@ function mkSource(p: Partial<Source>): Source {
   };
 }
 
-beforeEach(() => mockGetJson.mockReset());
+beforeEach(() => { mockGetJson.mockReset(); mockGetText.mockReset(); });
 
 describe("http_json connector", () => {
   const src = mkSource({ kind: "http_json", row_path: ["result", "Factories"], max_page_size: 10 });
@@ -116,5 +117,43 @@ describe("metadata connector honesty", () => {
   });
   it("lists no datasets", async () => {
     expect(await listDatasets(mkSource({ kind: "metadata" }))).toEqual([]);
+  });
+});
+
+describe("csv connector", () => {
+  const src = mkSource({ kind: "csv", base_url: "https://data.example/health.csv" });
+  it("parses quoted values, filters, paginates and redacts", async () => {
+    mockGetText.mockResolvedValue('name,note,email\n"Clinic, One","line ""quoted""",a@example.com\nClinic Two,ok,b@example.com\n');
+    const result = await fetchResult(src, { query: "two", limit: 1 });
+    expect(result.total).toBe(2);
+    expect(result.records).toEqual([{ name: "Clinic Two", note: "ok", email: "[redacted-open-data-contact]" }]);
+    expect(result.data_quality.warnings[0]).toContain("client-side");
+  });
+  it("rejects malformed and duplicate headers", () => {
+    expect(() => parseDelimited('name,name\na,b')).toThrow("duplicate header");
+    expect(() => parseDelimited('name\n"broken')).toThrow("unterminated");
+  });
+});
+
+describe("connector plugin registry", () => {
+  it("registers a connector without changing dispatch code", async () => {
+    registerConnector("fixture_test", {
+      capabilities: { records: true, search: true, geo: false, queryLanguage: "text" },
+      fetch: async (source) => ({
+        records: [{ plugin: true }], source_id: source.id, fetched_at: "2026-01-01T00:00:00Z",
+        citation: source.base_url, license: source.license, dataset: null, total: 1, fields: [],
+        data_quality: { confidence: 1, warnings: [], validation: { records_out: 1 } },
+      }),
+      datasets: async () => [{ id: "one", title_en: "One", title_ar: "واحد", records_count: 1, theme: "test", modified: "", has_geo: false }],
+    });
+    const source = mkSource({ kind: "fixture_test" as Source["kind"] });
+    expect((await fetchResult(source)).records).toEqual([{ plugin: true }]);
+    expect((await listDatasets(source))[0].id).toBe("one");
+    expect(connectorKinds()).toContain("fixture_test");
+    expect(connectorCapabilities("fixture_test")).toMatchObject({ records: true, geo: false });
+  });
+
+  it("rejects duplicate connector names", () => {
+    expect(() => registerConnector("metadata", { fetch: async () => { throw new Error("never"); } })).toThrow("connector already registered");
   });
 });

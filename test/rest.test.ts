@@ -63,7 +63,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
     expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.30.0" });
-    expect(manifest.tools.write).toEqual(["uae_source_add_metadata", "uae_dataset_snapshot:create"]);
+    expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });
 

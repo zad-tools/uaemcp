@@ -1,6 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { SourceNotFound, ValidationError } from "../src/errors.js";
 import { REGISTRY } from "../src/sources.js";
+import { Registry } from "../src/sources.js";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 describe("Registry", () => {
   it("lists 32 built-in sources", () => {
@@ -34,5 +38,25 @@ describe("Registry", () => {
         base_url: "https://example.com/",
       }),
     ).toThrow(ValidationError);
+  });
+
+  it("persists a validated custom connector source", () => {
+    const directory = mkdtempSync(join(tmpdir(), "uaemcp-registry-"));
+    const path = join(directory, "sources.json");
+    try {
+      const registry = new Registry(path);
+      const added = registry.addSource({
+        id: "health_csv", name_en: "Health CSV", name_ar: "بيانات الصحة",
+        owner: "Test Authority", base_url: "https://example.gov.ae/data.csv", kind: "csv",
+        connector_config: { delimiter: "," },
+      });
+      expect(added).toMatchObject({ kind: "csv", access_status: "live", origin: "custom" });
+      expect(new Registry(path).get("health_csv").connector_config).toEqual({ delimiter: "," });
+    } finally { rmSync(directory, { recursive: true, force: true }); }
+  });
+
+  it("rejects unsafe custom source definitions", () => {
+    const registry = new Registry(join(tmpdir(), `uaemcp-missing-${crypto.randomUUID()}.json`));
+    expect(() => registry.addSource({ id: "Bad ID", name_en: "x", name_ar: "x", owner: "x", base_url: "file:///etc/passwd", kind: "csv" })).toThrow(ValidationError);
   });
 });

@@ -5,7 +5,7 @@ Official UAE open data over the Model Context Protocol, running on Bun.
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 14 source-cited
+The server keeps the public `uaemcp` contract and extends it to 15 source-cited
 MCP tools, six resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
 connectors, geo queries, aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
@@ -93,6 +93,7 @@ API failures throw `UaemcpClientError` with the HTTP status and public error cod
 | `uae_dataset_snapshot` | Create, list and compare historical snapshots |
 | `uae_intelligence_recipe` | Run evidence-backed coverage, freshness or historical recipes |
 | `uae_source_add_metadata` | Add metadata with a write token |
+| `uae_source_add` | Register a custom source for any installed connector (write token required) |
 
 ## Unified catalog and coverage
 
@@ -160,3 +161,4 @@ docker compose up --build
 ```
 
 MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+Connector authors should start with [docs/CONNECTORS.md](docs/CONNECTORS.md).

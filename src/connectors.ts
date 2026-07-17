@@ -13,7 +13,7 @@
 
 import { SETTINGS } from "./config.js";
 import { SourceUnavailable, ValidationError } from "./errors.js";
-import { getJson, probe } from "./http.js";
+import { getJson, getText, probe } from "./http.js";
 import { redactRecords } from "./redaction.js";
 import { citation, fetchUrl, type Source } from "./sources.js";
 
@@ -52,6 +52,16 @@ export interface FetchOpts {
   query?: string;
   limit?: number;
   offset?: number;
+}
+
+export interface Connector {
+  fetch(source: Source, options: FetchOpts): Promise<FetchResult>;
+  datasets?(source: Source, options: FetchOpts): Promise<DatasetRef[]>;
+  capabilities?: {
+    records?: boolean; search?: boolean; geo?: boolean; aggregation?: boolean;
+    schema?: boolean; history?: boolean; realtime?: boolean; export?: string[];
+    queryLanguage?: string | null;
+  };
 }
 
 const utcNow = (): string => new Date().toISOString().replace(/\.\d+Z$/, "Z");
@@ -284,24 +294,90 @@ async function arcgisDatasets(source: Source, opts: FetchOpts): Promise<DatasetR
   return all.slice(offset, offset + (opts.limit ?? 50));
 }
 
-// ── dispatch ─────────────────────────────────────────────────────────────────
-export async function fetchResult(source: Source, opts: FetchOpts = {}): Promise<FetchResult> {
-  switch (source.kind) {
-    case "http_json":
-      return fetchHttpJson(source, opts);
-    case "ods":
-      return fetchOds(source, opts);
-    case "ckan":
-      return fetchCkan(source, opts);
-    case "arcgis":
-      return fetchArcgis(source, opts);
-    case "metadata":
-      throw new SourceUnavailable(
-        `'${source.id}' is a discovery-only source and exposes no record API yet. See ${citation(source)} for the portal's published datasets.`,
-      );
-    default:
-      throw new ValidationError(`no connector for kind: ${source.kind}`);
+// ── CSV / TSV ────────────────────────────────────────────────────────────────
+export function parseDelimited(text: string, delimiter = ","): Rec[] {
+  if (delimiter.length !== 1) throw new ValidationError("CSV delimiter must be one character");
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = "";
+  let quoted = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (quoted) {
+      if (char === '"' && text[index + 1] === '"') { cell += '"'; index += 1; }
+      else if (char === '"') quoted = false;
+      else cell += char;
+    } else if (char === '"') quoted = true;
+    else if (char === delimiter) { row.push(cell); cell = ""; }
+    else if (char === "\n") { row.push(cell.replace(/\r$/, "")); rows.push(row); row = []; cell = ""; }
+    else cell += char;
   }
+  if (quoted) throw new ValidationError("CSV contains an unterminated quoted field");
+  if (cell || row.length) { row.push(cell.replace(/\r$/, "")); rows.push(row); }
+  const header = (rows.shift() ?? []).map((name, index) => name.trim().replace(/^\uFEFF/, "") || `column_${index + 1}`);
+  if (!header.length) return [];
+  const seen = new Set<string>();
+  for (const name of header) {
+    if (seen.has(name)) throw new ValidationError(`CSV contains duplicate header: ${name}`);
+    seen.add(name);
+  }
+  return rows.filter((values) => values.some(Boolean)).map((values) => Object.fromEntries(header.map((name, index) => [name, values[index] ?? ""])));
+}
+
+async function fetchCsv(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const delimiter = String(source.connector_config.delimiter ?? (fetchUrl(source).toLowerCase().endsWith(".tsv") ? "\t" : ","));
+  let records = parseDelimited(await getText(fetchUrl(source)), delimiter);
+  const total = records.length;
+  let clientFiltered = false;
+  if (opts.query) {
+    const query = opts.query.toLocaleLowerCase();
+    records = records.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query));
+    clientFiltered = true;
+  }
+  const offset = opts.offset ?? 0;
+  records = redactRecords(records.slice(offset, offset + Math.min(opts.limit ?? 10, 1000)));
+  return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
+}
+
+async function csvDatasets(source: Source): Promise<DatasetRef[]> {
+  return [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: source.category, modified: "", has_geo: Boolean(source.connector_config.has_geo) }];
+}
+
+// ── plugin registry ──────────────────────────────────────────────────────────
+const connectors = new Map<string, Connector>();
+
+export function registerConnector(kind: string, connector: Connector, options: { replace?: boolean } = {}): void {
+  const name = kind.trim().toLowerCase();
+  if (!/^[a-z][a-z0-9_-]{1,31}$/.test(name)) throw new ValidationError("connector kind must be 2-32 lowercase letters, digits, _ or -");
+  if (connectors.has(name) && !options.replace) throw new ValidationError(`connector already registered: ${name}`);
+  connectors.set(name, connector);
+}
+
+export function connectorKinds(): string[] {
+  return [...connectors.keys()].sort();
+}
+
+export function connectorCapabilities(kind: string): Connector["capabilities"] | null {
+  const value = connectors.get(kind)?.capabilities;
+  return value ? { ...value, export: value.export ? [...value.export] : undefined } : null;
+}
+
+const liveCapabilities = { records: true, search: true, geo: true, aggregation: true, schema: true, history: true, realtime: false, export: ["json", "csv", "geojson", "xlsx"] };
+registerConnector("http_json", { fetch: fetchHttpJson, datasets: async (source) => [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: "", modified: "", has_geo: false }], capabilities: { ...liveCapabilities, queryLanguage: "text" } });
+registerConnector("ods", { fetch: fetchOds, datasets: odsDatasets, capabilities: { ...liveCapabilities, queryLanguage: "opendatasoft" } });
+registerConnector("ckan", { fetch: fetchCkan, datasets: ckanDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "ckan" } });
+registerConnector("arcgis", { fetch: fetchArcgis, datasets: arcgisDatasets, capabilities: { ...liveCapabilities, queryLanguage: "arcgis" } });
+registerConnector("csv", { fetch: fetchCsv, datasets: csvDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "text" } });
+registerConnector("metadata", {
+  fetch: async (source) => { throw new SourceUnavailable(`'${source.id}' is a discovery-only source and exposes no record API yet. See ${citation(source)} for the portal's published datasets.`); },
+  datasets: async () => [],
+  capabilities: { records: false, search: false, geo: false, aggregation: false, schema: false, history: false, realtime: false, export: [], queryLanguage: null },
+});
+
+export async function fetchResult(source: Source, opts: FetchOpts = {}): Promise<FetchResult> {
+  const connector = connectors.get(source.kind);
+  if (!connector) throw new ValidationError(`no connector for kind: ${source.kind}`);
+  return connector.fetch(source, opts);
 }
 
 export async function fetchRecords(source: Source, opts: { query?: string; limit?: number; dataset?: string | null } = {}): Promise<Rec[]> {
@@ -309,18 +385,9 @@ export async function fetchRecords(source: Source, opts: { query?: string; limit
 }
 
 export async function listDatasets(source: Source, opts: FetchOpts = {}): Promise<DatasetRef[]> {
-  switch (source.kind) {
-    case "ods":
-      return odsDatasets(source, opts);
-    case "ckan":
-      return ckanDatasets(source, opts);
-    case "arcgis":
-      return arcgisDatasets(source, opts);
-    case "http_json":
-      return [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: "", modified: "", has_geo: false }];
-    default:
-      return [];
-  }
+  const connector = connectors.get(source.kind);
+  if (!connector) throw new ValidationError(`no connector for kind: ${source.kind}`);
+  return connector.datasets ? connector.datasets(source, opts) : [];
 }
 
 export interface HealthResult {

@@ -1,6 +1,7 @@
 import type { Source } from "./sources.js";
 import { REGISTRY } from "./sources.js";
 import type { DatasetRef } from "./connectors.js";
+import { connectorCapabilities } from "./connectors.js";
 
 export interface Capabilities {
   metadata: true;
@@ -11,27 +12,28 @@ export interface Capabilities {
   aggregation: boolean;
   schema: boolean;
   history: boolean;
-  realtime: false;
+  realtime: boolean;
   export: string[];
-  queryLanguage: "text" | "ckan" | "opendatasoft" | "arcgis" | null;
+  queryLanguage: string | null;
 }
 
 export function capabilitiesFor(source: Source): Capabilities {
   const records = source.access_status === "live" && source.kind !== "metadata";
   const datasets = ["ckan", "ods", "arcgis"].includes(source.kind);
   const queryLanguage = source.kind === "http_json" ? "text" : source.kind === "metadata" ? null : source.kind === "ods" ? "opendatasoft" : source.kind;
+  const plugin = connectorCapabilities(source.kind);
   return {
     metadata: true,
     datasets,
-    records,
-    search: records || datasets,
-    geo: records,
-    aggregation: records,
-    schema: records,
-    history: records,
-    realtime: false,
-    export: records ? ["json", "csv", "geojson", "xlsx"] : [],
-    queryLanguage,
+    records: records && (plugin?.records ?? true),
+    search: records && (plugin?.search ?? (records || datasets)),
+    geo: records && (plugin?.geo ?? records),
+    aggregation: records && (plugin?.aggregation ?? records),
+    schema: records && (plugin?.schema ?? records),
+    history: records && (plugin?.history ?? records),
+    realtime: records && (plugin?.realtime ?? false),
+    export: records ? (plugin?.export ?? ["json", "csv", "geojson", "xlsx"]) : [],
+    queryLanguage: (plugin?.queryLanguage ?? queryLanguage) as Capabilities["queryLanguage"],
   };
 }
 

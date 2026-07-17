@@ -85,6 +85,7 @@ describe("Bun HTTP runtime", () => {
       "uae_source_aggregate",
       "uae_market_snapshot",
       "uae_dashboard_summary",
+      "uae_source_add",
       "uae_source_add_metadata",
     ].sort());
   });

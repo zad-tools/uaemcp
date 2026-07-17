@@ -15,7 +15,7 @@ export function trustManifest(): Record<string, unknown> {
     endpoints: { mcp: "/mcp", rest: "/api/v1", health: "/health", metrics: "/metrics" },
     tools: {
       read: [...READ_TOOLS, "uae_dataset_snapshot:list", "uae_dataset_snapshot:diff"],
-      write: ["uae_source_add_metadata", "uae_dataset_snapshot:create"],
+      write: ["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"],
       writesEnabledByDefault: false,
     },
     safeguards: ["ssrf-protection", "pii-redaction", "bounded-fetches", "rate-limiting", "host-allowlist", "origin-allowlist"],
