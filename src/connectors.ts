@@ -408,7 +408,11 @@ function coerceRedactionExemptNumericFields(records: Rec[], configured: unknown)
 
 async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> {
   const configuredColumns = source.connector_config.columns;
-  let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1), {
+  const configuredTimeoutMs = Number(source.connector_config.timeout_ms ?? 0);
+  if (configuredTimeoutMs && (!Number.isInteger(configuredTimeoutMs) || configuredTimeoutMs < 1_000 || configuredTimeoutMs > 60_000)) {
+    throw new ValidationError("XLSX timeout_ms must be an integer from 1,000 to 60,000");
+  }
+  let records = parseXlsx(await getBytes(fetchUrl(source), undefined, configuredTimeoutMs || undefined), Number(source.connector_config.sheet ?? 1), {
     headerRow: Number(source.connector_config.header_row ?? 1),
     dataStartRow: Number(source.connector_config.data_start_row ?? Number(source.connector_config.header_row ?? 1) + 1),
     columns: configuredColumns && typeof configuredColumns === "object" && !Array.isArray(configuredColumns)
