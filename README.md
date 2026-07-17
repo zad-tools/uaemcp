@@ -9,6 +9,7 @@
 <p align="center">
   <a href="https://uaemcp.zad.tools"><img src="https://img.shields.io/badge/LIVE-uaemcp.zad.tools-087443?style=flat-square" alt="Live instance"></a>
   <a href="https://github.com/ahmedvnabil/Open-Emirates-Intelligence-MCP/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ahmedvnabil/Open-Emirates-Intelligence-MCP/ci.yml?style=flat-square&label=CI" alt="CI status"></a>
+  <a href="https://www.npmjs.com/package/uaemcp"><img src="https://img.shields.io/npm/v/uaemcp?style=flat-square&logo=npm" alt="npm version"></a>
   <img src="https://img.shields.io/badge/runtime-Bun-f1eddf?style=flat-square&logo=bun&logoColor=13251d" alt="Bun runtime">
   <img src="https://img.shields.io/badge/license-MIT-c34032?style=flat-square" alt="MIT license">
 </p>
@@ -41,7 +42,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 30 source-cited
+The server keeps the public `uaemcp` contract and extends it to 31 source-cited
 MCP tools, seven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -101,6 +102,30 @@ pretends to choose a licence, calculate final fees or guarantee approval.
 ## Run with Bun
 
 Requires Bun 1.3 or newer.
+
+Use the published package without cloning the repository:
+
+```bash
+bunx uaemcp --version
+bunx uaemcp doctor
+bunx uaemcp                 # stdio MCP server
+bunx uaemcp http            # HTTP server at /mcp
+```
+
+MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "uae-intelligence": {
+      "command": "bunx",
+      "args": ["uaemcp"]
+    }
+  }
+}
+```
+
+From source:
 
 ```bash
 bun install

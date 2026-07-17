@@ -23,6 +23,7 @@
 ## Verification
 
 - `bun run check`: typecheck, 234 offline/runtime tests and 11 generated SDK freshness checks passed.
+- The exact npm tarball is installed and its CLI version/doctor commands are exercised before publishing.
 - Desktop live-source query: 3 normalized and mapped FGIC results returned.
 - Arabic: `lang=ar`, `dir=rtl`, local Dubai Font and localized runtime states verified.
 - Mobile 390×844: one-column results and search form, no horizontal overflow.
