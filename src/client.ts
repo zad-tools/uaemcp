@@ -37,6 +37,9 @@ export class UaemcpClient {
   sources<T = Record<string, unknown>[]>() { return this.request<T>("/api/v1/sources"); }
   source<T = Record<string, unknown>>(sourceId: string) { return this.request<T>(`/api/v1/sources/${encodeURIComponent(sourceId)}`); }
   coverage<T = Record<string, unknown>>() { return this.request<T>("/api/v1/coverage"); }
+  industryAtlas<T = Record<string, unknown>>(options: { emirate?: string; query?: string; limit?: number } = {}) {
+    return this.request<T>(this.query("/api/v1/industry-atlas", { emirate: options.emirate, q: options.query, limit: options.limit }));
+  }
   search<T = Record<string, unknown>>(query: string, options: { limit?: number; deep?: boolean } = {}) {
     return this.request<T>(this.query("/api/v1/search", { q: query, ...options }));
   }

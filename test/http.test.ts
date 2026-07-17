@@ -93,6 +93,7 @@ describe("Bun HTTP runtime", () => {
       "uae_indicator",
       "uae_entity_resolve",
       "uae_observatory",
+      "uae_industry_atlas",
     ].sort());
   });
 

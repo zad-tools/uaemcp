@@ -24,6 +24,7 @@ import { listRecipes, runRecipe } from "./intelligence.js";
 import { snapshotScheduler } from "./scheduler.js";
 import { resolveEntities } from "./entity-resolution.js";
 import { coverageIndicator, healthIndicator, industrialDistributionIndicator, listIndicators, stabilityIndicator } from "./indicators.js";
+import { buildIndustryAtlas } from "./industry-atlas.js";
 
 type Json = Record<string, unknown>;
 
@@ -41,6 +42,25 @@ function text(payload: Json) {
 
 export function buildServer(): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_industry_atlas",
+    {
+      description: "Build an evidence-backed UAE industrial-establishment atlas from a bounded official MOIAT sample. Counts are never presented as population totals without upstream coverage proof.",
+      inputSchema: { emirate: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
+    },
+    async ({ emirate, query, limit }) => {
+      try {
+        const source = REGISTRY.get("moiat_industrial_licenses");
+        const result = await fetchResult(source, { limit });
+        const atlas = buildIndustryAtlas(result.records, {
+          sourceId: source.id, citation: result.citation, fetchedAt: result.fetched_at,
+          upstreamTotal: result.total, qualityScore: result.data_quality.quality_score, emirate, query,
+        });
+        return text(ok(atlas, { ...metaOf(result), requested_limit: limit }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_indicator",
@@ -404,6 +424,18 @@ export function buildServer(): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "industry_atlas_methodology",
+    "uae://industry-atlas/methodology",
+    { title: "UAE Industry Atlas methodology", description: "Scope, unit of analysis, evidence rules and limitations for industrial atlas answers.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      unit: "industrial establishment record", sourceId: "moiat_industrial_licenses",
+      countingRule: "one returned license record equals one observed establishment record",
+      populationClaimAllowed: false,
+      limitations: ["Bounded samples are not UAE totals.", "License records do not prove current operation.", "Product-label counts are not production volumes."],
+    }) }] }),
+  );
 
   server.registerResource(
     "open_data_observatory",

@@ -22,6 +22,9 @@ class UaemcpClient:
     def get_coverage(self, **params):
         return self._get(f"/api/v1/coverage", params)
 
+    def get_industry_atlas(self, **params):
+        return self._get(f"/api/v1/industry-atlas", params)
+
     def list_sources(self, **params):
         return self._get(f"/api/v1/sources", params)
 
