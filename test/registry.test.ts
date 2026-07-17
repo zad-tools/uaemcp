@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 describe("Registry", () => {
-  it("lists 32 built-in sources", () => {
-    expect(REGISTRY.list().length).toBe(32);
+  it("lists 33 built-in sources", () => {
+    expect(REGISTRY.list().length).toBe(33);
   });
 
   it("gets a known source", () => {

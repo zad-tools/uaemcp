@@ -1,13 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "bun:test";
 
-vi.mock("../src/http.js", () => ({ getJson: vi.fn(), getText: vi.fn(), probe: vi.fn() }));
+vi.mock("../src/http.js", () => ({ getBytes: vi.fn(), getJson: vi.fn(), getText: vi.fn(), probe: vi.fn() }));
 
-import { connectorCapabilities, connectorKinds, fetchResult, listDatasets, parseDelimited, registerConnector } from "../src/connectors.js";
-import { getJson, getText } from "../src/http.js";
+import { connectorCapabilities, connectorKinds, fetchResult, listDatasets, parseDelimited, parseSdmxJson, registerConnector } from "../src/connectors.js";
+import { getBytes, getJson, getText } from "../src/http.js";
+import { exportRecords } from "../src/export.js";
+import { parseXlsx } from "../src/xlsx.js";
 import type { Source } from "../src/sources.js";
 
 const mockGetJson = getJson as unknown as ReturnType<typeof vi.fn>;
 const mockGetText = getText as unknown as ReturnType<typeof vi.fn>;
+const mockGetBytes = getBytes as unknown as ReturnType<typeof vi.fn>;
 
 function mkSource(p: Partial<Source>): Source {
   return {
@@ -18,7 +21,7 @@ function mkSource(p: Partial<Source>): Source {
   };
 }
 
-beforeEach(() => { mockGetJson.mockReset(); mockGetText.mockReset(); });
+beforeEach(() => { mockGetJson.mockReset(); mockGetText.mockReset(); mockGetBytes.mockReset(); });
 
 describe("http_json connector", () => {
   const src = mkSource({ kind: "http_json", row_path: ["result", "Factories"], max_page_size: 10 });
@@ -132,6 +135,60 @@ describe("csv connector", () => {
   it("rejects malformed and duplicate headers", () => {
     expect(() => parseDelimited('name,name\na,b')).toThrow("duplicate header");
     expect(() => parseDelimited('name\n"broken')).toThrow("unterminated");
+  });
+});
+
+describe("sparql connector", () => {
+  it("flattens SELECT bindings and enforces a bounded query", async () => {
+    const src = mkSource({ kind: "sparql", connector_config: { default_query: "SELECT ?name ?email WHERE { ?s ?p {{search}} }" } });
+    mockGetJson.mockResolvedValue({ results: { bindings: [{ name: { type: "literal", value: "Clinic" }, email: { type: "literal", value: "care@example.com" } }] } });
+    const result = await fetchResult(src, { query: "health", limit: 5 });
+    expect(result.records).toEqual([{ name: "Clinic", email: "[redacted-open-data-contact]" }]);
+    const params = mockGetJson.mock.calls[0][1] as Record<string, string>;
+    expect(params.query).toContain("LIMIT 5");
+    expect(params.query).toContain('"health"');
+  });
+  it("rejects updates, SERVICE and arbitrary queries by default", async () => {
+    await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "DELETE WHERE { ?s ?p ?o }" } }))).rejects.toThrow("only permits SELECT");
+    await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "SELECT * WHERE { SERVICE <https://x> { ?s ?p ?o } }" } }))).rejects.toThrow("SERVICE");
+    await expect(fetchResult(mkSource({ kind: "sparql", connector_config: { default_query: "SELECT * WHERE { ?s ?p ?o }" } }), { query: "SELECT * WHERE {}" })).rejects.toThrow("does not accept arbitrary");
+  });
+});
+
+describe("xlsx connector", () => {
+  it("reads a bounded workbook and redacts contacts", async () => {
+    const source = mkSource({ kind: "xlsx", base_url: "https://example.gov.ae/health.xlsx" });
+    const workbook = exportRecords([{ name: "Clinic", count: 12, email: "care@example.com" }], "xlsx", source, null).body;
+    expect(parseXlsx(workbook)).toEqual([{ name: "Clinic", count: "12", email: "care@example.com" }]);
+    mockGetBytes.mockResolvedValue(workbook);
+    const result = await fetchResult(source, { limit: 1 });
+    expect(result.records).toEqual([{ name: "Clinic", count: "12", email: "[redacted-open-data-contact]" }]);
+  });
+
+  it("rejects non-XLSX bytes", () => {
+    expect(() => parseXlsx(new Uint8Array([1, 2, 3]))).toThrow("valid XLSX");
+  });
+});
+
+describe("sdmx connector", () => {
+  const payload = {
+    structure: { dimensions: {
+      series: [{ id: "FREQ", values: [{ id: "A" }] }, { id: "EMIRATE", values: [{ id: "DXB" }, { id: "AUH" }] }],
+      observation: [{ id: "TIME_PERIOD", values: [{ id: "2024" }, { id: "2025" }] }],
+    } },
+    dataSets: [{ series: { "0:1": { observations: { "0": [10], "1": [12, "estimated"] } } } }],
+  };
+  it("flattens SDMX dimensions and observations", () => {
+    expect(parseSdmxJson(payload)).toEqual([
+      { FREQ: "A", EMIRATE: "AUH", TIME_PERIOD: "2024", OBS_VALUE: 10 },
+      { FREQ: "A", EMIRATE: "AUH", TIME_PERIOD: "2025", OBS_VALUE: 12, OBS_ATTRIBUTES: ["estimated"] },
+    ]);
+  });
+  it("fetches, searches and paginates SDMX JSON", async () => {
+    mockGetJson.mockResolvedValue(payload);
+    const result = await fetchResult(mkSource({ kind: "sdmx" }), { query: "2025", limit: 1 });
+    expect(result.total).toBe(2);
+    expect(result.records[0]).toMatchObject({ TIME_PERIOD: "2025", OBS_VALUE: 12 });
   });
 });
 

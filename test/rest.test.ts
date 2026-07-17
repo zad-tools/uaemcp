@@ -24,8 +24,8 @@ describe("REST v1", () => {
     const payload = await response.json();
     expect(response.status).toBe(200);
     expect(payload.ok).toBe(true);
-    expect(payload.data).toHaveLength(32);
-    expect(payload.meta.total).toBe(32);
+    expect(payload.data).toHaveLength(33);
+    expect(payload.meta.total).toBe(33);
   });
 
   it("returns structured errors", async () => {
@@ -54,7 +54,7 @@ describe("REST v1", () => {
   it("publishes conservative coverage and unified catalog models", async () => {
     const coverage = await fetch(`${baseUrl}/api/v1/coverage`).then((response) => response.json());
     const catalog = await fetch(`${baseUrl}/api/v1/catalog`).then((response) => response.json());
-    expect(coverage.data.liveRecordConnectors).toBe(2);
+    expect(coverage.data.liveRecordConnectors).toBe(3);
     expect(catalog.data[0].type).toBe("portal");
     expect(catalog.data[0].capabilities).toBeDefined();
   });
@@ -62,7 +62,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.30.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.31.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });

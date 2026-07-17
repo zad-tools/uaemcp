@@ -19,6 +19,14 @@
 - Bilingual source browser and safe REST playground
 - Typed TypeScript client
 
+## v1.31 — Community connectors — complete
+
+- Runtime connector plugin registry and capability discovery
+- Write-gated custom sources with persistent configuration
+- CSV, XLSX, SDMX and bounded SPARQL connectors
+- Safe XLSX extraction budget and SPARQL update/SERVICE rejection
+- Third verified live official source from MOHAP, reported as published
+
 ## v1.40 — Deeper intelligence
 
 - UAE geography normalization

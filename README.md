@@ -6,8 +6,9 @@ Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
 The server keeps the public `uaemcp` contract and extends it to 15 source-cited
-MCP tools, six resources, three prompts, bilingual catalog search, CKAN/OpenDataSoft/ArcGIS/JSON
-connectors, geo queries, aggregation, PII redaction, SSRF protection, and
+MCP tools, six resources, three prompts, bilingual catalog search, CKAN,
+OpenDataSoft, ArcGIS, JSON, CSV, XLSX, SDMX and SPARQL connectors, geo queries,
+aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
 bounded dataset snapshots for repeatable comparisons.
 
@@ -79,7 +80,7 @@ API failures throw `UaemcpClientError` with the HTTP status and public error cod
 
 | Tool | Purpose |
 | --- | --- |
-| `uae_sources_list` | List the 32 registered official sources |
+| `uae_sources_list` | List the 33 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -107,7 +108,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 32 official portals indexed, 2 live record
+Current conservative coverage is 33 official sources indexed, 3 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

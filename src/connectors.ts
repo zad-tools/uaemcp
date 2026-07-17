@@ -13,9 +13,10 @@
 
 import { SETTINGS } from "./config.js";
 import { SourceUnavailable, ValidationError } from "./errors.js";
-import { getJson, getText, probe } from "./http.js";
+import { getBytes, getJson, getText, probe } from "./http.js";
 import { redactRecords } from "./redaction.js";
 import { citation, fetchUrl, type Source } from "./sources.js";
+import { parseXlsx } from "./xlsx.js";
 
 type Rec = Record<string, unknown>;
 
@@ -343,6 +344,88 @@ async function csvDatasets(source: Source): Promise<DatasetRef[]> {
   return [{ id: source.id, title_en: source.name_en, title_ar: source.name_ar, records_count: null, theme: source.category, modified: "", has_geo: Boolean(source.connector_config.has_geo) }];
 }
 
+async function fetchXlsx(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  let records = parseXlsx(await getBytes(fetchUrl(source)), Number(source.connector_config.sheet ?? 1));
+  const total = records.length;
+  let clientFiltered = false;
+  if (opts.query) { const query = opts.query.toLocaleLowerCase(); records = records.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query)); clientFiltered = true; }
+  const offset = opts.offset ?? 0;
+  records = redactRecords(records.slice(offset, offset + Math.min(opts.limit ?? 10, 1000)));
+  return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
+}
+
+// ── SPARQL SELECT ────────────────────────────────────────────────────────────
+function boundedSparql(query: string, limit: number): string {
+  const normalized = query.trim();
+  if (!/^(?:PREFIX\s+\S+:\s*<[^>]+>\s*)*SELECT\b/is.test(normalized)) throw new ValidationError("SPARQL connector only permits SELECT queries");
+  if (/\b(?:INSERT|DELETE|LOAD|CLEAR|CREATE|DROP|COPY|MOVE|ADD|SERVICE)\b/i.test(normalized)) throw new ValidationError("SPARQL update and SERVICE clauses are not permitted");
+  if (/\bLIMIT\s+\d+/i.test(normalized)) return normalized.replace(/\bLIMIT\s+(\d+)/i, (_match, value) => `LIMIT ${Math.min(Number(value), limit)}`);
+  return `${normalized}\nLIMIT ${limit}`;
+}
+
+async function fetchSparql(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const configured = String(source.connector_config.default_query ?? "");
+  let query = configured;
+  if (opts.query && configured.includes("{{search}}")) query = configured.replaceAll("{{search}}", JSON.stringify(opts.query));
+  else if (opts.query && source.connector_config.allow_raw_query === true) query = opts.query;
+  else if (opts.query) throw new ValidationError("this SPARQL source does not accept arbitrary queries");
+  if (!query) throw new ValidationError("SPARQL source requires connector_config.default_query");
+  const limit = Math.min(opts.limit ?? 10, 1000);
+  const payload = await getJson(fetchUrl(source), { query: boundedSparql(query, limit), format: "application/sparql-results+json" }) as Rec;
+  const bindings = coerceRecords(((payload.results as Rec | undefined)?.bindings));
+  const flattened = bindings.map((binding) => Object.fromEntries(Object.entries(binding).map(([key, node]) => {
+    const value = node && typeof node === "object" ? (node as Rec).value : node;
+    return [key, value ?? null];
+  })));
+  const records = redactRecords(flattened.slice(opts.offset ?? 0, (opts.offset ?? 0) + limit));
+  return result(source, records, { total: flattened.length, data_quality: scoreConfidence(records, flattened.length, false) });
+}
+
+// ── SDMX-JSON ────────────────────────────────────────────────────────────────
+interface SdmxDimension { id?: string; values?: Array<{ id?: string; name?: string }> }
+
+export function parseSdmxJson(payload: Rec): Rec[] {
+  const structure = (payload.structure ?? {}) as Rec;
+  const dimensions = (structure.dimensions ?? {}) as Rec;
+  const seriesDimensions = (Array.isArray(dimensions.series) ? dimensions.series : []) as SdmxDimension[];
+  const observationDimensions = (Array.isArray(dimensions.observation) ? dimensions.observation : []) as SdmxDimension[];
+  const dataSet = (Array.isArray(payload.dataSets) ? payload.dataSets[0] : null) as Rec | null;
+  if (!dataSet) return coerceRecords(payload.data ?? payload.observations);
+  const series = (dataSet.series ?? {}) as Rec;
+  const rows: Rec[] = [];
+  for (const [seriesKey, seriesValue] of Object.entries(series)) {
+    const base: Rec = {};
+    seriesKey.split(":").forEach((index, position) => {
+      const dimension = seriesDimensions[position];
+      if (dimension?.id) base[dimension.id] = dimension.values?.[Number(index)]?.id ?? index;
+    });
+    const observations = ((seriesValue as Rec).observations ?? {}) as Rec;
+    for (const [observationKey, raw] of Object.entries(observations)) {
+      const row = { ...base };
+      observationKey.split(":").forEach((index, position) => {
+        const dimension = observationDimensions[position];
+        if (dimension?.id) row[dimension.id] = dimension.values?.[Number(index)]?.id ?? index;
+      });
+      const values = Array.isArray(raw) ? raw : [raw];
+      row.OBS_VALUE = values[0] ?? null;
+      if (values.length > 1) row.OBS_ATTRIBUTES = values.slice(1);
+      rows.push(row);
+    }
+  }
+  return rows;
+}
+
+async function fetchSdmx(source: Source, opts: FetchOpts): Promise<FetchResult> {
+  const payload = await getJson(fetchUrl(source), { ...source.default_params, format: source.connector_config.format ?? "sdmx-json" }) as Rec;
+  let all = parseSdmxJson(payload);
+  const total = all.length;
+  let clientFiltered = false;
+  if (opts.query) { const query = opts.query.toLocaleLowerCase(); all = all.filter((record) => JSON.stringify(record).toLocaleLowerCase().includes(query)); clientFiltered = true; }
+  const offset = opts.offset ?? 0;
+  const records = redactRecords(all.slice(offset, offset + Math.min(opts.limit ?? 10, 1000)));
+  return result(source, records, { total, data_quality: scoreConfidence(records, total, clientFiltered) });
+}
+
 // ── plugin registry ──────────────────────────────────────────────────────────
 const connectors = new Map<string, Connector>();
 
@@ -368,6 +451,9 @@ registerConnector("ods", { fetch: fetchOds, datasets: odsDatasets, capabilities:
 registerConnector("ckan", { fetch: fetchCkan, datasets: ckanDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "ckan" } });
 registerConnector("arcgis", { fetch: fetchArcgis, datasets: arcgisDatasets, capabilities: { ...liveCapabilities, queryLanguage: "arcgis" } });
 registerConnector("csv", { fetch: fetchCsv, datasets: csvDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "text" } });
+registerConnector("xlsx", { fetch: fetchXlsx, datasets: csvDatasets, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "text" } });
+registerConnector("sparql", { fetch: fetchSparql, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "sparql" } });
+registerConnector("sdmx", { fetch: fetchSdmx, capabilities: { ...liveCapabilities, geo: false, queryLanguage: "sdmx" } });
 registerConnector("metadata", {
   fetch: async (source) => { throw new SourceUnavailable(`'${source.id}' is a discovery-only source and exposes no record API yet. See ${citation(source)} for the portal's published datasets.`); },
   datasets: async () => [],

@@ -11,7 +11,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { SourceNotFound, ValidationError } from "./errors.js";
 
-export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "csv" | "metadata";
+export type SourceKind = "http_json" | "ckan" | "ods" | "arcgis" | "csv" | "xlsx" | "sdmx" | "sparql" | "metadata";
 export type AccessStatus = "live" | "blocked" | "key_required" | "metadata_only";
 
 export interface Source {
@@ -49,6 +49,7 @@ export interface CustomSourceInput {
 
 const LICENSE =
   "Open government data; verify source terms before redistribution.";
+const MOHAP_HEALTH_FACILITIES_2026_XLSX = "https://mohap.gov.ae/documents/20117/2614454/%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9%20%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%20%D9%84%D9%84%D9%85%D9%86%D8%B4%D8%A2%D8%AA%20%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9%C2%A0%20%E2%80%93%20%D9%84%D8%B9%D8%A7%D9%85%202026%20Geocoded%20Location%20of%20Health%20Facilities%20-%20GIS%C2%A0.xlsx/a88cb9b8-690e-14f7-37c1-77fd188e5b23";
 
 function src(p: Partial<Source> & Pick<Source, "id" | "name_en" | "name_ar" | "owner" | "category" | "kind" | "base_url">): Source {
   return {
@@ -105,6 +106,7 @@ const BUILT_IN: Source[] = [
   src({ id: "rta_dubai_open_data", name_en: "Roads and Transport Authority (Dubai) Open Data", name_ar: "البيانات المفتوحة لهيئة الطرق والمواصلات - دبي", owner: "Roads and Transport Authority", category: "transport", kind: "metadata", base_url: "https://www.rta.ae/", docs_url: "https://www.rta.ae/wps/portal/rta/ae/open-data", notes: "Dubai transport, roads and mobility open-data surface." }),
   src({ id: "dewa_open_data", name_en: "Dubai Electricity and Water Authority Open Data", name_ar: "البيانات المفتوحة لهيئة كهرباء ومياه دبي", owner: "Dubai Electricity and Water Authority", category: "utilities", kind: "metadata", base_url: "https://www.dewa.gov.ae/", docs_url: "https://www.dewa.gov.ae/en/about-us/open-data", notes: "Utilities open data. Automated health checks may be blocked by bot mitigation." }),
   src({ id: "mohap_open_data", name_en: "Ministry of Health and Prevention Open Data", name_ar: "البيانات المفتوحة لوزارة الصحة ووقاية المجتمع", owner: "Ministry of Health and Prevention", category: "health", kind: "metadata", base_url: "https://mohap.gov.ae/", docs_url: "https://mohap.gov.ae/en/open-data", notes: "Federal health open-data surface." }),
+  src({ id: "mohap_health_facilities_metadata_2026", name_en: "MOHAP Health Facilities Dataset Metadata 2026", name_ar: "البيانات الوصفية لمنشآت الصحة 2026", owner: "Ministry of Health and Prevention", category: "health", kind: "xlsx", base_url: MOHAP_HEALTH_FACILITIES_2026_XLSX, docs_url: "https://mohap.gov.ae/en/open-data/mohap-open-data", license: "Published by MOHAP for public use, distribution and sharing; attribution required.", notes: "Verified official XLSX. Despite the download title, sheet 1 currently contains 12 bilingual metadata fields describing the dataset, not facility coordinates. UAEMCP reports the published content as-is.", connector_config: { sheet: 1 } }),
   src({ id: "tdra_open_data", name_en: "TDRA Open Data", name_ar: "البيانات المفتوحة للهيئة العامة لتنظيم الاتصالات والحكومة الرقمية", owner: "Telecommunications and Digital Government Regulatory Authority", category: "digital", kind: "metadata", base_url: "https://tdra.gov.ae/", docs_url: "https://tdra.gov.ae/en/open-data", notes: "Telecom and digital-government regulator open-data surface." }),
   src({ id: "fta_open_data", name_en: "Federal Tax Authority Open Data", name_ar: "البيانات المفتوحة للهيئة الاتحادية للضرائب", owner: "Federal Tax Authority", category: "finance", kind: "metadata", base_url: "https://tax.gov.ae/", docs_url: "https://tax.gov.ae/en/open.data.aspx", notes: "Federal tax open-data and statistics surface." }),
   src({ id: "dha_dubai_open_data", name_en: "Dubai Health Authority Open Data", name_ar: "البيانات المفتوحة لهيئة الصحة بدبي", owner: "Dubai Health Authority", category: "health", kind: "metadata", base_url: "https://www.dha.gov.ae/", docs_url: "https://www.dha.gov.ae/en/open-data", notes: "Dubai health-sector open-data surface." }),

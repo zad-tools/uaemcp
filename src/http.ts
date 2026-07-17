@@ -79,6 +79,13 @@ export async function getText(url: string, params?: Record<string, unknown>, tim
   return text;
 }
 
+export async function getBytes(url: string, params?: Record<string, unknown>, timeoutMs?: number): Promise<Uint8Array> {
+  const resp = await request(url, { params, timeoutMs });
+  const bytes = new Uint8Array(await resp.arrayBuffer());
+  if (bytes.byteLength > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`source response too large: ${url}`);
+  return bytes;
+}
+
 export async function probe(url: string, timeoutMs?: number): Promise<void> {
   await request(url, { timeoutMs });
 }

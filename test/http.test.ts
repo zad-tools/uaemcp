@@ -33,7 +33,7 @@ describe("Bun HTTP runtime", () => {
 
     expect(health).toEqual({ status: "alive", runtime: "bun" });
     expect(ready.status).toBe("ready");
-    expect(ready.sources).toBe(32);
+    expect(ready.sources).toBe(33);
     expect(metrics).toContain("uaemcp_http_requests_total");
   });
 
@@ -60,7 +60,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.30.0",
+      version: "1.31.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
