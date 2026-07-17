@@ -85,8 +85,16 @@ export async function handleRest(request: Request): Promise<Response | null> {
       const datasets = recipe === "dataset_freshness" && sourceId
         ? await listDatasets(REGISTRY.get(sourceId), { query: optional(url.searchParams, "query"), limit: Math.max(1, integer(url.searchParams, "limit", 100, 100)) })
         : undefined;
+      const limit = Math.max(1, integer(url.searchParams, "limit", 100, 1000));
+      const dataset = optional(url.searchParams, "dataset");
+      const records = recipe === "emirate_comparison" && sourceId
+        ? (await fetchResult(REGISTRY.get(sourceId), { dataset, query: optional(url.searchParams, "query"), limit })).records
+        : undefined;
+      const snapshots = recipe === "trend_analysis" && sourceId
+        ? reliabilityStore().listSnapshots(sourceId, dataset ?? null, 100)
+        : undefined;
       return json(envelope(runRecipe({
-        recipe, sourceId, datasets,
+        recipe, sourceId, dataset, datasets, records, snapshots,
         fromSnapshot: integer(url.searchParams, "from_snapshot", 0, Number.MAX_SAFE_INTEGER) || undefined,
         toSnapshot: integer(url.searchParams, "to_snapshot", 0, Number.MAX_SAFE_INTEGER) || undefined,
       }, reliabilityStore())));
@@ -153,15 +161,16 @@ export async function handleRest(request: Request): Promise<Response | null> {
     if (action === "geo") {
       const bbox = optional(url.searchParams, "bbox");
       const near = optional(url.searchParams, "near");
-      const filtered = geo.filterRecords(result.records, source, { bbox: bbox ? geo.parseBbox(bbox) : undefined, near: near ? geo.parseNear(near) : undefined });
-      return json(envelope(geo.toGeoJson(filtered, source, dataset ?? null), { source_id: source.id, citation: citation(source), scanned: result.records.length, matched: filtered.length }));
+      const polygon = optional(url.searchParams, "polygon");
+      const filtered = geo.filterRecords(result.records, source, { bbox: bbox ? geo.parseBbox(bbox) : undefined, near: near ? geo.parseNear(near) : undefined, polygon: polygon ? geo.parsePolygon(polygon) : undefined });
+      return json(envelope(geo.toGeoJson(filtered, source, dataset ?? null), { source_id: source.id, citation: citation(source), scanned: result.records.length, matched: filtered.length, lineage: [{ operation: "fetch", connector: source.kind }, { operation: "spatial_filter", bbox: Boolean(bbox), near: Boolean(near), polygon: Boolean(polygon) }, { operation: "geojson" }] }));
     }
     if (action === "aggregate") {
       const fields = (url.searchParams.get("group_by") || "").split(",").map((field) => field.trim()).filter(Boolean);
       if (!fields.length) throw new ValidationError("group_by is required");
       const metric = (url.searchParams.get("metric") || "count") as Metric;
       const groups = aggregate(result.records, { group_by: fields, metric, value_field: optional(url.searchParams, "value_field"), top: Math.max(1, integer(url.searchParams, "top", 20, 200)) });
-      return json(envelope(groups, { source_id: source.id, group_by: fields, metric, sample_size: result.records.length, citation: citation(source) }));
+      return json(envelope(groups, { source_id: source.id, group_by: fields, metric, sample_size: result.records.length, citation: citation(source), lineage: [{ operation: "fetch", connector: source.kind }, { operation: "aggregate", group_by: fields, metric }] }));
     }
     if (action === "export") {
       const format = (url.searchParams.get("format") || "json") as ExportFormat;
@@ -172,7 +181,7 @@ export async function handleRest(request: Request): Promise<Response | null> {
     }
     return null;
   } catch (error) {
-    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near/.test(error.message)) return failure(new ValidationError(error.message));
+    if (!(error instanceof UaemcpError) && error instanceof Error && /metric must|requires a value_field|bbox|near|polygon/.test(error.message)) return failure(new ValidationError(error.message));
     return failure(error);
   }
 }

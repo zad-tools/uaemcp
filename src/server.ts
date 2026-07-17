@@ -101,16 +101,18 @@ export function buildServer(): McpServer {
     {
       description: "Run an evidence-backed analytical recipe. Results include methodology, evidence, limitations and citations.",
       inputSchema: {
-        recipe: z.enum(["source_coverage", "dataset_freshness", "historical_comparison"]),
-        source_id: z.string().optional(), query: z.string().optional(),
-        limit: z.number().int().min(1).max(100).default(100),
+        recipe: z.enum(["source_coverage", "dataset_freshness", "historical_comparison", "emirate_comparison", "trend_analysis"]),
+        source_id: z.string().optional(), dataset: z.string().optional(), query: z.string().optional(),
+        limit: z.number().int().min(1).max(1000).default(100),
         from_snapshot: z.number().int().positive().optional(), to_snapshot: z.number().int().positive().optional(),
       },
     },
-    async ({ recipe, source_id, query, limit, from_snapshot, to_snapshot }) => {
+    async ({ recipe, source_id, dataset, query, limit, from_snapshot, to_snapshot }) => {
       try {
         const datasets = recipe === "dataset_freshness" && source_id ? await listDatasets(REGISTRY.get(source_id), { query, limit }) : undefined;
-        return text(ok(runRecipe({ recipe, sourceId: source_id, datasets, fromSnapshot: from_snapshot, toSnapshot: to_snapshot }, reliabilityStore())));
+        const records = recipe === "emirate_comparison" && source_id ? (await fetchResult(REGISTRY.get(source_id), { dataset, query, limit })).records : undefined;
+        const snapshots = recipe === "trend_analysis" && source_id ? reliabilityStore().listSnapshots(source_id, dataset ?? null, 100) : undefined;
+        return text(ok(runRecipe({ recipe, sourceId: source_id, dataset, datasets, records, snapshots, fromSnapshot: from_snapshot, toSnapshot: to_snapshot }, reliabilityStore())));
       } catch (e) { return text(fail(e)); }
     },
   );
@@ -229,16 +231,17 @@ export function buildServer(): McpServer {
     "uae_source_geo",
     {
       description: "Spatially-filtered records as GeoJSON — powers map apps. bbox='min_lon,min_lat,max_lon,max_lat'; near='lat,lon,radius_km'.",
-      inputSchema: { source_id: z.string(), dataset: z.string().optional(), bbox: z.string().optional(), near: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
+      inputSchema: { source_id: z.string(), dataset: z.string().optional(), bbox: z.string().optional(), near: z.string().optional(), polygon: z.string().optional(), query: z.string().optional(), limit: z.number().int().min(1).max(1000).default(500) },
     },
-    async ({ source_id, dataset, bbox, near, query, limit }) => {
+    async ({ source_id, dataset, bbox, near, polygon, query, limit }) => {
       try {
         const s = REGISTRY.get(source_id);
         const bb = bbox ? geo.parseBbox(bbox) : undefined;
         const nr = near ? geo.parseNear(near) : undefined;
+        const pg = polygon ? geo.parsePolygon(polygon) : undefined;
         const r = await fetchResult(s, { dataset, query, limit });
-        const filtered = geo.filterRecords(r.records, s, { bbox: bb, near: nr });
-        return text(ok(geo.toGeoJson(filtered, s, dataset ?? null), { source_id: s.id, citation: citation(s), scanned: r.records.length, matched: filtered.length }));
+        const filtered = geo.filterRecords(r.records, s, { bbox: bb, near: nr, polygon: pg });
+        return text(ok(geo.toGeoJson(filtered, s, dataset ?? null), { source_id: s.id, citation: citation(s), scanned: r.records.length, matched: filtered.length, lineage: [{ operation: "fetch", connector: s.kind }, { operation: "spatial_filter", bbox: Boolean(bb), near: Boolean(nr), polygon: Boolean(pg) }, { operation: "geojson" }] }));
       } catch (e) {
         return text(fail(e));
       }
@@ -257,7 +260,7 @@ export function buildServer(): McpServer {
         const fields = group_by.split(",").map((f) => f.trim()).filter(Boolean);
         const r = await fetchResult(s, { dataset, query, limit });
         const groups = aggregate(r.records, { group_by: fields, metric: metric as Metric, value_field, top });
-        return text(ok(groups, { source_id: s.id, group_by: fields, metric, sample_size: r.records.length, citation: citation(s) }));
+        return text(ok(groups, { source_id: s.id, group_by: fields, metric, sample_size: r.records.length, citation: citation(s), lineage: [{ operation: "fetch", connector: s.kind }, { operation: "aggregate", group_by: fields, metric }] }));
       } catch (e) {
         return text(fail(e));
       }

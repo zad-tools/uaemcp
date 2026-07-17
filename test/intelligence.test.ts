@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { coverageRecipe, freshnessRecipe, historicalRecipe, listRecipes } from "../src/intelligence.js";
+import { coverageRecipe, emirateComparisonRecipe, freshnessRecipe, historicalRecipe, listRecipes, trendRecipe } from "../src/intelligence.js";
 import { REGISTRY } from "../src/sources.js";
 
 describe("intelligence recipes", () => {
   test("publishes a bounded recipe catalog", () => {
-    expect(listRecipes().map((recipe) => recipe.id)).toEqual(["source_coverage", "dataset_freshness", "historical_comparison"]);
+    expect(listRecipes().map((recipe) => recipe.id)).toEqual(["source_coverage", "dataset_freshness", "historical_comparison", "emirate_comparison", "trend_analysis"]);
   });
 
   test("coverage is honest and evidence-backed", () => {
@@ -31,5 +31,24 @@ describe("intelligence recipes", () => {
     });
     expect(result.answer).toMatchObject({ changed: true, recordsAdded: 2, schemaFieldsAdded: ["new"] });
     expect(result.evidence).toHaveLength(1);
+  });
+
+  test("compares emirates using normalized bilingual names and cites methodology", () => {
+    const result = emirateComparisonRecipe(REGISTRY.get("moiat_industrial_licenses"), [
+      { EmirateNameEN: "Dubai" }, { EmirateNameAR: "دبي" }, { EmirateNameEN: "Abu Dhabi" }, { EmirateNameEN: "unknown" },
+    ]);
+    expect(result.answer).toMatchObject({ matchedRecords: 3, unmatchedRecords: 1 });
+    expect((result.answer as Record<string, any>).emirates[0]).toMatchObject({ emirateId: "dubai", value: 2 });
+    expect(result.methodology).toMatchObject({ indicator: "record_count_by_emirate" });
+  });
+
+  test("detects an increasing snapshot trend without pretending causality", () => {
+    const result = trendRecipe(REGISTRY.get("moiat_industrial_licenses"), [
+      { capturedAt: "2026-01-01T00:00:00Z", recordCount: 10 },
+      { capturedAt: "2026-02-01T00:00:00Z", recordCount: 12 },
+      { capturedAt: "2026-03-01T00:00:00Z", recordCount: 15 },
+    ]);
+    expect(result.answer).toMatchObject({ direction: "up", absoluteChange: 5, percentChange: 50 });
+    expect((result.limitations as string[]).join(" ")).toContain("causality");
   });
 });

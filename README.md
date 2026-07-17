@@ -93,7 +93,7 @@ API failures throw `UaemcpClientError` with the HTTP status and public error cod
 | `uae_market_snapshot` | Build a source-backed market snapshot |
 | `uae_dashboard_summary` | Summarize source health concurrently |
 | `uae_dataset_snapshot` | Create, list and compare historical snapshots |
-| `uae_intelligence_recipe` | Run evidence-backed coverage, freshness or historical recipes |
+| `uae_intelligence_recipe` | Run coverage, freshness, history, emirate-comparison and trend recipes |
 | `uae_source_add_metadata` | Add metadata with a write token |
 | `uae_source_add` | Register a custom source for any installed connector (write token required) |
 

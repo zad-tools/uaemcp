@@ -104,6 +104,22 @@ export function parseNear(raw: string): Near {
   return [lon, lat, radius];
 }
 
+export function parsePolygon(raw: string): Point[] {
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { throw new Error("polygon must be a JSON array of [lon,lat] points"); }
+  const coordinates = parsed && typeof parsed === "object" && !Array.isArray(parsed) && (parsed as Rec).type === "Polygon"
+    ? ((parsed as Rec).coordinates as unknown[])?.[0]
+    : parsed;
+  if (!Array.isArray(coordinates) || coordinates.length < 3) throw new Error("polygon must contain at least three [lon,lat] points");
+  const points = coordinates.map((point) => {
+    if (!Array.isArray(point) || point.length < 2) throw new Error("polygon positions must be [lon,lat]");
+    const lon = num(point[0]); const lat = num(point[1]);
+    if (lon === null || lat === null || lon < -180 || lon > 180 || lat < -90 || lat > 90) throw new Error("polygon contains an invalid coordinate");
+    return [lon, lat] as Point;
+  });
+  return points;
+}
+
 export function filterRecords(records: Rec[], source: Source, opts: { bbox?: Bbox; near?: Near; polygon?: Point[] } = {}): Rec[] {
   if (!opts.bbox && !opts.near && !opts.polygon) return records;
   const out: Rec[] = [];

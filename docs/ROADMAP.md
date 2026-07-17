@@ -48,9 +48,16 @@
 - Optional OpenAI-compatible embedding reranking with graceful lexical fallback
 - Ranking evidence and matched terms returned with each source result
 
+## v1.35 — UAE normalization and trends — complete
+
+- Canonical bilingual aliases and codes for all seven emirates
+- Stable cross-source entity keys without mutating source records
+- Evidence-backed emirate comparison and snapshot trend recipes
+- Polygon search exposed through REST and MCP
+- Lineage on spatial, aggregate and intelligence-derived results
+
 ## v1.40 — Deeper intelligence
 
-- UAE geography normalization
 - Cross-source entity resolution
 - Indicators with methodology, lineage and limitations
 - Additional distributed scheduling options for multi-replica deployments

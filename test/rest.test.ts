@@ -62,14 +62,14 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.34.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.35.0" });
     expect(manifest.tools.write).toEqual(["uae_source_add", "uae_source_add_metadata", "uae_dataset_snapshot:create"]);
     expect(manifest.dataPolicy.fabricationAllowed).toBe(false);
   });
 
   it("publishes and runs intelligence recipes", async () => {
     const list = await fetch(`${baseUrl}/api/v1/intelligence/recipes`).then((response) => response.json());
-    expect(list.data).toHaveLength(3);
+    expect(list.data).toHaveLength(5);
     const result = await fetch(`${baseUrl}/api/v1/intelligence/recipes/source_coverage`).then((response) => response.json());
     expect(result.data.recipe).toBe("source_coverage");
     expect(result.data.methodology).toBeObject();

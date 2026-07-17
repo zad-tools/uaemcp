@@ -59,6 +59,10 @@ describe("geo", () => {
     expect(geo.inPolygon([5, 5], sq)).toBe(true);
     expect(geo.inPolygon([15, 5], sq)).toBe(false);
   });
+  it("parses GeoJSON polygon coordinates", () => {
+    expect(geo.parsePolygon('[[55,25],[56,25],[56,26],[55,25]]')).toHaveLength(4);
+    expect(() => geo.parsePolygon('[[55,25],[56,25]]')).toThrow();
+  });
 });
 
 const ROWS = [
