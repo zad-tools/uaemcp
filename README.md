@@ -139,6 +139,9 @@ Unknown measurements stay explicitly `unknown` until history can prove them.
 | `UAEMCP_SNAPSHOT_INTERVAL_MINUTES` | `0` | Snapshot schedule; `0` disables it |
 | `UAEMCP_SNAPSHOT_TARGETS` | unset | Comma-separated `source` or `source@dataset` targets |
 | `UAEMCP_SNAPSHOT_LIMIT` | `100` | Records captured per scheduled target |
+| `UAEMCP_EMBEDDING_ENDPOINT` | unset | Optional OpenAI-compatible `/embeddings` endpoint for hybrid reranking |
+| `UAEMCP_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model sent to that endpoint |
+| `UAEMCP_EMBEDDING_API_KEY` | unset | Optional bearer token for the embedding endpoint |
 
 The scheduler starts with the HTTP server, runs immediately and then at the
 configured interval. Identical payloads are deduplicated. Inspect its state at

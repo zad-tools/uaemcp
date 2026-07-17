@@ -42,6 +42,9 @@ export interface Settings {
   snapshotLimit: number;
   snapshotRetention: number;
   healthRetention: number;
+  embeddingEndpoint: string | null;
+  embeddingModel: string;
+  embeddingApiKey: string | null;
 }
 
 export const SETTINGS: Settings = {
@@ -65,6 +68,9 @@ export const SETTINGS: Settings = {
   snapshotLimit: positiveInt("UAEMCP_SNAPSHOT_LIMIT", 100, 1000),
   snapshotRetention: positiveInt("UAEMCP_SNAPSHOT_RETENTION", 30, 10_000),
   healthRetention: positiveInt("UAEMCP_HEALTH_RETENTION", 10_000, 1_000_000),
+  embeddingEndpoint: process.env.UAEMCP_EMBEDDING_ENDPOINT || null,
+  embeddingModel: process.env.UAEMCP_EMBEDDING_MODEL ?? "text-embedding-3-small",
+  embeddingApiKey: process.env.UAEMCP_EMBEDDING_API_KEY || null,
 };
 
 export const writesEnabled = (): boolean => Boolean(SETTINGS.writeToken);

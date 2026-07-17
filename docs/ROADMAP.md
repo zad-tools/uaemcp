@@ -41,6 +41,13 @@
 - Read-only GraphQL connector with configured documents and bounded variables
 - SSRF validation on every redirect and HTTPS downgrade rejection
 
+## v1.34 — Hybrid discovery — complete
+
+- Field-weighted BM25 ranking across the official source catalog
+- Arabic/English query normalization, glossary expansion and entity recognition
+- Optional OpenAI-compatible embedding reranking with graceful lexical fallback
+- Ranking evidence and matched terms returned with each source result
+
 ## v1.40 — Deeper intelligence
 
 - UAE geography normalization

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { expandQuery, normalizeText } from "../src/glossary.js";
+import { expandQuery, normalizeText, recognizeConcepts } from "../src/glossary.js";
 import { inferSchema } from "../src/schema.js";
 
 describe("dataset schema", () => {
@@ -24,5 +24,8 @@ describe("bilingual glossary", () => {
   });
   it("expands cross-language concepts", () => {
     expect(expandQuery("رخصة صناعية")).toContain("industrial license");
+  });
+  it("recognizes bilingual query entities", () => {
+    expect(recognizeConcepts("عقارات ومصانع في الإمارات")).toEqual(["emirate", "industrial_license", "real_estate"]);
   });
 });

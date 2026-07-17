@@ -8,7 +8,7 @@ export interface Concept {
 export const GLOSSARY: Concept[] = [
   { id: "emirate", ar: ["إمارة", "الامارة", "الإمارات"], en: ["emirate", "emirates", "state"], fields: ["emirate", "emiratenameen", "emiratenamear"] },
   { id: "commercial_license", ar: ["رخصة تجارية", "رخصة اقتصادية", "ترخيص تجاري"], en: ["commercial license", "trade licence", "trade license", "economic licence"], fields: ["license_type", "licensetype", "activity_type"] },
-  { id: "industrial_license", ar: ["رخصة صناعية", "ترخيص صناعي", "مصنع"], en: ["industrial license", "industrial licence", "factory"], fields: ["license", "factory", "products"] },
+  { id: "industrial_license", ar: ["رخصة صناعية", "ترخيص صناعي", "مصنع", "مصانع"], en: ["industrial license", "industrial licence", "factory", "factories"], fields: ["license", "factory", "products"] },
   { id: "real_estate", ar: ["عقارات", "عقار", "أراضي", "ايجارات", "إيجارات"], en: ["real estate", "property", "land", "rentals"], fields: ["property_type", "land", "rent"] },
   { id: "area", ar: ["منطقة", "مدينة", "حي"], en: ["area", "city", "district"], fields: ["area", "city", "district"] },
 ];
@@ -35,6 +35,11 @@ export function expandQuery(query: string): string[] {
     }
   }
   return [...terms];
+}
+
+export function recognizeConcepts(query: string): string[] {
+  const normalized = normalizeText(query);
+  return GLOSSARY.filter((concept) => [...concept.ar, ...concept.en].some((label) => normalized.includes(normalizeText(label)))).map((concept) => concept.id);
 }
 
 export function semanticType(field: string): string | null {

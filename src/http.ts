@@ -12,7 +12,7 @@ import { validateUrl } from "./ssrf.js";
 
 async function request(
   url: string,
-  opts: { params?: Record<string, unknown>; timeoutMs?: number; method?: "GET" | "POST"; body?: string } = {},
+  opts: { params?: Record<string, unknown>; timeoutMs?: number; method?: "GET" | "POST"; body?: string; headers?: Record<string, string> } = {},
 ): Promise<Response> {
   let full = url;
   if (opts.params) {
@@ -39,6 +39,7 @@ async function request(
           "User-Agent": SETTINGS.userAgent,
           Accept: "application/json, text/html;q=0.9, */*;q=0.8",
           ...(body ? { "Content-Type": "application/json" } : {}),
+          ...opts.headers,
         },
       });
       if (resp.status < 300 || resp.status >= 400) break;
@@ -87,10 +88,10 @@ export async function getJson(
   }
 }
 
-export async function postJson(url: string, payload: unknown, timeoutMs?: number): Promise<unknown> {
+export async function postJson(url: string, payload: unknown, timeoutMs?: number, headers?: Record<string, string>): Promise<unknown> {
   const body = JSON.stringify(payload);
   if (body.length > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`request body too large: ${url}`);
-  const resp = await request(url, { method: "POST", body, timeoutMs });
+  const resp = await request(url, { method: "POST", body, timeoutMs, headers });
   const text = await resp.text();
   if (text.length > SETTINGS.maxResponseBytes) throw new SourceUnavailable(`source response too large: ${url}`);
   try {

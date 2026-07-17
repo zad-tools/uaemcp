@@ -34,6 +34,8 @@ it does not mean every UAE portal has a public machine-readable API.
   read-only GraphQL, SDMX and bounded SPARQL
 - Schema discovery with field types, examples, nullability and statistics
 - Bilingual Arabic/English glossary and query expansion
+- Hybrid source discovery with BM25, bilingual entity recognition and optional
+  embedding reranking through an OpenAI-compatible endpoint
 - PII redaction, write-token gating, rate limiting and SSRF protection
 - Durable health history, scheduled snapshots, retention and record/schema diff
 - Evidence-backed coverage, freshness and historical-comparison recipes
@@ -43,8 +45,6 @@ it does not mean every UAE portal has a public machine-readable API.
 
 ### Partial
 
-- Semantic search: bilingual normalization and ranking exist; embeddings and a
-  true BM25 index do not.
 - Intelligence: coverage, freshness and historical recipes exist; cross-source
   entity resolution, domain indicators and time-series trend recipes remain.
 - GIS: point extraction and spatial filters exist; vector tiles, nearest-feature
@@ -58,7 +58,6 @@ it does not mean every UAE portal has a public machine-readable API.
 
 ### Not yet shipped
 
-- Embedding-backed semantic retrieval
 - UAE-wide entity resolution and normalized administrative geography
 - Vector tile service and arbitrary cross-source spatial joins
 - Generated multi-language SDKs

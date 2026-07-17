@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { aggregate } from "../src/aggregate.js";
 import { exportRecords } from "../src/export.js";
 import * as geo from "../src/geo.js";
-import { searchSources } from "../src/search.js";
+import { buildSearch, searchSources, setEmbeddingProvider } from "../src/search.js";
 import type { Source } from "../src/sources.js";
 
 function mkSource(p: Partial<Source>): Source {
@@ -127,5 +127,21 @@ describe("search", () => {
   });
   it("exact id ranks first", () => {
     expect(searchSources("moiat_industrial_licenses", 5)[0].source_id).toBe("moiat_industrial_licenses");
+  });
+  it("reports hybrid BM25 ranking evidence", () => {
+    const [first] = searchSources("industrial factory", 1);
+    expect(first.source_id).toBe("moiat_industrial_licenses");
+    expect(first.ranking).toMatchObject({ method: "hybrid_bm25_glossary", bm25: expect.any(Number) });
+    expect(first.matched_terms).toContain("industrial");
+  });
+  it("optionally reranks with a bounded embedding provider", async () => {
+    setEmbeddingProvider({ embed: async (texts) => texts.map((text) => text.includes("Dubai Municipality") ? [1, 0] : text === "civic services" ? [1, 0] : [0, 1]) });
+    try {
+      const result = await buildSearch("civic services", { limit: 5 });
+      expect(result.ranking).toBe("hybrid_bm25_embedding_glossary");
+      expect((result.sources as Record<string, unknown>[])[0].source_id).toBe("dubai_municipality_open_data");
+    } finally {
+      setEmbeddingProvider(null);
+    }
   });
 });
