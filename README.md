@@ -41,7 +41,7 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 25 source-cited
+The server keeps the public `uaemcp` contract and extends it to 26 source-cited
 MCP tools, nine resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
@@ -105,7 +105,12 @@ Endpoints:
 - FTA Archive Explorer: `GET /tax-services/archive` — source-native 2017–2022, 2024 and 2025 workbooks with comparison disabled when scopes are incompatible
 - UAE Place Names Explorer: `GET /places` — bilingual official place-name search and mapped FGIC evidence
 - UAE Health Indicators: `GET /health-indicators` — 111 official MOHAP indicator rows with source-native 2016–2023 series and explicit scale limitations
+- UAE Education Ledger: `GET /education` — FCSC-accredited 2023/2024 national totals, reconciliation checks and the separate seven-resource Ministry of Education catalogue
 - Industrial Change Monitor: `GET /api/v1/industry-atlas/change` — compares the two latest different retained samples; unchanged checks are deduplicated and sample movement is never described as economic growth
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/education"><img src="docs/assets/screenshots/education-ledger.png" alt="UAE Education Ledger with accredited FCSC totals and Ministry of Education resource catalogue" width="100%"></a>
+</p>
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/health-indicators"><img src="docs/assets/screenshots/health-indicators.jpg" alt="UAE Health Indicators evidence ledger using Dubai Font" width="100%"></a>
@@ -187,8 +192,9 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_education_ledger` | Read the accredited 2023/2024 national education snapshot and separate Ministry resource catalogue with reconciliation and source SHA-256 |
 | `uae_products_list` | Discover all public evidence products with bilingual scope, routes and limitations |
-| `uae_sources_list` | List the 38 registered official sources |
+| `uae_sources_list` | List the 39 registered official sources |
 | `uae_source_get` | Read source metadata |
 | `uae_source_health` | Probe one source |
 | `uae_source_datasets` | Discover portal datasets |
@@ -231,7 +237,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 38 official sources indexed, 8 live record
+Current conservative coverage is 39 official sources indexed, 8 live record
 connectors, 1 blocked connector, and 3 key-required portals. Counts never imply
 that metadata-only portals are queryable.
 

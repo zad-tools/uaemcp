@@ -19,6 +19,27 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "education_ledger",
+    status: "published",
+    access: "public",
+    category: "EDUCATION / LEDGER",
+    categoryAr: "التعليم / السجل",
+    title: { en: "UAE Education Ledger", ar: "سجل التعليم في الإمارات" },
+    description: {
+      en: "Read a reconciled national 2023/2024 education snapshot alongside the Ministry's separate 2018–2024 resource catalogue.",
+      ar: "اقرأ لقطة وطنية متطابقة للتعليم لعام 2023/2024 إلى جانب كتالوج موارد الوزارة المستقل للفترة 2018–2024.",
+    },
+    webPath: "/education",
+    apiPath: "/api/v1/education",
+    sourceIds: ["fcsc_unified_uae_numbers_2025", "bayanat_uae_open_data"],
+    evidence: {
+      scope: { en: "FCSC-accredited national totals plus seven Ministry of Education catalogue resources.", ar: "إجماليات وطنية معتمدة من المركز الاتحادي وسبعة موارد مفهرسة لوزارة التربية." },
+      limitations: [
+        { en: "The retained report is a verified snapshot, not a real-time enrollment feed; catalogue resources are not merged into it.", ar: "التقرير المحتفظ به نسخة موثقة وليس تغذية لحظية، ولا تُدمج موارد الكتالوج داخله." },
+      ],
+    },
+  },
+  {
     id: "health_indicators",
     status: "published",
     access: "public",

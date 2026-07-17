@@ -6,6 +6,7 @@ public final class UaemcpClient {
  public UaemcpClient(String baseUrl){this.baseUrl=baseUrl.replaceAll("/+$","");} private static String enc(String v){return URLEncoder.encode(v,StandardCharsets.UTF_8).replace("+","%20");}
  private String get(String path, Map<String,String> params) throws Exception {String q=params.entrySet().stream().filter(e->e.getValue()!=null).map(e->enc(e.getKey())+"="+enc(e.getValue())).collect(Collectors.joining("&")); HttpRequest r=HttpRequest.newBuilder(URI.create(baseUrl+path+(q.isEmpty()?"":"?"+q))).timeout(Duration.ofSeconds(20)).header("Accept","application/json").build(); HttpResponse<String> s=http.send(r,HttpResponse.BodyHandlers.ofString()); if(s.statusCode()>=400)throw new IllegalStateException("UAEMCP HTTP "+s.statusCode()+": "+s.body()); return s.body();}
  public String listProducts(Map<String,String> params) throws Exception {return get("/api/v1/products",params);}
+ public String getEducationLedger(Map<String,String> params) throws Exception {return get("/api/v1/education",params);}
  public String getHealthIndicators(Map<String,String> params) throws Exception {return get("/api/v1/health-indicators",params);}
  public String getCoverage(Map<String,String> params) throws Exception {return get("/api/v1/coverage",params);}
  public String getIndustryAtlas(Map<String,String> params) throws Exception {return get("/api/v1/industry-atlas",params);}

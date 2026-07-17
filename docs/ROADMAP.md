@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.51 — National education evidence — complete
+
+- FCSC-accredited General Education and Higher Education 2023/2024 snapshot
+- Female/male reconciliation before derived ratios are exposed
+- Separate Ministry of Education seven-resource 2018–2024 catalogue
+- Verified report SHA-256, explicit snapshot delivery and legacy-download limits
+- Bilingual Dubai Font product across web, REST, MCP and OpenAPI
+
 ## v1.50 — Unified civic typography — complete
 
 - Dubai Font across all public evidence applications and both writing directions

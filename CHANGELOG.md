@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.51.0
+
+- Added the UAE Education Ledger with FCSC-accredited 2023/2024 national student and educational-personnel totals, explicit female/male reconciliation, and bounded derived ratios.
+- Added the separate seven-resource Ministry of Education 2018–2024 catalogue without merging incompatible evidence scopes or claiming legacy downloads are live.
+- Added `/education`, `GET /api/v1/education`, `uae_education_ledger`, OpenAPI and product-registry integration, a SHA-256 identified official-report snapshot, bilingual RTL presentation, and a real README screenshot.
+- Increased the honest registry to 39 indexed official sources while keeping the live-connector count at eight.
+
 ## 1.50.0
 
 - Adopted Dubai Font across every public interface in English and Arabic, including RTL-specific typography and matching content-security policies.

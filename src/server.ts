@@ -31,6 +31,7 @@ import { buildTaxArchive, loadTaxArchiveViews, TAX_ARCHIVE_SPECS } from "./tax-a
 import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
+import { buildEducationLedger } from "./education-ledger.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -49,6 +50,26 @@ function text(payload: Json) {
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+
+  server.registerTool(
+    "uae_education_ledger",
+    {
+      description: "Read the accredited UAE 2023/2024 national education snapshot and the separate Ministry of Education 2018–2024 resource catalogue. Includes reconciliation checks, source SHA-256, methodology and limitations; it is not a live enrollment feed.",
+    },
+    async () => {
+      try {
+        const ledger = buildEducationLedger();
+        return text(ok(ledger, {
+          source_id: "fcsc_unified_uae_numbers_2025",
+          citation: ledger.source.citation,
+          catalogue_citation: ledger.source.catalogueCitation,
+          fetched_at: ledger.source.retrievedAt,
+          delivery: ledger.source.delivery,
+          sha256: ledger.source.sha256,
+        }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
 
   server.registerTool(
     "uae_health_indicators",

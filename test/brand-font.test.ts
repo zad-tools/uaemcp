@@ -7,6 +7,7 @@ import { taxArchivePage } from "../src/tax-archive-web.js";
 import { taxServicesPage } from "../src/tax-services-web.js";
 import { tradeFlowPage } from "../src/trade-flow-web.js";
 import { landingPage } from "../src/web.js";
+import { educationLedgerPage } from "../src/education-ledger-web.js";
 import { handleRest } from "../src/rest.js";
 
 const pages = [
@@ -18,6 +19,7 @@ const pages = [
   ["/tax-services/archive", taxArchivePage],
   ["/trade-flow", tradeFlowPage],
   ["/health-indicators", healthIndicatorsPage],
+  ["/education", educationLedgerPage],
 ] as const;
 
 describe("Dubai Font public brand contract", () => {
