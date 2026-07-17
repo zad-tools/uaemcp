@@ -117,7 +117,7 @@ describe("REST v1", () => {
     const response = await fetch(`${baseUrl}/openapi.json`);
     const document = await response.json();
     expect(response.status).toBe(200);
-    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.74.0" } });
+    expect(document).toMatchObject({ openapi: "3.1.0", info: { version: "1.75.0" } });
     expect(document.paths).toHaveProperty("/api/v1/policy-watch");
     expect(document.paths).toHaveProperty("/api/v1/policy-watch/check");
     expect(document.paths["/api/v1/founder-pathway"].post.operationId).toBe("buildFounderPathway");
@@ -129,8 +129,8 @@ describe("REST v1", () => {
     const payload = await response.json();
     expect(response.status).toBe(200);
     expect(payload.ok).toBe(true);
-    expect(payload.data).toHaveLength(47);
-    expect(payload.meta.total).toBe(47);
+    expect(payload.data).toHaveLength(48);
+    expect(payload.meta.total).toBe(48);
   });
 
   it("returns structured errors", async () => {
@@ -159,7 +159,7 @@ describe("REST v1", () => {
   it("publishes conservative coverage and unified catalog models", async () => {
     const coverage = await fetch(`${baseUrl}/api/v1/coverage`).then((response) => response.json());
     const catalog = await fetch(`${baseUrl}/api/v1/catalog`).then((response) => response.json());
-    expect(coverage.data.liveRecordConnectors).toBe(15);
+    expect(coverage.data.liveRecordConnectors).toBe(16);
     expect(catalog.data[0].type).toBe("portal");
     expect(catalog.data[0].capabilities).toBeDefined();
   });
@@ -175,7 +175,7 @@ describe("REST v1", () => {
   it("publishes a machine-readable trust manifest", async () => {
     const response = await fetch(`${baseUrl}/.well-known/uaemcp.json`);
     const manifest = await response.json();
-    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.74.0" });
+    expect(manifest.server).toMatchObject({ runtime: "bun", version: "1.75.0" });
     expect(manifest.endpoints).toMatchObject({ policyWatch: "/policy-watch", policyWatchApi: "/api/v1/policy-watch" });
     expect(manifest.endpoints.tradeFlowRadar).toBe("/trade-flow");
     expect(manifest.endpoints.products).toBe("/api/v1/products");
@@ -210,7 +210,7 @@ describe("REST v1", () => {
     const list = await fetch(`${baseUrl}/api/v1/intelligence/indicators`).then((response) => response.json());
     const coverage = await fetch(`${baseUrl}/api/v1/intelligence/indicators/open_data_coverage`).then((response) => response.json());
     expect(list.data).toHaveLength(4);
-    expect(coverage.data).toMatchObject({ indicator: "open_data_coverage", value: 31.91, methodology: expect.any(Object), limitations: expect.any(Array) });
+    expect(coverage.data).toMatchObject({ indicator: "open_data_coverage", value: 33.33, methodology: expect.any(Object), limitations: expect.any(Array) });
   });
 
   it("exposes safe snapshot scheduler status", async () => {
@@ -224,7 +224,7 @@ describe("REST v1", () => {
     const report = await fetch(`${baseUrl}/api/v1/observatory`).then((response) => response.json());
     const incidents = await fetch(`${baseUrl}/api/v1/observatory/incidents?limit=10`).then((response) => response.json());
     const profile = await fetch(`${baseUrl}/api/v1/observatory/sources/moiat_industrial_licenses`).then((response) => response.json());
-    expect(report.data).toMatchObject({ monitoredSources: 47, currentStatus: expect.any(Object), incidents: expect.any(Object) });
+    expect(report.data).toMatchObject({ monitoredSources: 48, currentStatus: expect.any(Object), incidents: expect.any(Object) });
     expect(incidents).toMatchObject({ ok: true, data: expect.any(Array), meta: { limit: 10 } });
     expect(profile.data).toMatchObject({ source: { id: "moiat_industrial_licenses" }, reliability: { sourceId: "moiat_industrial_licenses" }, incidents: expect.any(Array) });
     const markdown = await fetch(`${baseUrl}/api/v1/observatory/report.md`);

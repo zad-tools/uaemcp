@@ -74,6 +74,7 @@ import { aeronauticalPublicationsPage } from "./aeronautical-publications-web.js
 import { healthFacilitiesMapPage } from "./health-facilities-map-web.js";
 import { loadTourismPulse, type TourismMetric } from "./tourism-pulse.js";
 import { tourismPulsePage } from "./tourism-pulse-web.js";
+import { loadEmploymentGender, type EmploymentGender } from "./employment-gender.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
@@ -201,6 +202,21 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
       if (from && to && from > to) throw new ValidationError("from must not be after to");
       const loaded = await loadConnectivityPulse(dependencies.fetchConnectivityRecords ?? fetchResult, { series: series as ConnectivitySeriesId | undefined, from, to });
       return json(envelope(loaded.data, { ...loaded.meta, filters: { series, from, to } }));
+    }
+    if (request.method === "GET" && (path === "/employment-gender" || path === "/api/v1/employment-gender")) {
+      const gender = optional(url.searchParams, "gender");
+      if (gender && gender !== "male" && gender !== "female") throw new ValidationError("gender must be male or female");
+      const parseYear = (name: string): number | undefined => {
+        const raw = url.searchParams.get(name);
+        if (raw === null) return undefined;
+        if (!/^\d{4}$/.test(raw) || Number(raw) < 2020 || Number(raw) > 2024) throw new ValidationError(`${name} must be an integer from 2020 to 2024`);
+        return Number(raw);
+      };
+      const fromYear = parseYear("from_year");
+      const toYear = parseYear("to_year");
+      if (fromYear && toYear && fromYear > toYear) throw new ValidationError("from_year must not be after to_year");
+      const loaded = await loadEmploymentGender({ fetcher: dependencies.fetchEmploymentGenderWorkbook, gender: gender as EmploymentGender | undefined, fromYear, toYear });
+      return json(envelope(loaded.report, { ...loaded.meta, filters: { gender, from_year: fromYear, to_year: toYear }, private_sector_only: true, population_total: false }));
     }
     if (request.method === "GET" && path === "/api/v1/tourism-pulse") {
       const metric = optional(url.searchParams, "metric");

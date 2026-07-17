@@ -22,9 +22,9 @@ describe("unified catalog", () => {
 
   it("reports conservative coverage instead of one inflated source count", () => {
     expect(coverageSummary()).toMatchObject({
-      officialPortalsIndexed: 47,
-      liveRecordConnectors: 15,
-      queryableDatasetsKnownMinimum: 221,
+      officialPortalsIndexed: 48,
+      liveRecordConnectors: 16,
+      queryableDatasetsKnownMinimum: 222,
       blockedConnectors: 1,
       keyRequiredPortals: 3,
     });

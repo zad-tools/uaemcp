@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.0",
-  "serverVersion": "1.74.0",
+  "serverVersion": "1.75.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
-    "total": 42,
-    "read": 39,
+    "total": 43,
+    "read": 40,
     "write": 2,
     "mixed": 1
   },
@@ -58,6 +58,11 @@
       "name": "uae_education_ledger",
       "kind": "read",
       "description": "Read the accredited UAE 2023/2024 national education snapshot and the separate Ministry of Education 2018–2024 resource catalogue. Includes reconciliation checks, source SHA-256, methodology and limitations; it is not a live enrollment feed."
+    },
+    {
+      "name": "uae_employment_gender",
+      "kind": "read",
+      "description": "Read official MOHRE annual male/female ratios for employees registered in private-sector systems from 2020–2024. Ratios are not employee counts or a total for all UAE employment."
     },
     {
       "name": "uae_entity_resolve",

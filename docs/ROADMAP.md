@@ -1,5 +1,14 @@
 # Roadmap
 
+## v1.75 — MOHRE Employment by Gender — complete
+
+- Ten official annual male/female ratio observations covering 2020–2024
+- Gender and inclusive year-range filters without interpolation or inferred counts
+- Strict source identity, annual completeness and sum-to-one validation
+- Verified SHA-256 snapshot fallback and 24-hour source cache
+- Bilingual same-origin Dubai Font interface with mobile-safe RTL composition
+- Explicit private-sector-only, ratio-not-count, pay-equity, causality and forecast boundaries
+
 ## v1.74 — UAE Tourism Pulse — complete
 
 - Five separate official national annual tourism aggregates with source-native units

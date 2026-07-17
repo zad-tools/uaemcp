@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 40 source-cited
-MCP tools, fourteen resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 43 source-cited
+MCP tools, seventeen resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -54,6 +54,18 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/employment-gender"><img src="docs/assets/employment-gender-motion.svg" alt="Animated MOHRE employment-by-gender evidence ledger preserving annual ratios and interpretation boundaries" width="100%"></a>
+</p>
+
+The **MOHRE Employment by Gender** ledger publishes ten validated annual ratio
+observations for employees registered in MOHRE private-sector systems from
+2020–2024. It keeps male and female shares separate, never converts ratios into
+employee counts, and does not claim whole-workforce coverage, pay equity,
+causality or forecasts. Use the
+[hosted ledger](https://uaemcp.zad.tools/employment-gender),
+`GET /api/v1/employment-gender`, or the `uae_employment_gender` MCP tool.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/tourism-pulse"><img src="docs/assets/tourism-pulse-motion.svg" alt="Animated UAE Tourism Pulse showing five separate national annual aggregates and explicit evidence boundaries" width="100%"></a>
@@ -234,18 +246,17 @@ claim.
 
 Requires Bun 1.3 or newer.
 
-The Bun rewrite is currently newer than npm's `latest` tag. Until npm Trusted
-Publishing is connected, run the CI-tested `main` branch directly from GitHub:
+The signed npm package is published from GitHub Actions through npm Trusted
+Publishing, with provenance and no long-lived release token:
 
 ```bash
-bunx --bun github:zad-tools/uaemcp#main --version
-bunx --bun github:zad-tools/uaemcp#main doctor
-bunx --bun github:zad-tools/uaemcp#main       # stdio MCP server
-bunx --bun github:zad-tools/uaemcp#main http # HTTP server at /mcp
+bunx --bun uaemcp@latest --version
+bunx --bun uaemcp@latest doctor
+bunx --bun uaemcp@latest       # stdio MCP server
+bunx --bun uaemcp@latest http  # HTTP server at /mcp
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.74.0` or newer.
 
 MCP client configuration:
 
@@ -254,7 +265,7 @@ MCP client configuration:
   "mcpServers": {
     "uae-intelligence": {
       "command": "bunx",
-      "args": ["--bun", "github:zad-tools/uaemcp#main"]
+      "args": ["--bun", "uaemcp@latest"]
     }
   }
 }
@@ -286,7 +297,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.74.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.75.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -463,7 +474,7 @@ The project does not present every indexed portal as live data. Use:
 - `GET|POST /api/v1/sources/{sourceId}/snapshots` and `GET /api/v1/snapshots/diff` for dataset history.
 - `GET /api/v1/intelligence/recipes` to discover analytical recipes and run them by id.
 
-Current conservative coverage is 47 official sources indexed, 15 live record
+Current conservative coverage is 48 official sources indexed, 16 live record
 connectors, at least 222 known queryable datasets, 1 blocked connector, and 3
 key-required portals. Counts never imply
 that metadata-only portals are queryable.

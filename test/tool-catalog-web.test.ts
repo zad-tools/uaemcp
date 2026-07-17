@@ -9,9 +9,9 @@ describe("public MCP Tools Explorer", () => {
     const response = await handleRest(new Request("http://localhost/api/v1/tools"));
     const payload = await response?.json();
     expect(response?.status).toBe(200);
-    expect(payload.data.summary).toEqual({ total: 42, read: 39, write: 2, mixed: 1 });
+    expect(payload.data.summary).toEqual({ total: 43, read: 40, write: 2, mixed: 1 });
     expect(payload.data.generatedFrom).toBe("runtime_registered_tools");
-    expect(payload.data.tools).toHaveLength(42);
+    expect(payload.data.tools).toHaveLength(43);
     expect(payload.data.tools.some((tool: { name: string }) => tool.name === "uae_dataset_snapshot")).toBe(true);
     expect(openApiDocument().paths).toHaveProperty("/api/v1/tools");
   });

@@ -14,6 +14,7 @@ public final class UaemcpClient {
  public String getNationalEvidenceBrief(Map<String,String> params) throws Exception {return get("/api/v1/national-brief",params);}
  public String getConnectivityPulse(Map<String,String> params) throws Exception {return get("/api/v1/connectivity",params);}
  public String getTourismPulse(Map<String,String> params) throws Exception {return get("/api/v1/tourism-pulse",params);}
+ public String getEmploymentGender(Map<String,String> params) throws Exception {return get("/api/v1/employment-gender",params);}
  public String searchPlaceNames(Map<String,String> params) throws Exception {return get("/api/v1/places",params);}
  public String buildFounderPathway(Map<String,String> params) throws Exception {return get("/api/v1/founder-pathway",params);}
  public String getGoldenResidencyPathways(Map<String,String> params) throws Exception {return get("/api/v1/golden-residency",params);}

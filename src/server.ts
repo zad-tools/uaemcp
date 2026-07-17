@@ -52,6 +52,7 @@ import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-s
 import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 import { loadAeronauticalPublications } from "./aeronautical-publications-service.js";
 import { loadTourismPulse } from "./tourism-pulse.js";
+import { loadEmploymentGender } from "./employment-gender.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
@@ -124,6 +125,25 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
         if (from_year && to_year && from_year > to_year) throw new ValidationError("from_year must not be after to_year");
         const loaded = await loadTourismPulse({ fetcher: dependencies.fetchTourismWorkbook, metric, fromYear: from_year, toYear: to_year });
         return text(ok(loaded.report, { ...loaded.meta, filters: { metric, from_year, to_year }, units_kept_separate: true, causal_interpretation: false }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_employment_gender",
+    {
+      description: "Read official MOHRE annual male/female ratios for employees registered in private-sector systems from 2020–2024. Ratios are not employee counts or a total for all UAE employment.",
+      inputSchema: {
+        gender: z.enum(["male", "female"]).optional(),
+        from_year: z.number().int().min(2020).max(2024).optional(),
+        to_year: z.number().int().min(2020).max(2024).optional(),
+      },
+    },
+    async ({ gender, from_year, to_year }) => {
+      try {
+        if (from_year && to_year && from_year > to_year) throw new ValidationError("from_year must not be after to_year");
+        const loaded = await loadEmploymentGender({ fetcher: dependencies.fetchEmploymentGenderWorkbook, gender, fromYear: from_year, toYear: to_year });
+        return text(ok(loaded.report, { ...loaded.meta, filters: { gender, from_year, to_year }, private_sector_only: true, population_total: false }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -897,6 +917,25 @@ function registerResources(server: McpServer): void {
       emirateBreakdownAvailable: false,
       causalInterpretation: false,
       prohibitedClaims: ["unique tourist count", "emirate ranking", "profitability", "investment suitability", "causality", "forecast", "future demand"],
+    }) }] }),
+  );
+
+  server.registerResource(
+    "employment_gender_methodology",
+    "uae://methodology/employment-gender",
+    { title: "MOHRE Employment by Gender methodology", description: "Annual private-sector registered-employment ratio grain, source boundaries and prohibited interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({
+      authority: "Ministry of Human Resources and Emiratisation",
+      period: "2020–2024",
+      frequency: "annual",
+      geography: "UAE",
+      population: "employees registered in MOHRE private-sector systems",
+      unit: "ratio",
+      populationTotal: false,
+      employeeCountsAvailable: false,
+      governmentEmploymentIncluded: false,
+      causalInterpretation: false,
+      prohibitedClaims: ["employee count", "whole UAE workforce", "labour-force participation", "pay equity", "causality", "forecast"],
     }) }] }),
   );
 

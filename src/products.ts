@@ -19,6 +19,22 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "employment_gender",
+    status: "published",
+    access: "public",
+    category: "EMPLOYMENT / ANNUAL RATIOS",
+    categoryAr: "العمالة / النسب السنوية",
+    title: { en: "MOHRE Employment by Gender", ar: "العمالة حسب النوع لدى وزارة الموارد البشرية والتوطين" },
+    description: { en: "Inspect official annual male and female shares of employees registered in MOHRE private-sector systems from 2020–2024.", ar: "افحص الحصص السنوية الرسمية للذكور والإناث من العمالة المسجلة في أنظمة الوزارة للقطاع الخاص بين 2020 و2024." },
+    webPath: "/employment-gender",
+    apiPath: "/api/v1/employment-gender",
+    sourceIds: ["mohre_employment_gender_2020_2024"],
+    evidence: {
+      scope: { en: "Ten annual gender-ratio observations for employees registered in MOHRE private-sector systems, covering 2020–2024.", ar: "عشر ملاحظات سنوية لنسب النوع للعمالة المسجلة في أنظمة الوزارة للقطاع الخاص، تغطي 2020–2024." },
+      limitations: [{ en: "Ratios are not employee counts or a total for all UAE employment and do not explain causes, wages, occupations or conditions.", ar: "النسب ليست أعداد موظفين ولا إجمالي العمالة في الإمارات، ولا تفسر الأسباب أو الأجور أو المهن أو ظروف العمل." }],
+    },
+  },
+  {
     id: "connectivity_pulse",
     status: "published",
     access: "public",

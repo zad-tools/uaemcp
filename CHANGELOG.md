@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.75.0 — 2026-07-18
+
+- Added MOHRE Employment by Gender over the ministry's official 2020–2024 workbook: ten validated annual male/female ratio observations.
+- Added `/employment-gender`, REST, MCP and methodology contracts with gender and inclusive year filters.
+- Added a strict workbook parser, 24-hour cache and SHA-256-identified verified snapshot fallback.
+- Added a bilingual Dubai Font evidence ledger and animated README visual with explicit private-sector, ratio-not-count, pay-equity and causality boundaries.
+
 ## 1.74.0 — 2026-07-18
 
 - Added UAE Tourism Pulse over the Ministry of Economy and Tourism's licensed national workbook: five annual series and 60 validated observations covering 2014–2025.

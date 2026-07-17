@@ -1,5 +1,5 @@
 const result = Bun.spawnSync({
-  cmd: ["npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
+  cmd: ["bun", "x", "--bun", "npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
   stdout: "pipe",
   stderr: "pipe",
 });
