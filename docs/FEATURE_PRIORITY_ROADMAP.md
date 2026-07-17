@@ -21,6 +21,8 @@ effort - technical risk - dependency complexity.
 
 ### Sprint 2 — Policy Evidence Watch
 
+**Status: complete in v1.67.0.** Five audited official surfaces, bounded hashes and excerpts, retained observations, daily scheduling, REST, MCP and bilingual product UI are implemented.
+
 - Register every official policy page used by founder-facing products.
 - Store bounded content fingerprints and last-check results.
 - Surface freshness and detected changes through the Observatory.

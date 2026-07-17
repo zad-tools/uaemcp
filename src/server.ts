@@ -44,6 +44,7 @@ import { buildPlaceNamesProduct } from "./places.js";
 import { loadNationalEvidenceBrief } from "./national-brief-service.js";
 import { loadEvidenceDossier } from "./evidence-dossier-service.js";
 import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-dossier.js";
+import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -264,6 +265,26 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
           fetchTaxRecords: dependencies.fetchTaxRecords,
         });
         return text(ok(result.data, { ...result.meta, stored: false }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_policy_evidence_watch",
+    {
+      description: "Read retained checks or run a bounded check across five audited official UAE legislation, tax, labour, residency and Cabinet pages. Detects published-page content changes only; it never determines legal effect, effective date or eligibility.",
+      inputSchema: {
+        action: z.enum(["report", "check"]).default("report"),
+        source_ids: z.array(z.enum(POLICY_WATCH_SOURCE_IDS)).min(1).max(5).refine((items) => new Set(items).size === items.length, "source ids must be unique").optional(),
+      },
+    },
+    async ({ action, source_ids }) => {
+      try {
+        const store = dependencies.policyEvidenceStore ?? policyEvidenceStore();
+        if (action === "report") return text(ok(policyEvidenceWatchReport(store), { hidden_upstream_work: false }));
+        const ids = source_ids ?? POLICY_WATCH_SOURCE_IDS;
+        const result = await checkPolicyEvidenceWatch(ids, { getText: dependencies.fetchPolicyPage, store });
+        return text(ok(result, { stores_user_data: false, stores_page_evidence: true }));
       } catch (error) { return text(fail(error)); }
     },
   );
@@ -718,6 +739,13 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
+
+  server.registerResource(
+    "policy_evidence_watch_methodology",
+    "uae://policy-watch/methodology",
+    { title: "UAE Policy Evidence Watch methodology", description: "Audited sources, hashing rules, retention boundaries and prohibited legal interpretations.", mimeType: "application/json" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: json({ sources: POLICY_WATCH_SOURCE_IDS, operation: "normalized_text_hash_diff", storesUserData: false, retainedContent: "SHA-256 plus excerpts capped at 240 characters", legalEffectDetermined: false, effectiveDateDetermined: false, eligibilityDetermined: false, unavailableMeansUnchanged: false }) }] }),
+  );
 
   server.registerResource(
     "evidence_studio_methodology",

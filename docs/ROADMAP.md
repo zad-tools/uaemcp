@@ -1,5 +1,13 @@
 # Roadmap
 
+## v1.67 — UAE Policy Evidence Watch — complete
+
+- Five allowlisted official policy and legislation surfaces
+- Retained SHA-256 fingerprints, bounded excerpts and honest change ledger
+- Daily hosted checks with explicit unavailable states and no full-page mirroring
+- Bilingual Dubai Font product across web, REST, MCP and OpenAPI
+- Published-page changes never represented as legal, effective-date or eligibility changes
+
 ## v1.66 — UAE Evidence Studio — complete
 
 - Stateless composition of two to five official evidence pillars

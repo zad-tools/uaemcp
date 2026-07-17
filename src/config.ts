@@ -46,6 +46,9 @@ export interface Settings {
   embeddingEndpoint: string | null;
   embeddingModel: string;
   embeddingApiKey: string | null;
+  policyWatchPath: string;
+  policyWatchIntervalMinutes: number;
+  policyWatchRetention: number;
 }
 
 export const SETTINGS: Settings = {
@@ -73,6 +76,9 @@ export const SETTINGS: Settings = {
   embeddingEndpoint: process.env.UAEMCP_EMBEDDING_ENDPOINT || null,
   embeddingModel: process.env.UAEMCP_EMBEDDING_MODEL ?? "text-embedding-3-small",
   embeddingApiKey: process.env.UAEMCP_EMBEDDING_API_KEY || null,
+  policyWatchPath: process.env.UAEMCP_POLICY_WATCH_PATH ?? "data/policy-watch.json",
+  policyWatchIntervalMinutes: num("UAEMCP_POLICY_WATCH_INTERVAL_MINUTES", 0),
+  policyWatchRetention: positiveInt("UAEMCP_POLICY_WATCH_RETENTION", 30, 1_000),
 };
 
 export const writesEnabled = (): boolean => Boolean(SETTINGS.writeToken);

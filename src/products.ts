@@ -19,6 +19,13 @@ export type PublicProduct = Readonly<{
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
+    id: "policy_evidence_watch", status: "published", access: "public", category: "POLICY / EVIDENCE", categoryAr: "السياسات / الأدلة",
+    title: { en: "UAE Policy Evidence Watch", ar: "مرصد أدلة السياسات في الإمارات" },
+    description: { en: "Track bounded content fingerprints for five audited official UAE legislation and policy pages without claiming that a detected page difference changed the law.", ar: "تتبّع بصمات محتوى محدودة لخمس صفحات إماراتية رسمية مدققة للتشريعات والسياسات دون الادعاء بأن اختلاف الصفحة غيّر القانون." },
+    webPath: "/policy-watch", apiPath: "/api/v1/policy-watch", sourceIds: ["uae_legislation_catalogue", "fta_legislation_index", "mohre_resolutions_circulars", "icp_policy_announcements", "uae_cabinet_news"],
+    evidence: { scope: { en: "Daily hosted checks retain SHA-256 fingerprints, timestamps and excerpts capped at 240 characters.", ar: "تحتفظ الفحوصات اليومية المستضافة ببصمات SHA-256 والطوابع الزمنية ومقتطفات لا تتجاوز 240 حرفًا." }, limitations: [{ en: "A published-page content difference does not determine legal effect, commencement, eligibility or advice.", ar: "لا يحدد اختلاف محتوى الصفحة المنشورة أثرًا قانونيًا أو بدء نفاذ أو أهلية أو استشارة." }] },
+  },
+  {
     id: "evidence_studio", status: "published", access: "public", category: "RESEARCH / DOSSIER", categoryAr: "البحث / ملف الأدلة",
     title: { en: "UAE Evidence Studio", ar: "استوديو الأدلة الإماراتية" },
     description: { en: "Compose selected official evidence into one bilingual, printable and downloadable dossier with every source boundary intact.", ar: "اجمع الأدلة الرسمية المختارة في ملف واحد ثنائي اللغة قابل للطباعة والتنزيل مع الحفاظ على حدود كل مصدر." },

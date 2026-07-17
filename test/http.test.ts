@@ -62,7 +62,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.66.0",
+      version: "1.67.0",
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -76,6 +76,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(names.sort()).toEqual([
       "uae_founder_pathway",
+      "uae_policy_evidence_watch",
       "uae_products_list",
       "uae_business_setup",
       "uae_startup_support",
@@ -117,22 +118,22 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.meta).toEqual({ total: 17, published: 17 });
+    expect(body.meta).toEqual({ total: 18, published: 18 });
     expect(body.data.map((product: { id: string }) => product.id)).toEqual([
-      "evidence_studio", "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
+      "policy_evidence_watch", "evidence_studio", "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);
   });
 
   it("publishes the product registry as addressable MCP context", async () => {
     const listed = await rpc("resources/list");
     const templates = await rpc("resources/templates/list");
-    expect(listed.payload.result.resources).toHaveLength(10);
+    expect(listed.payload.result.resources).toHaveLength(11);
     expect(templates.payload.result.resourceTemplates).toHaveLength(2);
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://products");
     const { payload } = await rpc("resources/read", { uri: "uae://products" });
     const body = JSON.parse(payload.result.contents[0].text);
-    expect(body.total).toBe(17);
-    expect(body.products[0].id).toBe("evidence_studio");
+    expect(body.total).toBe(18);
+    expect(body.products[0].id).toBe("policy_evidence_watch");
   });
 
   it("exposes the observatory through MCP without triggering upstream probes", async () => {

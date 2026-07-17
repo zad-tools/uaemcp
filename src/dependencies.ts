@@ -1,4 +1,5 @@
 import { fetchResult } from "./connectors.js";
+import type { PolicyEvidenceStore } from "./policy-evidence-watch.js";
 
 export interface RuntimeDependencies {
   fetchIndustryRecords?: typeof fetchResult;
@@ -10,4 +11,6 @@ export interface RuntimeDependencies {
   fetchHealthRecords?: typeof fetchResult;
   fetchHealthFacilitiesRecords?: typeof fetchResult;
   fetchPlaceRecords?: typeof fetchResult;
+  fetchPolicyPage?: (url: string) => Promise<string>;
+  policyEvidenceStore?: PolicyEvidenceStore;
 }

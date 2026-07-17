@@ -58,6 +58,9 @@ import { loadNationalEvidenceBrief } from "./national-brief-service.js";
 import { evidenceStudioPage } from "./evidence-studio-web.js";
 import { loadEvidenceDossier, type EvidenceDossierOptions } from "./evidence-dossier-service.js";
 import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS, type EvidencePillarId } from "./evidence-dossier.js";
+import { policyWatchPage } from "./policy-watch-web.js";
+import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
+import { policyWatchScheduler } from "./policy-watch-scheduler.js";
 import type { RuntimeDependencies } from "./dependencies.js";
 
 type Json = Record<string, unknown>;
@@ -129,12 +132,31 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/founder-pathway") return new Response(founderPathwayPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/national-brief") return new Response(nationalBriefPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/evidence-studio") return new Response(evidenceStudioPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
+    if (request.method === "GET" && path === "/policy-watch") return new Response(policyWatchPage(), { headers: { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; font-src 'self'; script-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" } });
     if (request.method === "GET" && path === "/openapi.json") return json(openApiDocument(url.origin));
     if (request.method === "GET" && path === "/.well-known/uaemcp.json") return json(trustManifest());
     if (request.method === "GET" && path === "/api/v1/coverage") return json(envelope(coverageSummary()));
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
       return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+    }
+    if (request.method === "GET" && path === "/api/v1/policy-watch") {
+      return json(envelope(policyEvidenceWatchReport(dependencies.policyEvidenceStore ?? policyEvidenceStore()), { hidden_upstream_work: false }));
+    }
+    if (request.method === "POST" && path === "/api/v1/policy-watch/check") {
+      const length = Number(request.headers.get("content-length") ?? 0);
+      if (length > 2_048) throw new ValidationError("request body is too large");
+      const body = await request.json().catch(() => { throw new ValidationError("body must be valid JSON"); }) as Record<string, unknown>;
+      if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some((key) => key !== "sourceIds")) throw new ValidationError("only sourceIds is accepted");
+      if (!Array.isArray(body.sourceIds) || body.sourceIds.length < 1 || body.sourceIds.length > 5 || new Set(body.sourceIds).size !== body.sourceIds.length || body.sourceIds.some((id) => typeof id !== "string" || !POLICY_WATCH_SOURCE_IDS.includes(id as typeof POLICY_WATCH_SOURCE_IDS[number]))) throw new ValidationError("sourceIds must contain 1-5 unique allowlisted ids");
+      const store = dependencies.policyEvidenceStore ?? policyEvidenceStore();
+      const recent = body.sourceIds.every((id) => {
+        const latest = store.observations(String(id), 1)[0];
+        return latest && Date.now() - Date.parse(latest.checkedAt) < 300_000;
+      });
+      if (recent) return json(envelope(policyEvidenceWatchReport(store), { cached: true, stores_user_data: false, stores_page_evidence: true }));
+      const report = await checkPolicyEvidenceWatch(body.sourceIds as string[], { getText: dependencies.fetchPolicyPage, store });
+      return json(envelope(report, { cached: false, stores_user_data: false, stores_page_evidence: true }));
     }
     if (request.method === "POST" && path === "/api/v1/evidence-dossier") {
       const length = Number(request.headers.get("content-length") ?? 0);
@@ -371,6 +393,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     }
     if (request.method === "GET" && path === "/api/v1/operations/snapshot-scheduler") return json(envelope(snapshotScheduler.status()));
     if (request.method === "GET" && path === "/api/v1/operations/health-scan-scheduler") return json(envelope(healthScanScheduler.status()));
+    if (request.method === "GET" && path === "/api/v1/operations/policy-watch") return json(envelope(policyWatchScheduler.status()));
     if (request.method === "GET" && path === "/api/v1/catalog") {
       return json(envelope(REGISTRY.list().map(portalModel), { coverage: coverageSummary() }));
     }

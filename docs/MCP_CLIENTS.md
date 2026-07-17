@@ -12,7 +12,7 @@ limit.
 
 > **npm status:** npm `latest` is still `0.2.2`, not this Bun rewrite. Do not use
 > `bunx uaemcp` until Trusted Publishing is connected and the npm badge reports
-> `1.66.0` or newer. The GitHub command below runs the CI-tested `main` branch,
+> `1.67.0` or newer. The GitHub command below runs the CI-tested `main` branch,
 > so pin a commit instead of `#main` when reproducibility matters.
 
 ## Quick matrix

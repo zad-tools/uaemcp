@@ -3,6 +3,7 @@ import { GOLDEN_PATHWAY_IDS } from "./golden-residency.js";
 import { BUSINESS_ACTIVITY_SECTORS, BUSINESS_EMIRATES, BUSINESS_SETUP_TYPES } from "./business-setup.js";
 import { STARTUP_EMIRATES, STARTUP_STAGES, STARTUP_SUPPORT_TYPES } from "./startup-support.js";
 import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-dossier.js";
+import { POLICY_WATCH_SOURCE_IDS } from "./policy-watch-service.js";
 
 const envelope = (schema: Record<string, unknown>): Record<string, unknown> => ({
   type: "object", required: ["ok", "data", "error", "meta"],
@@ -28,6 +29,7 @@ const businessSetupRouteSchema = { type: "object", required: ["emirate", "setupT
 const startupSupportMatchSchema = { type: "object", required: ["stage", "supportType", "emirate"], additionalProperties: false, properties: { stage: { type: "string", enum: [...STARTUP_STAGES] }, supportType: { type: "string", enum: [...STARTUP_SUPPORT_TYPES] }, emirate: { type: "string", enum: [...STARTUP_EMIRATES] } } };
 const founderPathwaySchema = { type: "object", required: ["stage", "emirate", "setupType", "supportType"], additionalProperties: false, properties: { stage: { type: "string", enum: [...STARTUP_STAGES] }, emirate: { type: "string", enum: [...BUSINESS_EMIRATES] }, setupType: { type: "string", enum: [...BUSINESS_SETUP_TYPES] }, supportType: { type: "string", enum: [...STARTUP_SUPPORT_TYPES] }, activitySector: { type: "string", enum: [...BUSINESS_ACTIVITY_SECTORS] } } };
 const evidenceDossierSchema = { type: "object", required: ["template", "question", "language", "pillars"], additionalProperties: false, properties: { template: { type: "string", enum: [...EVIDENCE_DOSSIER_TEMPLATES] }, question: { type: "string", minLength: 1, maxLength: 200 }, language: { type: "string", enum: ["en", "ar"] }, pillars: { type: "array", minItems: 2, maxItems: 5, uniqueItems: true, items: { type: "string", enum: [...EVIDENCE_PILLAR_IDS] } }, query: { type: "string", maxLength: 100 }, emirate: { type: "string", enum: [...BUSINESS_EMIRATES] }, healthFacilitiesLimit: { type: "integer", minimum: 1, maximum: 200 }, healthIndicatorsLimit: { type: "integer", minimum: 1, maximum: 50 }, industryLimit: { type: "integer", minimum: 1, maximum: 100 } } };
+const policyWatchCheckSchema = { type: "object", additionalProperties: false, properties: { sourceIds: { type: "array", minItems: 1, maxItems: 5, uniqueItems: true, items: { type: "string", enum: [...POLICY_WATCH_SOURCE_IDS] } } } };
 
 export function openApiDocument(origin = "http://localhost:8080"): Record<string, unknown> {
   const sourceId = { name: "sourceId", in: "path", required: true, schema: { type: "string" } };
@@ -38,6 +40,9 @@ export function openApiDocument(origin = "http://localhost:8080"): Record<string
     tags: [{ name: "Products" }, { name: "Catalog" }, { name: "Data" }, { name: "Intelligence" }, { name: "Observatory" }, { name: "Maps" }],
     paths: {
       "/api/v1/products": { get: { operationId: "listProducts", tags: ["Products"], responses: { "200": response(envelope({ type: "array", items: { $ref: "#/components/schemas/Product" } })) } } },
+      "/api/v1/policy-watch": { get: { operationId: "getPolicyEvidenceWatch", tags: ["Products", "Intelligence"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/policy-watch/check": { post: { operationId: "checkPolicyEvidenceWatch", tags: ["Products", "Intelligence"], requestBody: { required: true, content: { "application/json": { schema: policyWatchCheckSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
+      "/api/v1/operations/policy-watch": { get: { operationId: "getPolicyEvidenceWatchOperations", tags: ["Observatory"], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/evidence-dossier": { post: { operationId: "buildEvidenceDossier", tags: ["Products", "Intelligence"], requestBody: { required: true, content: { "application/json": { schema: evidenceDossierSchema } } }, responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/national-brief": { get: { operationId: "getNationalEvidenceBrief", tags: ["Products", "Intelligence"], parameters: [parameter("health_limit", false, { type: "integer", minimum: 1, maximum: 50, default: 12 }), parameter("industry_limit", false, { type: "integer", minimum: 1, maximum: 100, default: 50 }), parameter("emirate"), parameter("q", false, { type: "string", maxLength: 100 })], responses: { "200": response(envelope({ type: "object", additionalProperties: true })) } } },
       "/api/v1/places": { get: { operationId: "searchPlaceNames", tags: ["Products", "Maps"], parameters: [parameter("q", true, { type: "string", minLength: 2, maxLength: 100 }), parameter("limit", false, { type: "integer", minimum: 1, maximum: 100, default: 20 })], responses: { "200": response(envelope({ $ref: "#/components/schemas/PlaceNamesProduct" })) } } },

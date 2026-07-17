@@ -12,6 +12,7 @@ import { snapshotScheduler } from "./scheduler.js";
 import { completionScript, doctorReport, formatDoctor, helpText, parseCli } from "./cli.js";
 import { VERSION } from "./version.js";
 import { healthScanScheduler } from "./health-scheduler.js";
+import { policyWatchScheduler } from "./policy-watch-scheduler.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
@@ -153,6 +154,7 @@ export function runHttp(host = SETTINGS.host, port = SETTINGS.port, dependencies
   const server = Bun.serve({ hostname: host, port, fetch: createFetchHandler(dependencies) });
   snapshotScheduler.start();
   healthScanScheduler.start();
+  policyWatchScheduler.start();
   process.stderr.write(`uaemcp http listening on ${server.url}mcp\n`);
   return server;
 }

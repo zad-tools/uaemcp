@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.67.0
+
+- Added UAE Policy Evidence Watch across five audited official legislation, resolution and announcement surfaces.
+- Added `/policy-watch`, retained-state and bounded-check REST endpoints, `uae_policy_evidence_watch`, and a methodology resource.
+- Persisted only SHA-256 fingerprints, short excerpts and check observations; full official pages are never mirrored.
+- Distinguished first snapshot, unchanged, content changed and check failed without interpreting a page update as a legal or eligibility change.
+- Added a daily hosted scheduler, strict allowlist, bilingual RTL Dubai Font interface and animated evidence-flow visual.
+
 ## 1.66.0
 
 - Added UAE Evidence Studio to compose two to five existing official evidence pillars into one bilingual source-cited dossier.

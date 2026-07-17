@@ -42,8 +42,8 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
-The server keeps the public `uaemcp` contract and extends it to 36 source-cited
-MCP tools, ten resources, three prompts, bilingual catalog search, CKAN,
+The server keeps the public `uaemcp` contract and extends it to 37 source-cited
+MCP tools, eleven resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
@@ -54,6 +54,18 @@ The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
 between English and Arabic. Every public application uses Dubai Font with native
 RTL composition.
+
+<p align="center">
+  <a href="https://uaemcp.zad.tools/policy-watch"><img src="docs/assets/policy-watch-motion.svg" alt="Animated UAE Policy Evidence Watch from five official sources to hashes and an evidence change ledger" width="100%"></a>
+</p>
+
+The **UAE Policy Evidence Watch** checks five audited official legislation,
+resolution and announcement surfaces. It retains SHA-256 fingerprints, bounded
+excerpts and check observations—not full government pages. A detected page
+content change is evidence for review; it is never presented as a legal change,
+effective date or eligibility decision. Use the
+[hosted watch](https://uaemcp.zad.tools/policy-watch), REST, or the
+`uae_policy_evidence_watch` MCP tool.
 
 <p align="center">
   <a href="https://uaemcp.zad.tools/evidence-studio"><img src="docs/assets/evidence-studio-motion.svg" alt="Animated UAE Evidence Studio composing source-native evidence into one dossier" width="100%"></a>
@@ -167,7 +179,7 @@ bunx --bun github:ahmedvnabil/Open-Emirates-Intelligence-MCP#main http # HTTP se
 ```
 
 The npm badge at the top of this README is the authoritative registry version.
-Use `bunx uaemcp` only after that badge reaches `1.66.0` or newer.
+Use `bunx uaemcp` only after that badge reaches `1.67.0` or newer.
 
 MCP client configuration:
 
@@ -208,7 +220,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.66.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.67.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -234,6 +246,7 @@ Endpoints:
 - REST API: `GET /api/v1/sources`, `/api/v1/search`, and source capability routes
 - Vector maps: `GET /api/v1/sources/{sourceId}/tilejson` and `/tiles/{z}/{x}/{y}.pbf`
 - Public Observatory: `GET /observatory` — source reliability, incidents and evidence reports
+- UAE Policy Evidence Watch: `GET /policy-watch` — retained hashes, bounded excerpts and change observations for five audited official surfaces; API at `GET /api/v1/policy-watch` and bounded checks at `POST /api/v1/policy-watch/check`
 - UAE Evidence Studio: `GET /evidence-studio` — compose two to five official evidence pillars into a source-cited dossier; API at `POST /api/v1/evidence-dossier`
 - UAE Founder Pathway: `GET /founder-pathway` — build, track, print and export a privacy-bounded action dossier across official setup, startup support and entrepreneur residency readiness
 - UAE Startup Support Navigator: `GET /startup-support` — privacy-first matching across nine official or government-backed support programmes by stage, support need and emirate
@@ -345,6 +358,7 @@ language. It is included in the main release check.
 
 | Tool | Purpose |
 | --- | --- |
+| `uae_policy_evidence_watch` | Read retained policy-page evidence or check one to five allowlisted official surfaces without interpreting content changes as legal changes |
 | `uae_evidence_dossier` | Compose two to five official evidence pillars into one bilingual source-cited dossier without ranking, composite scoring or storage |
 | `uae_founder_pathway` | Build a source-linked execution checklist across official setup, relevant support and entrepreneur residency readiness without collecting personal data |
 | `uae_business_setup` | Route founders to the competent official mainland or free-zone starting point without collecting personal data |
