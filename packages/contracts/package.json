@@ -2,6 +2,13 @@
   "name": "@open-emirates/contracts",
   "version": "0.1.0",
   "description": "Stable response contracts for Open Emirates data products.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zad-tools/uaemcp.git",
+    "directory": "packages/contracts"
+  },
+  "homepage": "https://uaemcp.zad.tools",
+  "bugs": "https://github.com/zad-tools/uaemcp/issues",
   "license": "MIT",
   "type": "module",
   "types": "./dist/index.d.ts",

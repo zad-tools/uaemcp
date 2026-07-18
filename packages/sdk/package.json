@@ -2,6 +2,13 @@
   "name": "@open-emirates/sdk",
   "version": "0.1.0",
   "description": "Typed TypeScript SDK for official UAE open-data products from Open Emirates.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zad-tools/uaemcp.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://uaemcp.zad.tools",
+  "bugs": "https://github.com/zad-tools/uaemcp/issues",
   "license": "MIT",
   "type": "module",
   "types": "./dist/index.d.ts",

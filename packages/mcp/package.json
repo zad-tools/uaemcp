@@ -2,6 +2,13 @@
   "name": "@open-emirates/mcp",
   "version": "0.1.0",
   "description": "Open Emirates MCP server for Claude, Codex, Cursor and other MCP clients.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zad-tools/uaemcp.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://uaemcp.zad.tools",
+  "bugs": "https://github.com/zad-tools/uaemcp/issues",
   "license": "MIT",
   "type": "module",
   "bin": {
