@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.80.0 - 2026-07-18
+
+- Added the site-wide OEI Product UI design system across all 26 public interfaces.
+- Unified Dubai Font typography, spacing, control heights, page padding, headings, metrics, forms, focus states and responsive behavior.
+- Removed extreme display scaling and raised small labels and interactive targets to readable, accessible minimums.
+
 ## 1.79.0 - 2026-07-18
 
 - Rebuilt the MCP Tools Explorer as a console-first workspace with a compact runtime contract header.
