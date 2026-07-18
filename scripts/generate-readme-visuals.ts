@@ -58,7 +58,7 @@ const products: ProductVisual[] = [
   { file:"ajman-business-motion.svg", title:"Ajman Business Evidence", eyebrow:"THREE OFFICIAL DATASET VIEWS", description:"Business evidence stays separated by source dataset, scope and record limit.", stages:["DISCOVER","QUERY","RANK SAMPLE","CITE"], footer:"BOUNDED SAMPLE · THREE DATASETS · NO MARKET-SIZE CLAIM" },
   { file:"ajman-urban-motion.svg", title:"Ajman Urban Evidence", eyebrow:"SIX SOURCE-NATIVE SERIES", description:"Buildings, rent contracts, roads and crossroads retain their published units.", stages:["BUILDINGS","RENT","ROADS","CROSSROADS","SOURCE UNITS"], footer:"NO CROSS-SERIES COMPOSITE · SIX OFFICIAL VIEWS" },
   { file:"golden-routing.svg", title:"Golden Residency Navigator", eyebrow:"PRIVACY-FIRST OFFICIAL ROUTING", description:"Maps a non-identifying profile to ICP, GDRFA Dubai and Abu Dhabi official paths.", stages:["PROFILE","CATEGORY","AUTHORITY","EVIDENCE CHECKLIST"], footer:"NOT AN ELIGIBILITY DECISION · NO PERSONAL DATA STORED", accent:palette.sand },
-  { file:"tool-catalog-motion.svg", title:"Runtime MCP Tool Catalogue", eyebrow:"43 TOOLS · 17 RESOURCES · 3 PROMPTS", description:"The browser catalogue is generated from the same registered runtime contract.", stages:["DISCOVER","INPUT SCHEMA","TRY READ TOOL","AGENT CONFIG"], footer:"ONE RUNTIME CONTRACT · MCP + REST + INTERACTIVE EXPLORER" },
+  { file:"tool-catalog-motion.svg", title:"Runtime MCP Tool Catalogue", eyebrow:"46 TOOLS · 17 RESOURCES · 3 PROMPTS", description:"Three agent-first facades lead into the complete specialist runtime contract.", stages:["DISCOVER","QUERY","ANALYZE","SPECIALIST TOOLS"], footer:"ONE RUNTIME CONTRACT · MCP + REST + INTERACTIVE EXPLORER" },
   { file:"place-names-motion.svg", title:"UAE Place Names Explorer", eyebrow:"FGIC NATIONAL GAZETTEER", description:"Bilingual place-name evidence normalized for bounded search and mapping.", stages:["AR / EN QUERY","NORMALIZE","VALIDATE COORDINATES","MAP"], footer:"OFFICIAL GAZETTEER · NO INVENTED TRANSLATIONS" },
 ];
 
@@ -70,7 +70,7 @@ const packages = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="5
 
 await Bun.write(
   new URL("readme-hero.svg", output),
-  hero.replace("LIVE PLATFORM / v1.81.0", "LIVE PLATFORM / v1.83.1").replace(
+  hero.replace("LIVE PLATFORM / v1.81.0", "LIVE PLATFORM / v1.84.0").replace(">43</text><text x=\"202\" y=\"60\"", ">46</text><text x=\"202\" y=\"60\"").replace(
     `<text x="72" y="258" fill="${palette.ink}" font-size="78" font-weight="700" letter-spacing="-4">The Emirates, queryable.</text><text x="76" y="306" fill="#52645b" font-size="18">Official UAE open data for agents, researchers and builders.</text>`,
     `<text x="72" y="226" fill="${palette.ink}" font-size="66" font-weight="700" letter-spacing="-3">The Emirates,</text><text x="72" y="292" fill="${palette.red}" font-size="66" font-weight="700" letter-spacing="-3">queryable.</text><text x="76" y="333" fill="#52645b" font-size="17">Official UAE open data for agents, researchers and builders.</text>`,
   ),

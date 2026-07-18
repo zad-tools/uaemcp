@@ -9,6 +9,7 @@ import { SETTINGS } from "./config.js";
 import { postJson } from "./http.js";
 import { citation, REGISTRY, type Source } from "./sources.js";
 import { expandQuery, normalizeText, recognizeConcepts } from "./glossary.js";
+import { listProducts, type PublicProduct } from "./products.js";
 
 type Rec = Record<string, unknown>;
 
@@ -120,6 +121,39 @@ export function searchSources(q: string, limit = 20): Rec[] {
     }));
 }
 
+function productDocument(product: PublicProduct): string[] {
+  const strong = `${product.id} ${product.title.en} ${product.title.ar}`;
+  return tokens(`${strong} ${strong} ${product.category} ${product.categoryAr} ${product.description.en} ${product.description.ar} ${product.evidence.scope.en} ${product.evidence.scope.ar}`);
+}
+
+export function searchProducts(q: string, limit = 20): Rec[] {
+  const queryTokens = [...new Set(expandQuery(q).flatMap(tokens))];
+  if (!queryTokens.length) return [];
+  return listProducts()
+    .map((product) => {
+      const terms = productDocument(product);
+      const matched = queryTokens.filter((term) => terms.includes(term));
+      const phrase = normalizeText(`${product.id} ${product.title.en} ${product.title.ar}`);
+      const exactBoost = phrase.includes(normalizeText(q)) ? 20 : 0;
+      return { product, matched, score: exactBoost + matched.length };
+    })
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score || left.product.id.localeCompare(right.product.id))
+    .slice(0, limit)
+    .map(({ product, matched, score }) => ({
+      type: "product",
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      webPath: product.webPath,
+      apiPath: product.apiPath,
+      sourceIds: product.sourceIds,
+      score,
+      matched_terms: matched,
+      limitations: product.evidence.limitations,
+    }));
+}
+
 async function portalDatasets(source: Source, q: string, perSource: number): Promise<Rec[]> {
   try {
     const refs = await Promise.race([
@@ -142,6 +176,7 @@ async function portalDatasets(source: Source, q: string, perSource: number): Pro
 
 export async function buildSearch(q: string, opts: { limit?: number; deep?: boolean; perSource?: number } = {}): Promise<Rec> {
   let sources = searchSources(q, opts.limit ?? 20);
+  const products = searchProducts(q, opts.limit ?? 20);
   let ranking = "hybrid_bm25_glossary";
   let embeddingWarning: string | null = null;
   if (embeddingProvider) {
@@ -158,5 +193,15 @@ export async function buildSearch(q: string, opts: { limit?: number; deep?: bool
     const groups = await Promise.all(portals.map((s) => portalDatasets(s, q, opts.perSource ?? 5)));
     datasets = groups.flat();
   }
-  return { query: q, entities: recognizeConcepts(q), ranking, embedding_warning: embeddingWarning, sources, datasets, counts: { sources: sources.length, datasets: datasets.length } };
+  return {
+    query: q,
+    entities: recognizeConcepts(q),
+    ranking,
+    searchMode: opts.deep ? "local_index_plus_live_portals" : "local_index",
+    embedding_warning: embeddingWarning,
+    products,
+    sources,
+    datasets,
+    counts: { products: products.length, sources: sources.length, datasets: datasets.length },
+  };
 }

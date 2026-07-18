@@ -108,7 +108,7 @@ export class ReliabilityStore {
     return incidents.sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt))).slice(0, Math.max(1, Math.min(limit, 1000)));
   }
 
-  observatoryReport(sourceIds: string[], generatedAt = new Date().toISOString()): Rec {
+  observatoryReport(sourceIds: string[], generatedAt = new Date().toISOString(), freshnessMaxAgeMs = Math.max(SETTINGS.cacheTtlMs * 2, 10 * 60 * 1000)): Rec {
     const latestRows = this.db.query(`
       SELECT h.source_id,h.status,h.latency_ms,h.record_count,h.message,h.checked_at
       FROM health_checks h
@@ -122,6 +122,32 @@ export class ReliabilityStore {
     }
     const allChecks = this.db.query(`SELECT status,latency_ms FROM health_checks`).all() as Rec[];
     const latencies = allChecks.map((row) => Number(row.latency_ms)).filter(Number.isFinite).sort((a, b) => a - b);
+    const generatedMs = Date.parse(generatedAt);
+    const freshnessFor = (checkedAt: unknown) => {
+      const checkedMs = typeof checkedAt === "string" ? Date.parse(checkedAt) : Number.NaN;
+      if (!Number.isFinite(checkedMs) || !Number.isFinite(generatedMs)) return { status: "unknown", ageMs: null };
+      const ageMs = Math.max(0, generatedMs - checkedMs);
+      return { status: ageMs <= freshnessMaxAgeMs ? "current" : "stale", ageMs };
+    };
+    const observationFreshness = { current: 0, stale: 0, unknown: 0 };
+    for (const sourceId of sourceIds) {
+      const status = freshnessFor(latest.get(sourceId)?.checked_at).status as keyof typeof observationFreshness;
+      observationFreshness[status] += 1;
+    }
+    const failureReason = (message: unknown): string => {
+      const normalized = String(message ?? "").toLowerCase();
+      if (normalized.includes("timeout") || normalized.includes("exceeded")) return "timeout";
+      if (normalized.includes("blocked") || normalized.includes("403")) return "blocked";
+      if (normalized.includes("dns") || normalized.includes("resolve")) return "dns";
+      if (normalized.includes("tls") || normalized.includes("certificate")) return "tls";
+      if (normalized.includes("401") || normalized.includes("unauthorized") || normalized.includes("key")) return "authentication";
+      return "unavailable";
+    };
+    const failureReasons: Record<string, number> = {};
+    for (const row of latestRows.filter((item) => item.status === "down")) {
+      const reason = failureReason(row.message);
+      failureReasons[reason] = (failureReasons[reason] ?? 0) + 1;
+    }
     const openIncidents = this.incidents(undefined, 1000).filter((incident) => incident.status === "open").length;
     const recoveredIncidents = this.incidents(undefined, 1000).filter((incident) => incident.status === "recovered").length;
     return {
@@ -129,12 +155,19 @@ export class ReliabilityStore {
       monitoredSources: sourceIds.length,
       observedSources: latestRows.length,
       currentStatus,
+      observedReachabilityRatio: latestRows.length ? Number((latestRows.filter((row) => row.status === "ok" || row.status === "partial").length / latestRows.length).toFixed(4)) : null,
       overallUptimeRatio: allChecks.length ? Number((allChecks.filter((row) => row.status === "ok").length / allChecks.length).toFixed(4)) : null,
       latencyP50Ms: latencies.length ? latencies[Math.floor(latencies.length * 0.5)] : null,
+      latencyP95Ms: latencies.length ? latencies[Math.min(latencies.length - 1, Math.floor(latencies.length * 0.95))] : null,
+      observationFreshness,
+      freshnessMaxAgeMs,
+      failureReasons,
       incidents: { open: openIncidents, recovered: recoveredIncidents, total: openIncidents + recoveredIncidents },
       sources: sourceIds.map((id) => {
         const row = latest.get(id);
-        return row ? { sourceId: id, status: row.status, latencyMs: Number(row.latency_ms), recordCount: Number(row.record_count), message: row.message, checkedAt: row.checked_at } : { sourceId: id, status: "unknown", latencyMs: null, recordCount: null, message: "No health observation recorded yet.", checkedAt: null };
+        return row
+          ? { sourceId: id, status: row.status, latencyMs: Number(row.latency_ms), recordCount: Number(row.record_count), message: row.message, checkedAt: row.checked_at, freshness: freshnessFor(row.checked_at) }
+          : { sourceId: id, status: "unknown", latencyMs: null, recordCount: null, message: "No health observation recorded yet.", checkedAt: null, freshness: freshnessFor(null) };
       }),
     };
   }

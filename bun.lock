@@ -37,7 +37,7 @@
     },
     "packages/sdk": {
       "name": "@open-emirates/sdk",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@open-emirates/contracts": "0.2.0",
         "ajv": "8.20.0",

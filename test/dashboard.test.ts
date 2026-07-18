@@ -52,4 +52,38 @@ describe("buildDashboardSummary", () => {
     const second = await buildDashboardSummary({ useCache: true, now: 1500, healthCheck });
     expect(second.cached).toBe(true);
   });
+
+  it("serves stale health immediately while one background refresh runs", async () => {
+    const previousTtl = SETTINGS.cacheTtlMs;
+    SETTINGS.cacheTtlMs = 20;
+    let calls = 0;
+    const healthCheck = async (source: { id: string; base_url: string }) => {
+      calls += 1;
+      await sleep(120);
+      return {
+        source_id: source.id,
+        status: "ok" as const,
+        message: "stub",
+        checked_url: source.base_url,
+        record_count: 1,
+        latency_ms: 120,
+      };
+    };
+
+    try {
+      const first = await buildDashboardSummary({ useCache: true, now: 1_000, healthCheck });
+      const callsAfterWarmup = calls;
+      const started = Date.now();
+      const stale = await buildDashboardSummary({ useCache: true, now: 1_021, healthCheck });
+      const duplicate = await buildDashboardSummary({ useCache: true, now: 1_022, healthCheck });
+
+      expect(Date.now() - started).toBeLessThan(50);
+      expect(stale.cached).toBe(true);
+      expect((stale as any).freshness).toMatchObject({ cacheState: "stale", refreshing: true, ageMs: 21 });
+      expect((duplicate as any).freshness).toMatchObject({ cacheState: "stale", refreshing: true });
+      expect(calls).toBe(callsAfterWarmup + first.total_sources);
+    } finally {
+      SETTINGS.cacheTtlMs = previousTtl;
+    }
+  });
 });

@@ -84,7 +84,7 @@ verified `main` commit:
 test "$(git branch --show-current)" = main
 test -z "$(git status --porcelain)"
 bun run check
-VERSION=1.83.1
+VERSION=1.84.0
 git tag -s "v$VERSION" -m "Open Emirates Intelligence v$VERSION"
 git push origin "v$VERSION"
 ```

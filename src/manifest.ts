@@ -2,6 +2,9 @@ import { coverageSummary } from "./catalog.js";
 import { SERVER_NAME, VERSION } from "./version.js";
 
 const READ_TOOLS = [
+  "uae_discover",
+  "uae_query",
+  "uae_analyze",
   "uae_place_names",
   "uae_founder_pathway",
   "uae_startup_support",

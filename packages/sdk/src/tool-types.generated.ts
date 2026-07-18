@@ -4,11 +4,13 @@ export interface OpenEmiratesToolArguments {
   "uae_ajman_business_evidence": { "query"?: string; "limit"?: number; };
   "uae_ajman_parks_footfall": Record<string, never>;
   "uae_ajman_urban_evidence": { "limit"?: number; };
+  "uae_analyze": { "action": "indicators" | "indicator" | "recipes" | "recipe" | "dossier"; "indicator"?: "open_data_coverage" | "api_health_score" | "dataset_stability" | "industrial_distribution"; "recipe"?: "source_coverage" | "dataset_freshness" | "historical_comparison" | "emirate_comparison" | "trend_analysis"; "source_id"?: string; "dataset"?: string; "query"?: string; "limit"?: number; "from_snapshot"?: number; "to_snapshot"?: number; "template"?: "evidence_brief" | "research_dossier" | "source_comparison"; "question"?: string; "language"?: "en" | "ar"; "pillars"?: Array<"education" | "health_facilities" | "health_indicators" | "industry" | "tax_activity">; "emirate"?: "abu_dhabi" | "dubai" | "sharjah" | "ajman" | "umm_al_quwain" | "ras_al_khaimah" | "fujairah"; };
   "uae_business_setup": { "action"?: "list" | "route"; "emirate"?: "abu_dhabi" | "dubai" | "sharjah" | "ajman" | "umm_al_quwain" | "ras_al_khaimah" | "fujairah"; "setup_type"?: "mainland" | "free_zone" | "unsure"; "activity_sector"?: "technology" | "professional" | "commercial" | "industrial" | "tourism" | "food" | "other"; };
   "uae_connectivity_pulse": { "series"?: "active_mobile_subscriptions" | "broadband_per_100_inhabitants" | "fixed_lines_per_100_inhabitants"; "from"?: string; "to"?: string; };
   "uae_dashboard_summary": Record<string, never>;
   "uae_dataset_schema": { "source_id": string; "dataset"?: string; "sample_size"?: number; };
   "uae_dataset_snapshot": { "action": "create" | "list" | "diff"; "source_id"?: string; "dataset"?: string; "limit"?: number; "from_snapshot"?: number; "to_snapshot"?: number; "token"?: string; };
+  "uae_discover": { "action"?: "search" | "sources" | "products" | "datasets"; "query"?: string; "source_id"?: string; "deep"?: boolean; "limit"?: number; "offset"?: number; };
   "uae_education_ledger": Record<string, never>;
   "uae_employment_gender": { "gender"?: "male" | "female"; "from_year"?: number; "to_year"?: number; };
   "uae_entity_resolve": { "left_source": string; "right_source": string; "left_fields": Array<string>; "right_fields": Array<string>; "left_dataset"?: string; "right_dataset"?: string; "limit"?: number; "max_matches"?: number; };
@@ -27,6 +29,7 @@ export interface OpenEmiratesToolArguments {
   "uae_place_names": { "query": string; "limit"?: number; };
   "uae_policy_evidence_watch": { "action"?: "report" | "check"; "source_ids"?: Array<"uae_legislation_catalogue" | "fta_legislation_index" | "mohre_resolutions_circulars" | "icp_policy_announcements" | "uae_cabinet_news">; };
   "uae_products_list": Record<string, never>;
+  "uae_query": { "action": "capabilities" | "records" | "schema" | "aggregate" | "geo"; "source_id": string; "dataset"?: string; "query"?: string; "limit"?: number; "offset"?: number; "group_by"?: string; "metric"?: "count" | "sum" | "avg" | "min" | "max"; "value_field"?: string; "top"?: number; "bbox"?: string; "near"?: string; "polygon"?: string; "nearest"?: string; };
   "uae_search": { "query": string; "limit"?: number; "deep"?: boolean; };
   "uae_source_add": { "id": string; "name_en": string; "name_ar": string; "owner": string; "base_url": string; "kind"?: string; "endpoint"?: string; "docs_url"?: string; "category"?: string; "license"?: string; "notes"?: string; "row_path"?: Array<string>; "default_params"?: Record<string, unknown>; "connector_config"?: Record<string, unknown>; "max_page_size"?: number; "token"?: string; };
   "uae_source_add_metadata": { "id": string; "name_en": string; "name_ar": string; "owner": string; "base_url": string; "docs_url"?: string; "category"?: string; "notes"?: string; "token"?: string; };
@@ -50,11 +53,13 @@ export interface OpenEmiratesToolData {
   "uae_ajman_business_evidence": unknown;
   "uae_ajman_parks_footfall": unknown;
   "uae_ajman_urban_evidence": unknown;
+  "uae_analyze": unknown;
   "uae_business_setup": unknown;
   "uae_connectivity_pulse": unknown;
   "uae_dashboard_summary": unknown;
   "uae_dataset_schema": unknown;
   "uae_dataset_snapshot": unknown;
+  "uae_discover": unknown;
   "uae_education_ledger": unknown;
   "uae_employment_gender": unknown;
   "uae_entity_resolve": unknown;
@@ -73,6 +78,7 @@ export interface OpenEmiratesToolData {
   "uae_place_names": unknown;
   "uae_policy_evidence_watch": unknown;
   "uae_products_list": unknown;
+  "uae_query": unknown;
   "uae_search": unknown;
   "uae_source_add": unknown;
   "uae_source_add_metadata": unknown;

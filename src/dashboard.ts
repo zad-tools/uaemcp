@@ -13,6 +13,16 @@ import { citation, REGISTRY, type Source } from "./sources.js";
 import { reliabilityStore } from "./reliability.js";
 
 let cache: { at: number; value: DashboardSummary } | null = null;
+let refreshPromise: Promise<DashboardSummary> | null = null;
+
+export interface DashboardFreshness {
+  cacheState: "miss" | "fresh" | "stale";
+  ageMs: number;
+  maxAgeMs: number;
+  staleWhileRevalidateMs: number;
+  refreshing: boolean;
+  nextRefreshAt: string;
+}
 
 export interface DashboardSummary {
   generated_at: string;
@@ -30,6 +40,18 @@ export interface DashboardSummary {
     citation: string;
   }[];
   cached: boolean;
+  freshness: DashboardFreshness;
+}
+
+function freshness(cacheState: DashboardFreshness["cacheState"], ageMs: number, refreshing: boolean, generatedAt: number): DashboardFreshness {
+  return {
+    cacheState,
+    ageMs: Math.max(0, ageMs),
+    maxAgeMs: SETTINGS.cacheTtlMs,
+    staleWhileRevalidateMs: SETTINGS.staleWhileRevalidateMs,
+    refreshing,
+    nextRefreshAt: new Date(generatedAt + SETTINGS.cacheTtlMs).toISOString(),
+  };
 }
 
 function withTimeout(source: Source, healthCheck: typeof checkHealth): Promise<HealthResult> {
@@ -68,14 +90,30 @@ export async function buildDashboardSummary(
 ): Promise<DashboardSummary> {
   const useCache = opts.useCache ?? true;
   const now = opts.now ?? Date.now();
-  if (useCache && cache && now - cache.at < SETTINGS.cacheTtlMs) {
-    return { ...cache.value, cached: true };
+  const ageMs = cache ? Math.max(0, now - cache.at) : 0;
+  if (useCache && cache && ageMs < SETTINGS.cacheTtlMs) {
+    return { ...cache.value, cached: true, freshness: freshness("fresh", ageMs, false, cache.at) };
+  }
+  if (useCache && cache && ageMs < SETTINGS.cacheTtlMs + SETTINGS.staleWhileRevalidateMs) {
+    if (!refreshPromise) {
+      refreshPromise = refreshDashboard(now, opts.recordHistory ?? false, opts.healthCheck ?? checkHealth)
+        .finally(() => { refreshPromise = null; });
+    }
+    return { ...cache.value, cached: true, freshness: freshness("stale", ageMs, true, cache.at) };
   }
 
+  if (!refreshPromise) {
+    refreshPromise = refreshDashboard(now, opts.recordHistory ?? false, opts.healthCheck ?? checkHealth)
+      .finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
+}
+
+async function refreshDashboard(now: number, recordHistory: boolean, healthCheck: typeof checkHealth): Promise<DashboardSummary> {
   const started = Date.now();
   const sources = REGISTRY.list();
-  const checks = await Promise.all(sources.map((s) => withTimeout(s, opts.healthCheck ?? checkHealth)));
-  if (opts.recordHistory) checks.forEach((check) => reliabilityStore().recordHealth(check));
+  const checks = await Promise.all(sources.map((s) => withTimeout(s, healthCheck)));
+  if (recordHistory) checks.forEach((check) => reliabilityStore().recordHealth(check));
 
   const statusCounts: Record<string, number> = {};
   const categoryCounts: Record<string, number> = {};
@@ -101,6 +139,7 @@ export async function buildDashboardSummary(
       citation: citation(s),
     })),
     cached: false,
+    freshness: freshness("miss", 0, false, now),
   };
   cache = { at: now, value: summary };
   return summary;
@@ -109,4 +148,5 @@ export async function buildDashboardSummary(
 /** Test hook: reset the module-level cache. */
 export function _clearCache(): void {
   cache = null;
+  refreshPromise = null;
 }

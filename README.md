@@ -74,13 +74,20 @@ guidance, not an eligibility or residence decision.
   <img src="docs/assets/package-architecture.svg" alt="Open Emirates independent package architecture from contracts to SDK, MCP and the Bun engine" width="100%">
 </p>
 
-The server keeps the public `uaemcp` contract and extends it to 43 source-cited
+The server keeps the public `uaemcp` contract and extends it to 46 source-cited
 MCP tools, seventeen resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
 SPARQL connectors, geo queries,
 aggregation, PII redaction, SSRF protection, and
 health/readiness/Prometheus endpoints. Bun SQLite stores health history and
 bounded dataset snapshots for repeatable comparisons.
+
+Agents can start with three stable facades instead of learning the complete
+specialist surface: `uae_discover` finds local catalog evidence without live
+fan-out by default, `uae_query` reads and shapes source data, and `uae_analyze`
+composes methodology-backed indicators, recipes and dossiers. Existing tools
+remain available. Set `UAEMCP_TOOL_PROFILE=core` to publish only the six core
+agent tools, or use `research`, `geo` and `full` profiles.
 
 The public gateway is fully bilingual: navigation, product evidence, catalog,
 connectors, dataset discovery, playground controls and runtime states switch
@@ -329,7 +336,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.83.1` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.84.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -538,6 +545,8 @@ Unknown measurements stay explicitly `unknown` until history can prove them.
 | `UAEMCP_HTTP_TIMEOUT` | `8` | Upstream timeout in seconds |
 | `UAEMCP_HEALTH_TIMEOUT` | `5` | Health timeout in seconds |
 | `UAEMCP_CACHE_TTL` | `300` | Dashboard cache TTL in seconds |
+| `UAEMCP_STALE_WHILE_REVALIDATE` | `1800` | Serve stale health/snapshots immediately while one background refresh runs |
+| `UAEMCP_TOOL_PROFILE` | `full` | MCP surface: `core`, `research`, `geo`, or backwards-compatible `full` |
 | `UAEMCP_MAX_RESPONSE_BYTES` | `5242880` | Maximum upstream response size |
 | `UAEMCP_ALLOW_PRIVATE_HOSTS` | `false` | Allow private upstream hosts |
 | `UAEMCP_ALLOWED_HOSTS` | unset | Comma-separated public host allowlist |

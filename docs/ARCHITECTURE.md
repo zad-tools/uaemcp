@@ -19,6 +19,15 @@ Clients -> Bun.serve -> MCP transport / REST router
 Every data result carries provenance. Public contracts are additive: tool names,
 resource URIs, response envelopes, and REST v1 fields are compatibility surfaces.
 
+## Agent interface
+
+The full specialist contract remains available, while three facade tools provide
+a stable agent-first path: discover local evidence, query source data, then run
+methodology-backed analysis. Deployment profiles reduce context cost without
+forking the implementation: `core`, `research`, `geo`, and the default `full`.
+Deep portal discovery remains explicit because it can invoke slow or unavailable
+upstreams; ordinary discovery searches the local source and product registry.
+
 ## Unified catalog
 
 The compatibility `Source` remains public, while the unified catalog exposes the
@@ -38,6 +47,14 @@ snapshots. Snapshot creation is a protected write; listing and comparison are
 read operations. Containers mount `/app/data`, so history survives deployments.
 An optional in-process scheduler captures only explicitly configured live
 targets. It deduplicates unchanged content and enforces per-source retention.
+
+Dashboard health and verified health-indicator snapshots use stale-while-
+revalidate delivery. A stale result returns immediately with machine-readable
+freshness metadata while one deduplicated background refresh runs. Repeated
+upstream failures enter bounded exponential backoff instead of making every
+user request wait for the same timeout. The Observatory reports observation
+freshness separately from observed reachability, so missing probes are not
+misrepresented as healthy or down.
 
 Intelligence recipes are application services rather than new one-off connector
 tools. Every recipe returns an answer, methodology, evidence, limitations and

@@ -18,6 +18,7 @@ export const GLOSSARY: Concept[] = [
   { id: "business_activity", ar: ["نشاط اقتصادي", "نشاط تجاري", "نشاط صناعي"], en: ["business activity", "economic activity", "trade activity", "industrial activity"], fields: ["business_activity", "economic_activity", "activity_type", "activity_name"] },
   { id: "property_type", ar: ["نوع العقار", "نوع الملكية", "فيلا", "شقة"], en: ["property type", "asset type", "villa", "apartment", "flat"], fields: ["property_type", "asset_type", "building_type"] },
   { id: "license_type", ar: ["نوع الرخصة", "نوع الترخيص"], en: ["license type", "licence type", "permit type"], fields: ["license_type", "licence_type", "permit_type"] },
+  { id: "golden_residency", ar: ["الإقامة الذهبية", "الاقامة الذهبية", "التأشيرة الذهبية"], en: ["golden residency", "golden visa", "residence visa"], fields: ["residency", "visa", "pathway"] },
 ];
 
 export function normalizeText(value: string): string {

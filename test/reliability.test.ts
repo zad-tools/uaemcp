@@ -20,12 +20,21 @@ describe("reliability store", () => {
     store.recordHealth({ source_id: "alpha", status: "ok", message: "recovered", checked_url: "https://a", record_count: 2, latency_ms: 30 }, "2026-01-03T00:00:00Z");
     store.recordHealth({ source_id: "beta", status: "down", message: "blocked", checked_url: "https://b", record_count: 0, latency_ms: 80 }, "2026-01-03T00:00:00Z");
 
-    expect(store.observatoryReport(["alpha", "beta", "empty"], "2026-01-04T00:00:00Z")).toMatchObject({
+    expect(store.observatoryReport(["alpha", "beta", "empty"], "2026-01-04T00:00:00Z", 172_800_000)).toMatchObject({
       generatedAt: "2026-01-04T00:00:00Z",
       monitoredSources: 3,
       observedSources: 2,
       currentStatus: { ok: 1, partial: 0, down: 1, unknown: 1 },
+      observedReachabilityRatio: 0.5,
+      latencyP95Ms: 5000,
+      observationFreshness: { current: 2, stale: 0, unknown: 1 },
+      failureReasons: { blocked: 1 },
       incidents: { open: 1, recovered: 1, total: 2 },
+      sources: [
+        expect.objectContaining({ sourceId: "alpha", freshness: { status: "current", ageMs: 86_400_000 } }),
+        expect.objectContaining({ sourceId: "beta", freshness: { status: "current", ageMs: 86_400_000 } }),
+        expect.objectContaining({ sourceId: "empty", freshness: { status: "unknown", ageMs: null } }),
+      ],
     });
     expect(store.incidents("alpha", 10)).toEqual([
       expect.objectContaining({ sourceId: "alpha", status: "recovered", startedAt: "2026-01-02T00:00:00Z", endedAt: "2026-01-03T00:00:00Z" }),

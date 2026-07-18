@@ -1,6 +1,6 @@
 [package]
 name = "uaemcp"
-version = "1.83.1"
+version = "1.84.0"
 edition = "2021"
 description = "Generated Rust client for Open Emirates Intelligence"
 license = "MIT"

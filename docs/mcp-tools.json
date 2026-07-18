@@ -1,10 +1,10 @@
 {
   "schemaVersion": "2.1",
-  "serverVersion": "1.83.1",
+  "serverVersion": "1.84.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
-    "total": 43,
-    "read": 40,
+    "total": 46,
+    "read": 43,
     "write": 2,
     "mixed": 1
   },
@@ -323,6 +323,188 @@
       },
       "exampleArguments": {
         "limit": 100
+      },
+      "limitations": [
+        "Results remain bounded by the cited source, its availability and its published coverage."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
+      "requiresAuth": false,
+      "browserPlayable": true,
+      "execution": {
+        "timeoutMs": 15000,
+        "maxResultBytes": 1000000
+      }
+    },
+    {
+      "name": "uae_analyze",
+      "title": "Analyze",
+      "kind": "read",
+      "description": "Agent-first analysis facade for methodology-backed indicators, reusable recipes and source-separated evidence dossiers. It never creates a composite score or unsupported narrative.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "indicators",
+              "indicator",
+              "recipes",
+              "recipe",
+              "dossier"
+            ]
+          },
+          "indicator": {
+            "type": "string",
+            "enum": [
+              "open_data_coverage",
+              "api_health_score",
+              "dataset_stability",
+              "industrial_distribution"
+            ]
+          },
+          "recipe": {
+            "type": "string",
+            "enum": [
+              "source_coverage",
+              "dataset_freshness",
+              "historical_comparison",
+              "emirate_comparison",
+              "trend_analysis"
+            ]
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "dataset": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100
+          },
+          "from_snapshot": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "to_snapshot": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "template": {
+            "type": "string",
+            "enum": [
+              "evidence_brief",
+              "research_dossier",
+              "source_comparison"
+            ]
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar"
+            ],
+            "default": "en"
+          },
+          "pillars": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "education",
+                "health_facilities",
+                "health_indicators",
+                "industry",
+                "tax_activity"
+              ]
+            },
+            "minItems": 2,
+            "maxItems": 5
+          },
+          "emirate": {
+            "type": "string",
+            "enum": [
+              "abu_dhabi",
+              "dubai",
+              "sharjah",
+              "ajman",
+              "umm_al_quwain",
+              "ras_al_khaimah",
+              "fujairah"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "exampleArguments": {
+        "action": "indicators",
+        "limit": 100,
+        "language": "en"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
@@ -819,6 +1001,117 @@
       ],
       "requiresAuth": true,
       "browserPlayable": false,
+      "execution": {
+        "timeoutMs": 15000,
+        "maxResultBytes": 1000000
+      }
+    },
+    {
+      "name": "uae_discover",
+      "title": "Discover",
+      "kind": "read",
+      "description": "Agent-first discovery across the local source and public-product index. Live portal discovery is opt-in with deep=true, so ordinary search does not wait for upstream portals.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "search",
+              "sources",
+              "products",
+              "datasets"
+            ],
+            "default": "search"
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "deep": {
+            "type": "boolean",
+            "default": false
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "exampleArguments": {
+        "action": "search",
+        "deep": false,
+        "limit": 20,
+        "offset": 0
+      },
+      "limitations": [
+        "Results remain bounded by the cited source, its availability and its published coverage."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
+      "requiresAuth": false,
+      "browserPlayable": true,
       "execution": {
         "timeoutMs": 15000,
         "maxResultBytes": 1000000
@@ -2759,6 +3052,155 @@
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "exampleArguments": {},
+      "limitations": [
+        "Results remain bounded by the cited source, its availability and its published coverage."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
+      "requiresAuth": false,
+      "browserPlayable": true,
+      "execution": {
+        "timeoutMs": 15000,
+        "maxResultBytes": 1000000
+      }
+    },
+    {
+      "name": "uae_query",
+      "title": "Query",
+      "kind": "read",
+      "description": "Agent-first query facade for source capabilities, records, schema, aggregation and geospatial output. Every result preserves the delegated source contract and citation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "capabilities",
+              "records",
+              "schema",
+              "aggregate",
+              "geo"
+            ]
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "dataset": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "group_by": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "count",
+              "sum",
+              "avg",
+              "min",
+              "max"
+            ],
+            "default": "count"
+          },
+          "value_field": {
+            "type": "string"
+          },
+          "top": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "default": 20
+          },
+          "bbox": {
+            "type": "string"
+          },
+          "near": {
+            "type": "string"
+          },
+          "polygon": {
+            "type": "string"
+          },
+          "nearest": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "source_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "exampleArguments": {
+        "action": "capabilities",
+        "source_id": "moiat_industrial_licenses",
+        "limit": 100,
+        "offset": 0,
+        "metric": "count"
+      },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],

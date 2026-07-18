@@ -82,6 +82,9 @@ describe("Bun HTTP runtime", () => {
       "uae_employment_gender",
       "uae_policy_evidence_watch",
       "uae_products_list",
+      "uae_discover",
+      "uae_query",
+      "uae_analyze",
       "uae_business_setup",
       "uae_startup_support",
       "uae_education_ledger",
@@ -146,7 +149,7 @@ describe("Bun HTTP runtime", () => {
     expect(listed.payload.result.resources.map((resource: { uri: string }) => resource.uri)).toContain("uae://tools");
     const toolsResource = await rpc("resources/read", { uri: "uae://tools" });
     const toolsCatalog = JSON.parse(toolsResource.payload.result.contents[0].text);
-    expect(toolsCatalog.summary.total).toBe(43);
+    expect(toolsCatalog.summary.total).toBe(46);
     expect(toolsCatalog.tools.some((tool: { name: string }) => tool.name === "uae_ajman_parks_footfall")).toBe(true);
 
     const { payload } = await rpc("resources/read", { uri: "uae://products" });

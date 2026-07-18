@@ -30,6 +30,8 @@ export interface Settings {
   httpTimeoutMs: number;
   healthTimeoutMs: number;
   cacheTtlMs: number;
+  staleWhileRevalidateMs: number;
+  toolProfile: "full" | "core" | "research" | "geo";
   maxResponseBytes: number;
   allowPrivateHosts: boolean;
   userAgent: string;
@@ -58,6 +60,10 @@ export const SETTINGS: Settings = {
   httpTimeoutMs: num("UAEMCP_HTTP_TIMEOUT", 8) * 1000,
   healthTimeoutMs: num("UAEMCP_HEALTH_TIMEOUT", 5) * 1000,
   cacheTtlMs: num("UAEMCP_CACHE_TTL", 300) * 1000,
+  staleWhileRevalidateMs: num("UAEMCP_STALE_WHILE_REVALIDATE", 1800) * 1000,
+  toolProfile: (["core", "research", "geo"].includes(process.env.UAEMCP_TOOL_PROFILE ?? "")
+    ? process.env.UAEMCP_TOOL_PROFILE
+    : "full") as Settings["toolProfile"],
   maxResponseBytes: num("UAEMCP_MAX_RESPONSE_BYTES", 5 * 1024 * 1024),
   allowPrivateHosts: bool("UAEMCP_ALLOW_PRIVATE_HOSTS", false),
   userAgent:

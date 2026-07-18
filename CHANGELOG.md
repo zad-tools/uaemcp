@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.84.0 - 2026-07-18
+
+- Added `uae_discover`, `uae_query` and `uae_analyze` as three agent-first facades while preserving all specialist MCP tools.
+- Added `core`, `research`, `geo` and backwards-compatible `full` tool profiles for smaller client context windows.
+- Added stale-while-revalidate dashboard and verified-snapshot delivery with deduplicated background refresh and bounded retry backoff.
+- Enriched local bilingual search with the public product registry and Golden Residency terminology, without requiring live portal fan-out.
+- Expanded the Observatory with observed reachability, p95 latency, observation freshness and classified failure reasons.
+
 ## 1.83.1 - 2026-07-18
 
 - Corrected the Arabic verified-snapshot limitation in Evidence Dossier so it remains aligned with the English fallback warning.

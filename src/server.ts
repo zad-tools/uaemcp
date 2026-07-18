@@ -53,10 +53,29 @@ import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 import { loadAeronauticalPublications } from "./aeronautical-publications-service.js";
 import { loadTourismPulse } from "./tourism-pulse.js";
 import { loadEmploymentGender } from "./employment-gender.js";
+import { SETTINGS } from "./config.js";
 
 type Json = Record<string, unknown>;
 const AERONAUTICAL_PUBLICATION_KINDS = ["airac_amendment", "supplement", "other"] as const;
-let cachedRuntimeToolCatalog: ReturnType<typeof createToolCatalog> | undefined;
+let cachedRuntimeToolCatalog:
+  | { profile: typeof SETTINGS.toolProfile; catalog: ReturnType<typeof createToolCatalog> }
+  | undefined;
+
+const CORE_TOOLS = new Set(["uae_discover", "uae_query", "uae_analyze", "uae_products_list", "uae_dashboard_summary", "uae_observatory"]);
+const RESEARCH_TOOLS = new Set([...CORE_TOOLS, "uae_search", "uae_sources_list", "uae_source_get", "uae_dataset_schema", "uae_evidence_dossier", "uae_national_evidence_brief", "uae_health_indicators", "uae_health_facilities_atlas", "uae_education_ledger", "uae_indicator", "uae_intelligence_recipe"]);
+const GEO_TOOLS = new Set([...CORE_TOOLS, "uae_place_names", "uae_source_geo", "uae_spatial_join", "uae_health_facilities_map", "uae_source_records", "uae_source_datasets"]);
+
+function enabledToolDefinitions(server: McpServer): Record<string, RegisteredToolDefinition> {
+  const registered = (server as unknown as { _registeredTools: Record<string, RegisteredToolDefinition & { enabled?: boolean }> })._registeredTools;
+  return Object.fromEntries(Object.entries(registered).filter(([, definition]) => definition.enabled !== false));
+}
+
+function applyToolProfile(server: McpServer): void {
+  if (SETTINGS.toolProfile === "full") return;
+  const allowed = SETTINGS.toolProfile === "core" ? CORE_TOOLS : SETTINGS.toolProfile === "research" ? RESEARCH_TOOLS : GEO_TOOLS;
+  const registered = (server as unknown as { _registeredTools: Record<string, RegisteredToolDefinition & { disable?: () => void }> })._registeredTools;
+  for (const [name, definition] of Object.entries(registered)) if (!allowed.has(name)) definition.disable?.();
+}
 
 function ok(data: unknown, meta: Json = {}): Json {
   return { ok: true, data, error: null, meta };
@@ -850,6 +869,131 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   );
 
   server.registerTool(
+    "uae_discover",
+    {
+      title: "Discover UAE official data",
+      description: "Agent-first discovery across the local source and public-product index. Live portal discovery is opt-in with deep=true, so ordinary search does not wait for upstream portals.",
+      inputSchema: {
+        action: z.enum(["search", "sources", "products", "datasets"]).default("search"),
+        query: z.string().trim().max(200).optional(),
+        source_id: z.string().optional(),
+        deep: z.boolean().default(false),
+        limit: z.number().int().min(1).max(100).default(20),
+        offset: z.number().int().min(0).default(0),
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    },
+    async ({ action, query, source_id, deep, limit, offset }) => {
+      try {
+        if (action === "search") {
+          if (!query) throw new ValidationError("query is required for action=search");
+          return text(ok(await buildSearch(query, { limit, deep }), { facade: true, delegatesTo: "uae_search", livePortalDiscovery: deep }));
+        }
+        if (action === "products") {
+          const products = query ? (await buildSearch(query, { limit })).products : listProducts().slice(offset, offset + limit);
+          return text(ok(products, { facade: true, delegatesTo: "uae_products_list", total: listProducts().length }));
+        }
+        if (action === "sources") {
+          const sources = query
+            ? (await buildSearch(query, { limit })).sources
+            : REGISTRY.list().slice(offset, offset + limit).map((source) => portalModel(source));
+          return text(ok(sources, { facade: true, delegatesTo: "uae_sources_list", total: REGISTRY.list().length }));
+        }
+        if (!source_id) throw new ValidationError("source_id is required for action=datasets");
+        const source = REGISTRY.get(source_id);
+        const datasets = (await listDatasets(source, { query, limit, offset })).map((dataset) => datasetModel(dataset, source));
+        return text(ok(datasets, { facade: true, delegatesTo: "uae_source_datasets", source_id: source.id }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_query",
+    {
+      title: "Query UAE official data",
+      description: "Agent-first query facade for source capabilities, records, schema, aggregation and geospatial output. Every result preserves the delegated source contract and citation.",
+      inputSchema: {
+        action: z.enum(["capabilities", "records", "schema", "aggregate", "geo"]),
+        source_id: z.string(), dataset: z.string().optional(), query: z.string().optional(),
+        limit: z.number().int().min(1).max(1000).default(100), offset: z.number().int().min(0).default(0),
+        group_by: z.string().optional(), metric: z.enum(["count", "sum", "avg", "min", "max"]).default("count"), value_field: z.string().optional(), top: z.number().int().min(1).max(200).default(20),
+        bbox: z.string().optional(), near: z.string().optional(), polygon: z.string().optional(), nearest: z.string().optional(),
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    },
+    async ({ action, source_id, dataset, query, limit, offset, group_by, metric, value_field, top, bbox, near, polygon, nearest }) => {
+      try {
+        const source = REGISTRY.get(source_id);
+        if (action === "capabilities") return text(ok({ sourceId: source.id, portal: portalModel(source), capabilities: capabilitiesFor(source) }, { facade: true, delegatesTo: "uae_source_get", citation: citation(source) }));
+        const result = await fetchResult(source, { dataset, query, limit, offset });
+        if (action === "records") return text(ok(result.records, { ...metaOf(result), facade: true, delegatesTo: "uae_source_records" }));
+        if (action === "schema") return text(ok(inferSchema(result.records), { ...metaOf(result), facade: true, delegatesTo: "uae_dataset_schema", sample_size: result.records.length }));
+        if (action === "aggregate") {
+          if (!group_by) throw new ValidationError("group_by is required for action=aggregate");
+          const fields = group_by.split(",").map((field) => field.trim()).filter(Boolean);
+          return text(ok(aggregate(result.records, { group_by: fields, metric: metric as Metric, value_field, top }), { ...metaOf(result), facade: true, delegatesTo: "uae_source_aggregate", group_by: fields, metric }));
+        }
+        const filtered = geo.filterRecords(result.records, source, {
+          bbox: bbox ? geo.parseBbox(bbox) : undefined,
+          near: near ? geo.parseNear(near) : undefined,
+          polygon: polygon ? geo.parsePolygon(polygon) : undefined,
+        });
+        const ranked = nearest ? geo.nearestRecords(filtered, source, geo.parseLatLon(nearest), top) : filtered;
+        return text(ok(geo.toGeoJson(ranked, source, dataset ?? null), { ...metaOf(result), facade: true, delegatesTo: "uae_source_geo", scanned: result.records.length, matched: ranked.length }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
+    "uae_analyze",
+    {
+      title: "Analyze UAE official evidence",
+      description: "Agent-first analysis facade for methodology-backed indicators, reusable recipes and source-separated evidence dossiers. It never creates a composite score or unsupported narrative.",
+      inputSchema: {
+        action: z.enum(["indicators", "indicator", "recipes", "recipe", "dossier"]),
+        indicator: z.enum(["open_data_coverage", "api_health_score", "dataset_stability", "industrial_distribution"]).optional(),
+        recipe: z.enum(["source_coverage", "dataset_freshness", "historical_comparison", "emirate_comparison", "trend_analysis"]).optional(),
+        source_id: z.string().optional(), dataset: z.string().optional(), query: z.string().trim().max(200).optional(),
+        limit: z.number().int().min(1).max(1000).default(100),
+        from_snapshot: z.number().int().positive().optional(), to_snapshot: z.number().int().positive().optional(),
+        template: z.enum(EVIDENCE_DOSSIER_TEMPLATES).optional(), question: z.string().trim().min(1).max(200).optional(), language: z.enum(["en", "ar"]).default("en"),
+        pillars: z.array(z.enum(EVIDENCE_PILLAR_IDS)).min(2).max(5).optional(), emirate: z.enum(BUSINESS_EMIRATES).optional(),
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    },
+    async ({ action, indicator, recipe, source_id, dataset, query, limit, from_snapshot, to_snapshot, template, question, language, pillars, emirate }) => {
+      try {
+        if (action === "indicators") return text(ok(listIndicators(), { facade: true, delegatesTo: "uae_indicator" }));
+        if (action === "recipes") return text(ok(listRecipes(), { facade: true, delegatesTo: "uae_intelligence_recipe" }));
+        if (action === "indicator") {
+          if (!indicator) throw new ValidationError("indicator is required for action=indicator");
+          if (indicator === "open_data_coverage") return text(ok(coverageIndicator(), { facade: true, delegatesTo: "uae_indicator" }));
+          if (indicator === "api_health_score") return text(ok(healthIndicator(reliabilityStore()), { facade: true, delegatesTo: "uae_indicator" }));
+          const source = REGISTRY.get(source_id ?? "moiat_industrial_licenses");
+          if (indicator === "dataset_stability") return text(ok(stabilityIndicator(source, reliabilityStore().listSnapshots(source.id, dataset ?? null, 100)), { facade: true, delegatesTo: "uae_indicator" }));
+          const records = (await fetchResult(source, { dataset, query, limit })).records;
+          return text(ok(industrialDistributionIndicator(source, records), { facade: true, delegatesTo: "uae_indicator" }));
+        }
+        if (action === "recipe") {
+          if (!recipe) throw new ValidationError("recipe is required for action=recipe");
+          const datasets = recipe === "dataset_freshness" && source_id ? await listDatasets(REGISTRY.get(source_id), { query, limit }) : undefined;
+          const records = recipe === "emirate_comparison" && source_id ? (await fetchResult(REGISTRY.get(source_id), { dataset, query, limit })).records : undefined;
+          const snapshots = recipe === "trend_analysis" && source_id ? reliabilityStore().listSnapshots(source_id, dataset ?? null, 100) : undefined;
+          return text(ok(runRecipe({ recipe, sourceId: source_id, dataset, datasets, records, snapshots, fromSnapshot: from_snapshot, toSnapshot: to_snapshot }, reliabilityStore()), { facade: true, delegatesTo: "uae_intelligence_recipe" }));
+        }
+        if (!question || !pillars) throw new ValidationError("question and pillars are required for action=dossier");
+        const dossier = await loadEvidenceDossier({ template: template ?? "research_dossier", question, language, pillars, query, emirate, healthFacilitiesLimit: 50, healthIndicatorsLimit: 12, industryLimit: Math.min(limit, 100) }, {
+          fetchHealthFacilitiesRecords: dependencies.fetchHealthFacilitiesRecords,
+          fetchHealthIndicatorsRecords: dependencies.fetchHealthRecords,
+          fetchIndustryRecords: dependencies.fetchIndustryRecords,
+          fetchTaxRecords: dependencies.fetchTaxRecords,
+        });
+        return text(ok(dossier.data, { ...dossier.meta, facade: true, delegatesTo: "uae_evidence_dossier", stored: false, question_privacy: evidenceDossierQuestionPrivacy() }));
+      } catch (error) { return text(fail(error)); }
+    },
+  );
+
+  server.registerTool(
     "uae_dashboard_summary",
     { description: "Concurrent, cached health snapshot across all sources (fast, never stalls)." },
     async () => {
@@ -877,22 +1021,25 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     },
   );
 
+  applyToolProfile(server);
   registerResources(server);
   registerPrompts(server);
   return server;
 }
 
 export function runtimeToolCatalog(): ReturnType<typeof createToolCatalog> {
-  if (cachedRuntimeToolCatalog) return cachedRuntimeToolCatalog;
-  const server = buildServer() as unknown as { _registeredTools: Record<string, { description?: string }> };
-  cachedRuntimeToolCatalog = createToolCatalog(server._registeredTools, VERSION);
-  return cachedRuntimeToolCatalog;
+  if (cachedRuntimeToolCatalog?.profile === SETTINGS.toolProfile) return cachedRuntimeToolCatalog.catalog;
+  const server = buildServer();
+  const catalog = createToolCatalog(enabledToolDefinitions(server), VERSION);
+  cachedRuntimeToolCatalog = { profile: SETTINGS.toolProfile, catalog };
+  return catalog;
 }
 
 export async function executeBrowserTool(name: string, args: Record<string, unknown>): Promise<Json> {
-  const server = buildServer() as unknown as { _registeredTools: Record<string, RegisteredToolDefinition & { handler?: (args: Record<string, unknown>, extra: Record<string, unknown>) => Promise<{ content?: Array<{ type: string; text?: string }> }> }> };
+  const server = buildServer() as unknown as { _registeredTools: Record<string, RegisteredToolDefinition & { enabled?: boolean; handler?: (args: Record<string, unknown>, extra: Record<string, unknown>) => Promise<{ content?: Array<{ type: string; text?: string }> }> }> };
   const definition = server._registeredTools[name];
   if (!definition) throw new ValidationError("unknown MCP tool");
+  if (definition.enabled === false) throw new ValidationError("MCP tool is not enabled in the active tool profile");
   const catalogTool = createToolCatalog({ [name]: definition }, VERSION).tools[0];
   if (!catalogTool?.browserPlayable) throw new ValidationError("this tool cannot run in the public browser playground");
   if (!definition.handler) throw new ValidationError("tool execution contract is unavailable");
@@ -922,8 +1069,7 @@ function registerResources(server: McpServer): void {
     "uae://tools",
     { title: "Runtime MCP tool catalog", description: "Generated directly from every currently registered MCP tool and its runtime description.", mimeType: "application/json" },
     async (uri) => {
-      const registered = (server as unknown as { _registeredTools: Record<string, RegisteredToolDefinition> })._registeredTools;
-      return { contents: [{ uri: uri.href, mimeType: "application/json", text: json(createToolCatalog(registered, VERSION)) }] };
+      return { contents: [{ uri: uri.href, mimeType: "application/json", text: json(createToolCatalog(enabledToolDefinitions(server), VERSION)) }] };
     },
   );
 
