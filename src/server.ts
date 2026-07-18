@@ -47,7 +47,7 @@ import { loadEvidenceDossier } from "./evidence-dossier-service.js";
 import { EVIDENCE_DOSSIER_TEMPLATES, EVIDENCE_PILLAR_IDS } from "./evidence-dossier.js";
 import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import type { RuntimeDependencies } from "./dependencies.js";
-import { createToolCatalog } from "./tool-catalog.js";
+import { createToolCatalog, type RegisteredToolDefinition } from "./tool-catalog.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse } from "./connectivity-service.js";
 import { loadHealthFacilitiesMap } from "./health-facilities-map-service.js";
 import { loadAeronauticalPublications } from "./aeronautical-publications-service.js";
@@ -870,6 +870,30 @@ export function runtimeToolCatalog(): ReturnType<typeof createToolCatalog> {
   return cachedRuntimeToolCatalog;
 }
 
+export async function executeBrowserTool(name: string, args: Record<string, unknown>): Promise<Json> {
+  const server = buildServer() as unknown as { _registeredTools: Record<string, RegisteredToolDefinition & { handler?: (args: Record<string, unknown>, extra: Record<string, unknown>) => Promise<{ content?: Array<{ type: string; text?: string }> }> }> };
+  const definition = server._registeredTools[name];
+  if (!definition) throw new ValidationError("unknown MCP tool");
+  const catalogTool = createToolCatalog({ [name]: definition }, VERSION).tools[0];
+  if (!catalogTool?.browserPlayable) throw new ValidationError("this tool cannot run in the public browser playground");
+  if (!definition.handler) throw new ValidationError("tool execution contract is unavailable");
+  const validation = definition.inputSchema
+    ? await (definition.inputSchema as { safeParseAsync(value: unknown): Promise<{ success: boolean; data?: Record<string, unknown>; error?: { issues?: Array<{ path?: unknown[]; message?: string }> } }> }).safeParseAsync(args)
+    : { success: true, data: args };
+  if (!validation.success) {
+    const issue = validation.error?.issues?.[0];
+    throw new ValidationError(`${issue?.path?.join(".") || "arguments"}: ${issue?.message || "invalid tool arguments"}`);
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new ValidationError("tool execution timed out")), catalogTool.execution.timeoutMs); });
+  const result = await Promise.race([definition.handler(validation.data ?? {}, {}), timeout]).finally(() => { if (timer) clearTimeout(timer); });
+  const textContent = result.content?.find((item) => item.type === "text" && typeof item.text === "string")?.text;
+  if (!textContent) throw new ValidationError("tool returned no JSON text result");
+  if (new TextEncoder().encode(textContent).byteLength > catalogTool.execution.maxResultBytes) throw new ValidationError("tool result exceeded the public browser limit");
+  const payload = JSON.parse(textContent) as Json;
+  return { ...payload, meta: { ...((payload.meta as Json | undefined) ?? {}), tool: name, via: "browser_playground" } };
+}
+
 // ── MCP resources: the catalog + each source/dataset as addressable context ──
 function registerResources(server: McpServer): void {
   const json = (payload: unknown): string => JSON.stringify(payload, null, 2);
@@ -879,7 +903,7 @@ function registerResources(server: McpServer): void {
     "uae://tools",
     { title: "Runtime MCP tool catalog", description: "Generated directly from every currently registered MCP tool and its runtime description.", mimeType: "application/json" },
     async (uri) => {
-      const registered = (server as unknown as { _registeredTools: Record<string, { description?: string }> })._registeredTools;
+      const registered = (server as unknown as { _registeredTools: Record<string, RegisteredToolDefinition> })._registeredTools;
       return { contents: [{ uri: uri.href, mimeType: "application/json", text: json(createToolCatalog(registered, VERSION)) }] };
     },
   );

@@ -64,7 +64,7 @@ import { policyWatchPage } from "./policy-watch-web.js";
 import { POLICY_WATCH_SOURCE_IDS, checkPolicyEvidenceWatch, policyEvidenceStore, policyEvidenceWatchReport } from "./policy-watch-service.js";
 import { policyWatchScheduler } from "./policy-watch-scheduler.js";
 import type { RuntimeDependencies } from "./dependencies.js";
-import { runtimeToolCatalog } from "./server.js";
+import { executeBrowserTool, runtimeToolCatalog } from "./server.js";
 import { toolExplorerPage } from "./tool-explorer-web.js";
 import { CONNECTIVITY_SERIES_IDS, loadConnectivityPulse, type ConnectivitySeriesId } from "./connectivity-service.js";
 import { connectivityPage } from "./connectivity-web.js";
@@ -172,6 +172,9 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if ((request.method === "GET" || request.method === "HEAD") && DUBAI_FONT_FILES.has(path)) return await dubaiFont(path, request.method);
     if (request.method === "GET" && path === "/") return publicHtml(landingPage());
     if (request.method === "GET" && path === "/tools") return publicHtml(toolExplorerPage());
+    if (request.method === "GET" && path === "/mcp/tools") return publicHtml(toolExplorerPage());
+    if (request.method === "GET" && path === "/playground") return publicHtml(toolExplorerPage());
+    if (request.method === "GET" && path.startsWith("/tools/")) return publicHtml(toolExplorerPage());
     if (request.method === "GET" && path === "/connectivity") return publicHtml(connectivityPage());
     if (request.method === "GET" && path === "/tourism-pulse") return publicHtml(tourismPulsePage());
     if (request.method === "GET" && path === "/aeronautical-publications") return publicHtml(aeronauticalPublicationsPage());
@@ -202,6 +205,23 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     if (request.method === "GET" && path === "/api/v1/tools") {
       const catalog = runtimeToolCatalog();
       return json(envelope(catalog, { total: catalog.summary.total, generated_from: catalog.generatedFrom }));
+    }
+    if (request.method === "GET" && path.startsWith("/api/v1/tools/")) {
+      const name = decodeURIComponent(path.slice("/api/v1/tools/".length));
+      if (!/^uae_[a-z0-9_]+$/.test(name)) return json({ ok: false, data: null, error: { code: "not_found", message: "unknown MCP tool" }, meta: {} }, 404);
+      const tool = runtimeToolCatalog().tools.find((entry) => entry.name === name);
+      return tool ? json(envelope(tool)) : json({ ok: false, data: null, error: { code: "not_found", message: "unknown MCP tool" }, meta: {} }, 404);
+    }
+    if (request.method === "POST" && path.startsWith("/api/v1/tools/") && path.endsWith("/call")) {
+      const name = decodeURIComponent(path.slice("/api/v1/tools/".length, -"/call".length));
+      const tool = runtimeToolCatalog().tools.find((entry) => entry.name === name);
+      if (!tool) return json({ ok: false, data: null, error: { code: "not_found", message: "unknown MCP tool" }, meta: {} }, 404);
+      if (!tool.browserPlayable) return json({ ok: false, data: null, error: { code: "forbidden", message: "write-capable tools are disabled in the public browser playground" }, meta: { tool: name } }, 403);
+      const contentLength = Number(request.headers.get("content-length") ?? 0);
+      if (contentLength > 50_000) return json({ ok: false, data: null, error: { code: "validation_error", message: "tool arguments are too large" }, meta: { tool: name } }, 413);
+      const body = await request.json().catch(() => null);
+      if (!body || typeof body !== "object" || Array.isArray(body)) return json({ ok: false, data: null, error: { code: "validation_error", message: "tool arguments must be a JSON object" }, meta: { tool: name } }, 400);
+      return json(await executeBrowserTool(name, body as Record<string, unknown>));
     }
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();

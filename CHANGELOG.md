@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.78.0 - 2026-07-18
+
+- Rebuilt `/tools` as a complete MCP Developer Console with runtime-derived input schemas, argument constraints, examples and shareable deep links for all 43 tools.
+- Added a bounded browser playground that executes public read tools through the same MCP handlers while rejecting write-capable tools, oversized arguments and oversized results.
+- Added per-tool REST discovery and playground endpoints, documented them in OpenAPI and regenerated all SDKs.
+- Added copy-ready connection recipes for Claude Code, Claude Desktop, Cursor, Codex, n8n and Windmill.
+
 ## 1.77.0 - 2026-07-18
 
 - Unified all 26 public interfaces under one Dubai Font visual system with consistent typography, focus states and touch targets.

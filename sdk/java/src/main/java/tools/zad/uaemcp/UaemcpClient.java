@@ -7,6 +7,8 @@ public final class UaemcpClient {
  private String get(String path, Map<String,String> params) throws Exception {String q=params.entrySet().stream().filter(e->e.getValue()!=null).map(e->enc(e.getKey())+"="+enc(e.getValue())).collect(Collectors.joining("&")); HttpRequest r=HttpRequest.newBuilder(URI.create(baseUrl+path+(q.isEmpty()?"":"?"+q))).timeout(Duration.ofSeconds(20)).header("Accept","application/json").build(); HttpResponse<String> s=http.send(r,HttpResponse.BodyHandlers.ofString()); if(s.statusCode()>=400)throw new IllegalStateException("UAEMCP HTTP "+s.statusCode()+": "+s.body()); return s.body();}
  public String listProducts(Map<String,String> params) throws Exception {return get("/api/v1/products",params);}
  public String listMcpTools(Map<String,String> params) throws Exception {return get("/api/v1/tools",params);}
+ public String getMcpTool(String ToolName, Map<String,String> params) throws Exception {return get("/api/v1/tools/" + enc(ToolName) + "",params);}
+ public String callMcpToolFromPlayground(String ToolName, Map<String,String> params) throws Exception {return get("/api/v1/tools/" + enc(ToolName) + "/call",params);}
  public String getPolicyEvidenceWatch(Map<String,String> params) throws Exception {return get("/api/v1/policy-watch",params);}
  public String checkPolicyEvidenceWatch(Map<String,String> params) throws Exception {return get("/api/v1/policy-watch/check",params);}
  public String getPolicyEvidenceWatchOperations(Map<String,String> params) throws Exception {return get("/api/v1/operations/policy-watch",params);}

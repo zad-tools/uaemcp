@@ -11,6 +11,7 @@
         "fflate": "0.8.3",
         "ipaddr.js": "2.4.0",
         "zod": "3.25.76",
+        "zod-to-json-schema": "3.25.2",
       },
       "devDependencies": {
         "@mapbox/vector-tile": "3.0.0",

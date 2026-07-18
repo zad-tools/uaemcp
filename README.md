@@ -297,7 +297,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.77.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.78.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:
@@ -445,8 +445,8 @@ server:
 - [Readable catalogue](docs/MCP_TOOLS.md)
 - [Machine-readable catalogue](docs/mcp-tools.json)
 - MCP resource: `uae://tools`
-- [Public bilingual Tools Explorer](https://uaemcp.zad.tools/tools)
-- REST contract: `GET /api/v1/tools`
+- [Public bilingual MCP Developer Console](https://uaemcp.zad.tools/tools) (also `/mcp/tools`) with schemas, examples, safe Try-it and client configuration
+- REST contracts: `GET /api/v1/tools` · `GET /api/v1/tools/{toolName}` · `POST /api/v1/tools/{toolName}/call`
 
 ```bash
 bun run generate:tools

@@ -1,14 +1,60 @@
-export type ToolKind = "read" | "write" | "mixed";
-export interface ToolCatalogEntry { name: string; kind: ToolKind; description: string }
+import { zodToJsonSchema } from "zod-to-json-schema";
 
-export function createToolCatalog(registeredTools: Record<string, { description?: string }>, version: string) {
+export type ToolKind = "read" | "write" | "mixed";
+type JsonSchema = Record<string, unknown>;
+export interface RegisteredToolDefinition { description?: string; inputSchema?: unknown }
+export interface ToolCatalogEntry {
+  name: string;
+  title: string;
+  kind: ToolKind;
+  description: string;
+  inputSchema: JsonSchema;
+  exampleArguments: Record<string, unknown>;
+  limitations: string[];
+  requiresAuth: boolean;
+  browserPlayable: boolean;
+  execution: { timeoutMs: number; maxResultBytes: number };
+}
+
+function title(name: string): string {
+  return name.replace(/^uae_/, "").split("_").map((part) => part[0]?.toUpperCase() + part.slice(1)).join(" ");
+}
+
+function exampleValue(schema: JsonSchema, field = ""): unknown {
+  if (schema.default !== undefined) return schema.default;
+  if (Array.isArray(schema.enum) && schema.enum.length) return schema.enum[0];
+  if (schema.type === "boolean") return false;
+  if (schema.type === "integer" || schema.type === "number") return schema.minimum ?? 1;
+  if (field.includes("query") || field === "q") return "Dubai";
+  if (field.includes("source_id")) return "moiat_industrial_licenses";
+  if (field.includes("limit")) return 10;
+  return "example";
+}
+
+function exampleArguments(schema: JsonSchema): Record<string, unknown> {
+  const properties = (schema.properties ?? {}) as Record<string, JsonSchema>;
+  const required = new Set(Array.isArray(schema.required) ? schema.required as string[] : []);
+  return Object.fromEntries(Object.entries(properties).filter(([name, value]) => required.has(name) || value.default !== undefined).slice(0, 5).map(([name, value]) => [name, exampleValue(value, name)]));
+}
+
+export function createToolCatalog(registeredTools: Record<string, RegisteredToolDefinition>, version: string) {
   const tools = Object.entries(registeredTools).map(([name, definition]): ToolCatalogEntry => {
     const description = definition.description?.trim() ?? "";
     const kind: ToolKind = name === "uae_dataset_snapshot" ? "mixed" : description.startsWith("[WRITE") || name === "uae_source_add" || name === "uae_source_add_metadata" ? "write" : "read";
-    return { name, kind, description };
+    const inputSchema = definition.inputSchema && !(definition.inputSchema as { _zod?: unknown })._zod
+      ? zodToJsonSchema(definition.inputSchema as never, { target: "jsonSchema7", $refStrategy: "none" }) as JsonSchema
+      : { type: "object", properties: {}, additionalProperties: false };
+    const requiresAuth = kind !== "read";
+    return {
+      name, title: title(name), kind, description, inputSchema,
+      exampleArguments: exampleArguments(inputSchema),
+      limitations: [requiresAuth ? "Write-capable tools require a server-side write token and cannot run in the public browser playground." : "Results remain bounded by the cited source, its availability and its published coverage."],
+      requiresAuth, browserPlayable: kind === "read",
+      execution: { timeoutMs: 15_000, maxResultBytes: 1_000_000 },
+    };
   }).sort((a, b) => a.name.localeCompare(b.name));
   return {
-    schemaVersion: "1.0",
+    schemaVersion: "2.0",
     serverVersion: version,
     generatedFrom: "runtime_registered_tools",
     summary: { total: tools.length, read: tools.filter((tool) => tool.kind === "read").length, write: tools.filter((tool) => tool.kind === "write").length, mixed: tools.filter((tool) => tool.kind === "mixed").length },

@@ -10,6 +10,8 @@ func (c *Client) get(ctx context.Context, path string, params url.Values) (map[s
 }
 func (c *Client) ListProducts(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/products", params) }
 func (c *Client) ListMcpTools(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tools", params) }
+func (c *Client) GetMcpTool(ctx context.Context, ToolName string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tools/" + url.PathEscape(ToolName) + "", params) }
+func (c *Client) CallMcpToolFromPlayground(ctx context.Context, ToolName string, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/tools/" + url.PathEscape(ToolName) + "/call", params) }
 func (c *Client) GetPolicyEvidenceWatch(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/policy-watch", params) }
 func (c *Client) CheckPolicyEvidenceWatch(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/policy-watch/check", params) }
 func (c *Client) GetPolicyEvidenceWatchOperations(ctx context.Context, params url.Values) (map[string]any,error) { return c.get(ctx, "/api/v1/operations/policy-watch", params) }

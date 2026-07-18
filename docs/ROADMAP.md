@@ -42,7 +42,14 @@
 - Bilingual Dubai Font chart, REST, MCP and methodology contracts
 - Subscription counts explicitly separated from people, coverage, quality and affordability
 
-## v1.70 — Public MCP Tools Explorer — complete
+## v1.78 — MCP Developer Console — complete
+
+- Runtime-derived JSON input schema, constraints, examples and limitations for every tool
+- Shareable `/tools/{toolName}` detail views and a bounded read-only browser playground
+- Write-capable tools disabled in public Try-it, with request, timeout and response-size limits
+- Claude, Cursor, Codex, n8n and Windmill configuration builder
+
+## v1.70 — Public MCP Tools Explorer — superseded by v1.78
 
 - Searchable bilingual catalogue generated from the actual running MCP server
 - Read, write and mixed filters with honest guarded-write messaging
