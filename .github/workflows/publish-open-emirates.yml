@@ -1,6 +1,16 @@
 name: publish-open-emirates-package
 
 on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        required: true
+        type: choice
+        options:
+          - contracts
+          - sdk
+          - mcp
   push:
     tags:
       - "contracts-v*"
@@ -34,13 +44,18 @@ jobs:
         id: package
         shell: bash
         run: |
-          case "$GITHUB_REF_NAME" in
-            contracts-v*) name=contracts ;;
-            sdk-v*) name=sdk ;;
-            mcp-v*) name=mcp ;;
-            *) exit 1 ;;
-          esac
-          version="${GITHUB_REF_NAME#*-v}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            name="${{ inputs.package }}"
+            version=$(node -p "require('./packages/$name/package.json').version")
+          else
+            case "$GITHUB_REF_NAME" in
+              contracts-v*) name=contracts ;;
+              sdk-v*) name=sdk ;;
+              mcp-v*) name=mcp ;;
+              *) exit 1 ;;
+            esac
+            version="${GITHUB_REF_NAME#*-v}"
+          fi
           actual=$(node -p "require('./packages/$name/package.json').version")
           test "$version" = "$actual"
           echo "name=$name" >> "$GITHUB_OUTPUT"
@@ -49,4 +64,6 @@ jobs:
         run: npm pack --dry-run
       - name: Publish with provenance
         working-directory: packages/${{ steps.package.outputs.name }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance
