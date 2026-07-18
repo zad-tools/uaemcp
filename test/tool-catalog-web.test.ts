@@ -63,6 +63,11 @@ describe("public MCP Tools Explorer", () => {
     expect(html).toContain("Cursor");
     expect(html).toContain("Windmill");
     expect(html).toContain("n8n");
+    expect(html).toContain('data-console-layout="true"');
+    expect(html).toContain('class="tool-rail"');
+    expect(html).toContain('class="result-dock"');
+    expect(html).toContain('id="config-drawer"');
+    expect(html).toContain('id="mobile-tool-picker"');
     expect(html).toContain('font-family:"Dubai"');
     expect(html).toContain('html body *{font-family:"Dubai",Arial,sans-serif!important}');
     expect(html).toContain("document.documentElement.dir=state.lang==='ar'?'rtl':'ltr'");

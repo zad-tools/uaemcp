@@ -11,7 +11,7 @@ does not require an API key; tool calls are still subject to the gateway's rate
 limit.
 
 > **npm status:** npm `latest` is the signed Bun release published from GitHub
-> Actions through Trusted Publishing with provenance. Use `uaemcp@1.78.0` instead
+> Actions through Trusted Publishing with provenance. Use `uaemcp@1.79.0` instead
 > of `@latest` when reproducibility matters.
 
 ## Quick matrix

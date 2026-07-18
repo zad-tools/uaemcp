@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.79.0 - 2026-07-18
+
+- Rebuilt the MCP Tools Explorer as a console-first workspace with a compact runtime contract header.
+- Added a focused tool rail, tabbed contract inspector, persistent playground result dock and agent configuration drawer.
+- Added an explicit mobile tool picker while preserving Dubai Font, bilingual direction and the existing brand palette.
+
 ## 1.78.0 - 2026-07-18
 
 - Rebuilt `/tools` as a complete MCP Developer Console with runtime-derived input schemas, argument constraints, examples and shareable deep links for all 43 tools.
