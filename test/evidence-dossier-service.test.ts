@@ -96,6 +96,19 @@ describe("evidence dossier service", () => {
     expect(loaded.data.limitations).toContainEqual(expect.objectContaining({ en: expect.stringContaining("relative outlier") }));
   });
 
+  it("keeps the verified-snapshot limitation aligned in both languages", async () => {
+    const loaded = await loadEvidenceDossier({ pillars: ["education", "health_indicators"], query: "population" }, {
+      fetchHealthIndicatorsRecords: async () => { throw new Error("MOHAP unavailable"); },
+    } as any);
+    const snapshotLimitation = loaded.data.pillars
+      .find(({ id }) => id === "health_indicators")
+      ?.limitations.find(({ en }) => en.includes("verified snapshot"));
+
+    expect(snapshotLimitation?.ar).toContain("النسخة الموثقة");
+    expect(snapshotLimitation?.ar).toContain("المصدر الحي");
+    expect(snapshotLimitation?.ar).not.toContain("أعلام الجودة");
+  });
+
   it("loads only the selected two-to-five pillars", async () => {
     let unexpectedCalls = 0;
     const unexpected = async () => { unexpectedCalls += 1; throw new Error("must not load"); };

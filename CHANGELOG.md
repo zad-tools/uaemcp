@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.83.1 - 2026-07-18
+
+- Corrected the Arabic verified-snapshot limitation in Evidence Dossier so it remains aligned with the English fallback warning.
+
 ## 1.83.0 - 2026-07-18
 
 - Reject unknown arguments across every MCP tool instead of silently stripping them, including the reported `indicator` filter case.
