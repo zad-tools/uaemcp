@@ -70,7 +70,7 @@ const packages = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="5
 
 await Bun.write(
   new URL("readme-hero.svg", output),
-  hero.replace(
+  hero.replace("LIVE PLATFORM / v1.81.0", "LIVE PLATFORM / v1.82.0").replace(
     `<text x="72" y="258" fill="${palette.ink}" font-size="78" font-weight="700" letter-spacing="-4">The Emirates, queryable.</text><text x="76" y="306" fill="#52645b" font-size="18">Official UAE open data for agents, researchers and builders.</text>`,
     `<text x="72" y="226" fill="${palette.ink}" font-size="66" font-weight="700" letter-spacing="-3">The Emirates,</text><text x="72" y="292" fill="${palette.red}" font-size="66" font-weight="700" letter-spacing="-3">queryable.</text><text x="76" y="333" fill="#52645b" font-size="17">Official UAE open data for agents, researchers and builders.</text>`,
   ),

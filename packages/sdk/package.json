@@ -1,6 +1,6 @@
 {
   "name": "@open-emirates/sdk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Typed TypeScript SDK for official UAE open-data products from Open Emirates.",
   "repository": {
     "type": "git",
@@ -26,7 +26,8 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@open-emirates/contracts": "0.1.0"
+    "@open-emirates/contracts": "0.2.0",
+    "ajv": "8.20.0"
   },
   "publishConfig": {
     "access": "public"

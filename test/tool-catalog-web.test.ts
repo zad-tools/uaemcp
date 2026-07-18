@@ -15,12 +15,17 @@ describe("public MCP Tools Explorer", () => {
     expect(payload.data.tools.some((tool: { name: string }) => tool.name === "uae_dataset_snapshot")).toBe(true);
     const search = payload.data.tools.find((tool: { name: string }) => tool.name === "uae_search");
     expect(search.inputSchema).toMatchObject({ type: "object", required: ["query"] });
+    expect(search.outputSchema).toMatchObject({
+      type: "object",
+      required: ["ok", "data", "error", "meta"],
+    });
     expect(search.exampleArguments).toMatchObject({ query: expect.any(String) });
     expect(search.limitations).toBeArray();
     expect(search.requiresAuth).toBe(false);
     expect(openApiDocument().paths).toHaveProperty("/api/v1/tools");
     expect(openApiDocument().paths).toHaveProperty("/api/v1/tools/{toolName}");
     expect(openApiDocument().paths).toHaveProperty("/api/v1/tools/{toolName}/call");
+    expect((openApiDocument() as any).components.schemas.ToolCatalogEntry.required).toContain("outputSchema");
   });
 
   it("publishes tool detail and safely executes read tools", async () => {

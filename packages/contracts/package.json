@@ -1,6 +1,6 @@
 {
   "name": "@open-emirates/contracts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Stable response contracts for Open Emirates data products.",
   "repository": {
     "type": "git",

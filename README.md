@@ -51,13 +51,24 @@ official source, evidence boundary, retrieval date and available licence terms.
 The repository is now a monorepo with separate release lines:
 
 - `@open-emirates/contracts` for dependency-free response contracts.
-- `@open-emirates/sdk` for a typed TypeScript client with validation, bounded
-  retries, timeouts and record pagination.
+- `@open-emirates/sdk` for a hybrid TypeScript client with generated tool types,
+  runtime Schema 2.1 discovery, local validation, bounded retries and pagination.
 - `@open-emirates/mcp` for the MCP stdio and Streamable HTTP entry point.
 - `uaemcp` remains the compatible engine and existing CLI during migration.
 
 The SDK has no MCP dependency. Package boundaries and publishing instructions
 are documented in [docs/PACKAGES.md](docs/PACKAGES.md).
+
+```ts
+import { OpenEmiratesClient } from "@open-emirates/sdk";
+
+const client = new OpenEmiratesClient();
+const result = await client.tools.call("uae_golden_residency", { action: "list" });
+```
+
+Known tools receive compile-time autocomplete; newer server tools remain callable
+through dynamic discovery. Golden Residency output is informational official-route
+guidance, not an eligibility or residence decision.
 
 <p align="center">
   <img src="docs/assets/package-architecture.svg" alt="Open Emirates independent package architecture from contracts to SDK, MCP and the Bun engine" width="100%">
@@ -318,7 +329,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.81.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.82.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:

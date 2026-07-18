@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.82.0 - 2026-07-18
+
+- Added Schema 2.1 tool contracts with output envelopes, stability, deprecation, idempotency, side-effect and authorization metadata.
+- Added a hybrid TypeScript tool client with runtime discovery, schema-version caching, local JSON Schema validation and bounded REST tool invocation.
+- Added generated compile-time argument types for all 43 registered tools while retaining a dynamic fallback for newer server tools.
+- Added dependency-free catalogue parsing contracts and synchronized contracts and SDK releases without coupling the MCP adapter to their version line.
+
 ## 1.81.0 - 2026-07-18
 
 - Added a monorepo workspace for independent Open Emirates contracts, TypeScript SDK and MCP packages.

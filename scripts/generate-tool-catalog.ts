@@ -1,5 +1,5 @@
 import { buildServer } from "../src/server.js";
-import { createToolCatalog, toolCatalogMarkdown } from "../src/tool-catalog.js";
+import { createToolCatalog, toolCatalogMarkdown, toolCatalogTypescript } from "../src/tool-catalog.js";
 import { VERSION } from "../src/version.js";
 
 const check = process.argv.includes("--check");
@@ -8,6 +8,7 @@ const catalog = createToolCatalog(server._registeredTools, VERSION);
 const outputs = new Map([
   ["docs/mcp-tools.json", `${JSON.stringify(catalog, null, 2)}\n`],
   ["docs/MCP_TOOLS.md", toolCatalogMarkdown(catalog)],
+  ["packages/sdk/src/tool-types.generated.ts", toolCatalogTypescript(catalog)],
 ]);
 let stale = false;
 for (const [path, content] of outputs) {

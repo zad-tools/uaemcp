@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "2.0",
-  "serverVersion": "1.81.0",
+  "schemaVersion": "2.1",
+  "serverVersion": "1.82.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
     "total": 43,
@@ -35,12 +35,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 25
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -70,12 +121,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 500
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -93,10 +195,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -122,12 +275,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 100
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -187,12 +391,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "list"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -228,10 +483,61 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -249,10 +555,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -287,6 +644,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses",
         "sample_size": 50
@@ -294,6 +696,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -347,12 +755,65 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "create",
         "limit": 100
       },
       "limitations": [
         "Write-capable tools require a server-side write token and cannot run in the public browser playground."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": false,
+      "sideEffects": true,
+      "authScopes": [
+        "tools:write"
       ],
       "requiresAuth": true,
       "browserPlayable": false,
@@ -371,10 +832,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -411,10 +923,61 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -478,6 +1041,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "left_source": "example",
         "right_source": "example",
@@ -488,6 +1096,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -582,6 +1196,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "template": "research_dossier",
         "question": "example",
@@ -592,6 +1251,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -668,6 +1333,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "stage": "idea",
         "emirate": "abu_dhabi",
@@ -677,6 +1387,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -803,12 +1519,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "list"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -881,6 +1648,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "year": "2024",
         "limit": 100
@@ -888,6 +1700,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -926,12 +1744,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 100
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -960,12 +1829,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 100
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1009,12 +1929,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 100
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1054,6 +2025,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "atlas",
         "limit": 500
@@ -1061,6 +2077,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1116,6 +2138,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "recipe": "source_coverage",
         "limit": 100
@@ -1123,6 +2190,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1152,6 +2225,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "topic": "industry",
         "limit": 100
@@ -1159,6 +2277,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1206,6 +2330,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "healthLimit": 12,
         "industryLimit": 50
@@ -1213,6 +2382,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1250,6 +2425,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "report",
         "limit": 100
@@ -1257,6 +2477,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1290,6 +2516,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "query": "Dubai",
         "limit": 20
@@ -1297,6 +2568,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1339,12 +2616,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "report"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1362,10 +2690,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1401,6 +2780,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "query": "Dubai",
         "limit": 20,
@@ -1409,6 +2833,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1490,6 +2920,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "id": "example",
         "name_en": "example",
@@ -1499,6 +2974,14 @@
       },
       "limitations": [
         "Write-capable tools require a server-side write token and cannot run in the public browser playground."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": false,
+      "sideEffects": true,
+      "authScopes": [
+        "tools:write"
       ],
       "requiresAuth": true,
       "browserPlayable": false,
@@ -1553,6 +3036,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "id": "example",
         "name_en": "example",
@@ -1562,6 +3090,14 @@
       },
       "limitations": [
         "Write-capable tools require a server-side write token and cannot run in the public browser playground."
+      ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": false,
+      "sideEffects": true,
+      "authScopes": [
+        "tools:write"
       ],
       "requiresAuth": true,
       "browserPlayable": false,
@@ -1624,6 +3160,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses",
         "group_by": "example",
@@ -1634,6 +3215,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1673,6 +3260,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses",
         "limit": 50,
@@ -1681,6 +3313,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1736,6 +3374,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses",
         "top": 10,
@@ -1744,6 +3427,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1769,12 +3458,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1800,12 +3540,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1848,6 +3639,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "source_id": "moiat_industrial_licenses",
         "limit": 10,
@@ -1856,6 +3692,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1873,10 +3715,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1930,6 +3823,51 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "left_source": "example",
         "right_source": "example",
@@ -1940,6 +3878,12 @@
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -1996,12 +3940,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "action": "list"
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -2019,10 +4014,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -2040,10 +4086,61 @@
         "properties": {},
         "additionalProperties": false
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -2083,10 +4180,61 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {},
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {
@@ -2112,12 +4260,63 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "ok",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "data": {},
+          "error": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "details": {}
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
       "exampleArguments": {
         "limit": 500
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
       ],
+      "since": null,
+      "stability": "stable",
+      "deprecated": false,
+      "idempotent": true,
+      "sideEffects": false,
+      "authScopes": [],
       "requiresAuth": false,
       "browserPlayable": true,
       "execution": {

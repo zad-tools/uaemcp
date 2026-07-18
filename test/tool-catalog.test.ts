@@ -14,5 +14,19 @@ describe("generated MCP tool catalog", () => {
     expect(catalog.tools.find((tool) => tool.name === "uae_source_add")?.kind).toBe("write");
     expect(catalog.tools.find((tool) => tool.name === "uae_dataset_snapshot")?.kind).toBe("mixed");
     expect(catalog.tools.every((tool) => tool.description.length > 10)).toBe(true);
+    expect(catalog.schemaVersion).toBe("2.1");
+    expect(catalog.tools.every((tool) => tool.outputSchema.type === "object")).toBe(true);
+    expect(catalog.tools.every((tool) => tool.outputSchema.required)).toBe(true);
+    expect(catalog.tools.every((tool) => tool.stability === "stable" && tool.deprecated === false)).toBe(true);
+    expect(catalog.tools.find((tool) => tool.name === "uae_search")).toMatchObject({
+      idempotent: true,
+      sideEffects: false,
+      authScopes: [],
+    });
+    expect(catalog.tools.find((tool) => tool.name === "uae_source_add_metadata")).toMatchObject({
+      idempotent: false,
+      sideEffects: true,
+      authScopes: ["tools:write"],
+    });
   });
 });

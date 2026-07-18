@@ -25,8 +25,8 @@ The SDK never imports MCP. The MCP package is a runtime adapter. The existing `u
 
 | Package | Tag format |
 |---|---|
-| `@open-emirates/contracts` | `contracts-v0.1.0` |
-| `@open-emirates/sdk` | `sdk-v0.1.0` |
+| `@open-emirates/contracts` | `contracts-v0.2.0` |
+| `@open-emirates/sdk` | `sdk-v0.2.0` |
 | `@open-emirates/mcp` | `mcp-v0.1.0` |
 
 Before the first publish, create or claim the `open-emirates` npm scope and configure npm Trusted Publishing for `.github/workflows/publish-open-emirates.yml` once per package.
