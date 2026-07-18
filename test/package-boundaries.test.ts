@@ -13,7 +13,7 @@ describe("Open Emirates package boundaries", () => {
     expect(contractsPackage.name).toBe("@open-emirates/contracts");
     expect("dependencies" in contractsPackage).toBe(false);
     expect(sdkPackage.name).toBe("@open-emirates/sdk");
-    expect(sdkPackage.dependencies).toEqual({ "@open-emirates/contracts": "workspace:*" });
+    expect(sdkPackage.dependencies).toEqual({ "@open-emirates/contracts": "0.1.0" });
     expect(JSON.stringify(sdkPackage)).not.toContain("modelcontextprotocol");
     expect(mcpPackage.name).toBe("@open-emirates/mcp");
     expect(mcpPackage.bin).toHaveProperty("open-emirates-mcp");
