@@ -67,12 +67,24 @@ jobs:
           actual=$(node -p "require('./packages/$name/package.json').version")
           test "$version" = "$actual"
           echo "name=$name" >> "$GITHUB_OUTPUT"
-      - name: Pack selected package
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Check registry version
+        id: registry
         if: github.event_name != 'workflow_dispatch' || inputs.operation == 'publish'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if npm view "@open-emirates/${{ steps.package.outputs.name }}@${{ steps.package.outputs.version }}" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Pack selected package
+        if: (github.event_name != 'workflow_dispatch' || inputs.operation == 'publish') && steps.registry.outputs.published != 'true'
         working-directory: packages/${{ steps.package.outputs.name }}
         run: npm pack --dry-run
       - name: Publish with provenance
-        if: github.event_name != 'workflow_dispatch' || inputs.operation == 'publish'
+        if: (github.event_name != 'workflow_dispatch' || inputs.operation == 'publish') && steps.registry.outputs.published != 'true'
         working-directory: packages/${{ steps.package.outputs.name }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
