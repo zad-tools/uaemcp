@@ -5,9 +5,13 @@
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM"],
     "types": ["bun"],
+    "resolveJsonModule": true,
+    "paths": {
+      "uaemcp/cli": ["./src/index.ts"]
+    },
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["src/**/*.ts", "packages/**/*.ts", "test/**/*.ts"]
 }

@@ -1,0 +1,52 @@
+name: publish-open-emirates-package
+
+on:
+  push:
+    tags:
+      - "contracts-v*"
+      - "sdk-v*"
+      - "mcp-v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - name: Select package
+        id: package
+        shell: bash
+        run: |
+          case "$GITHUB_REF_NAME" in
+            contracts-v*) name=contracts ;;
+            sdk-v*) name=sdk ;;
+            mcp-v*) name=mcp ;;
+            *) exit 1 ;;
+          esac
+          version="${GITHUB_REF_NAME#*-v}"
+          actual=$(node -p "require('./packages/$name/package.json').version")
+          test "$version" = "$actual"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - name: Pack selected package
+        working-directory: packages/${{ steps.package.outputs.name }}
+        run: npm pack --dry-run
+      - name: Publish with provenance
+        working-directory: packages/${{ steps.package.outputs.name }}
+        run: npm publish --access public --provenance

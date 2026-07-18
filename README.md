@@ -42,6 +42,23 @@
 Maintained by **Ahmed Morsy**. Released under the MIT license and built on the
 original open-source UAEMCP work credited in [LICENSE](LICENSE).
 
+Open Emirates is an independent open-source initiative. It is not affiliated
+with or endorsed by the UAE Government. Every data product identifies its
+official source, evidence boundary, retrieval date and available licence terms.
+
+## Independent packages
+
+The repository is now a monorepo with separate release lines:
+
+- `@open-emirates/contracts` for dependency-free response contracts.
+- `@open-emirates/sdk` for a typed TypeScript client with validation, bounded
+  retries, timeouts and record pagination.
+- `@open-emirates/mcp` for the MCP stdio and Streamable HTTP entry point.
+- `uaemcp` remains the compatible engine and existing CLI during migration.
+
+The SDK has no MCP dependency. Package boundaries and publishing instructions
+are documented in [docs/PACKAGES.md](docs/PACKAGES.md).
+
 The server keeps the public `uaemcp` contract and extends it to 43 source-cited
 MCP tools, seventeen resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and
@@ -297,7 +314,7 @@ docker compose -f compose.ghcr.yml up -d
 curl http://127.0.0.1:8080/ready
 ```
 
-Release tags such as `:1.80.0` and `:latest` are produced from verified Git tags;
+Release tags such as `:1.81.0` and `:latest` are produced from verified Git tags;
 `:edge` tracks the tested `main` branch.
 
 The installed CLI also provides deployment diagnostics and shell completion:

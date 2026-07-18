@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.81.0 - 2026-07-18
+
+- Added a monorepo workspace for independent Open Emirates contracts, TypeScript SDK and MCP packages.
+- Added a dependency-free response contract and a Node-compatible TypeScript SDK with validation, bounded retries, timeouts and record pagination.
+- Added independent package release tags and provenance publishing workflow while preserving the existing `uaemcp` CLI and exports.
+- Added a clear independent-project disclaimer and documented package dependency direction and migration compatibility.
+
 ## 1.80.0 - 2026-07-18
 
 - Added the site-wide OEI Product UI design system across all 26 public interfaces.

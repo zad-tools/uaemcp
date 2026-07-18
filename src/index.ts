@@ -159,7 +159,7 @@ export function runHttp(host = SETTINGS.host, port = SETTINGS.port, dependencies
   return server;
 }
 
-async function main(args = Bun.argv.slice(2)): Promise<void> {
+export async function runCli(args = Bun.argv.slice(2)): Promise<void> {
   const command = parseCli(args);
   if (command.command === "stdio") return runStdio();
   if (command.command === "http") return void runHttp(command.host ?? SETTINGS.host, command.port ?? SETTINGS.port);
@@ -172,7 +172,7 @@ async function main(args = Bun.argv.slice(2)): Promise<void> {
 }
 
 if (import.meta.main) {
-  main().catch((error) => {
+  runCli().catch((error) => {
     process.stderr.write(`fatal: ${error instanceof Error ? error.stack : String(error)}\n`);
     process.exit(1);
   });
