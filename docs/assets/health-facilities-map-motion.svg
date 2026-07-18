@@ -1,45 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
-  <title id="title">UAE Health Facilities Map evidence flow</title>
-  <desc id="desc">The official MOHAP workbook contains 15,326 rows. Validation retains 7,471 UAE-frame coordinates and reports 7,855 exclusions.</desc>
-  <style>
-    @font-face{font-family:Dubai;src:url('../fonts/DubaiW23-Regular.woff2')}text{font-family:Dubai,Arial,sans-serif}.mono{font-family:monospace;letter-spacing:1.4px}.flow{stroke-dasharray:12 10;animation:move 3s linear infinite}.pulse{animation:pulse 2.6s ease-in-out infinite}.point{animation:point 4s ease-in-out infinite}.p2{animation-delay:.5s}.p3{animation-delay:1s}.p4{animation-delay:1.5s}@keyframes move{to{stroke-dashoffset:-66}}@keyframes pulse{50%{opacity:.35}}@keyframes point{0%,18%{opacity:.15;transform:scale(.6)}45%,100%{opacity:1;transform:scale(1)}}@media(prefers-reduced-motion:reduce){.flow,.pulse,.point{animation:none}}
-  </style>
-  <rect width="1200" height="520" fill="#0d1914"/>
-  <path d="M35 44H1165V476H35Z" fill="none" stroke="#53645b"/>
-  <text x="68" y="92" fill="#f1eddf" font-size="34" font-weight="700">MOHAP HEALTH FACILITIES MAP / 2026</text>
-  <text x="1130" y="89" text-anchor="end" fill="#d1bc76" font-size="15" class="mono">NAME + COORDINATE ONLY</text>
-  <g transform="translate(68 137)">
-    <rect width="270" height="278" fill="#13251d" stroke="#687970"/>
-    <text x="25" y="42" fill="#d1bc76" font-size="13" class="mono">OFFICIAL XLSX / GIS SHEET</text>
-    <text x="25" y="116" fill="#f1eddf" font-size="62" font-weight="700">15,326</text>
-    <text x="25" y="150" fill="#aab8b0" font-size="18">published rows</text>
-    <path d="M25 184H245" stroke="#687970"/>
-    <text x="25" y="220" fill="#f1eddf" font-size="16">English + Arabic name</text>
-    <text x="25" y="250" fill="#f1eddf" font-size="16">source coordinate</text>
-  </g>
-  <path class="flow" d="M362 276H466" stroke="#d1bc76" stroke-width="3"/>
-  <g transform="translate(466 175)">
-    <rect width="235" height="202" fill="#f1eddf" stroke="#d1bc76" stroke-width="2"/>
-    <text x="117" y="42" text-anchor="middle" fill="#c83d34" font-size="13" class="mono">BOUNDED VALIDATION</text>
-    <text x="117" y="88" text-anchor="middle" fill="#13251d" font-size="17">22–27° N</text>
-    <text x="117" y="119" text-anchor="middle" fill="#13251d" font-size="17">51–57° E</text>
-    <path d="M28 142H207" stroke="#87948d"/>
-    <text x="117" y="174" text-anchor="middle" fill="#687970" font-size="14">no guessed locations</text>
-  </g>
-  <path class="flow" d="M701 238H793M701 319H793" stroke="#d1bc76" stroke-width="3"/>
-  <g transform="translate(793 130)">
-    <rect width="337" height="151" fill="#15402e" stroke="#43a775" stroke-width="2"/>
-    <circle class="pulse" cx="29" cy="31" r="7" fill="#43a775"/>
-    <text x="52" y="39" fill="#d8e5dd" font-size="13" class="mono">VALID UAE-FRAME COORDINATES</text>
-    <text x="28" y="104" fill="#f1eddf" font-size="58" font-weight="700">7,471</text>
-    <g fill="#d1bc76"><circle class="point" cx="244" cy="98" r="5"/><circle class="point p2" cx="274" cy="71" r="5"/><circle class="point p3" cx="294" cy="111" r="5"/><circle class="point p4" cx="316" cy="87" r="5"/></g>
-  </g>
-  <g transform="translate(793 302)">
-    <rect width="337" height="113" fill="#291916" stroke="#c83d34" stroke-width="2"/>
-    <text x="28" y="38" fill="#e9aaa4" font-size="13" class="mono">REPORTED EXCLUSIONS / 7,855</text>
-    <text x="28" y="74" fill="#f1eddf" font-size="15">2,671 blank · 1,102 sentinel 90,90</text>
-    <text x="28" y="97" fill="#f1eddf" font-size="15">4,082 malformed or outside frame</text>
-  </g>
-  <rect x="68" y="440" width="1062" height="34" fill="#c83d34"/>
-  <text x="599" y="463" text-anchor="middle" fill="#f1eddf" font-size="13" class="mono">COORDINATE DISCOVERY ≠ LICENCE · TYPE · OPERATION · CAPACITY · QUALITY</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc"><title id="title">Health Facilities Map</title><desc id="desc">Published facility rows become a bounded map only after coordinate validation.</desc><defs><style>
+  @font-face{font-family:Dubai;src:url('/assets/fonts/Dubai-Regular.woff')}
+  text{font-family:Dubai,Arial,sans-serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  @keyframes sweep{0%{transform:translateX(-260px)}100%{transform:translateX(1320px)}}
+  @keyframes rise{from{transform:scaleY(.08)}to{transform:scaleY(1)}}
+  @keyframes dash{to{stroke-dashoffset:-48}}
+  @keyframes blink{0%,45%{opacity:1}50%,100%{opacity:.25}}
+  @media(prefers-reduced-motion:no-preference){.sweep{animation:sweep 7s linear infinite}.rise{animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom}.dash{animation:dash 4s linear infinite}.blink{animation:blink 1.8s steps(1) infinite}}
+  @media(prefers-reduced-motion:reduce){.sweep,.rise,.dash,.blink{animation:none}}
+</style></defs><rect width="1200" height="520" fill="#f1eddf"/><path d="M0 42h1200M0 478h1200M42 0v520M1158 0v520" stroke="#10231b" opacity=".16"/><g transform="translate(62 54)"><rect width="46" height="46" fill="#173d2d"/><path d="M9 34V17h4v17m4 29V11h4v23m4 29V20h4v14m4 29V8h4v26m4 29V15h4v19" stroke="#f1eddf" stroke-width="3"/><path d="M8 39h30" stroke="#c34032" stroke-width="4"/></g><text x="122" y="72" fill="#10231b" font-size="14" font-weight="700" letter-spacing="2">OPEN EMIRATES</text><text x="122" y="93" fill="#829188" font-size="10" class="mono" letter-spacing="1.4">INDEPENDENT OPEN-SOURCE INITIATIVE</text><text x="62" y="160" fill="#c34032" font-size="11" class="mono" letter-spacing="2">MOHAP · GEOSPATIAL EVIDENCE</text><text x="62" y="212" fill="#10231b" font-size="40" font-weight="700">Health Facilities Map</text><text x="62" y="247" fill="#52645b" font-size="16">Published facility rows become a bounded map only after coordinate validation.</text><g><rect x="62" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="62" y="292" width="5" height="112" fill="#087443" style="animation-delay:0s"/><text x="80" y="320" fill="#d8b86f" font-size="10" class="mono">01</text><text x="80" y="357" fill="#f1eddf" font-size="15" font-weight="700">OFFICIAL XLSX</text></g><g><rect x="314.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="314.5" y="292" width="5" height="112" fill="#087443" style="animation-delay:0.09s"/><text x="332.5" y="320" fill="#d8b86f" font-size="10" class="mono">02</text><text x="332.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">ROW VALIDATION</text></g><g><rect x="567" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="567" y="292" width="5" height="112" fill="#087443" style="animation-delay:0.18s"/><text x="585" y="320" fill="#d8b86f" font-size="10" class="mono">03</text><text x="585" y="357" fill="#f1eddf" font-size="15" font-weight="700">VALID COORDINATES</text></g><g><rect x="819.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="819.5" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0.27s"/><text x="837.5" y="320" fill="#d8b86f" font-size="10" class="mono">04</text><text x="837.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">GEOJSON MAP</text></g><path class="dash" d="M70 427H1130" stroke="#087443" stroke-width="2" stroke-dasharray="8 8"/><circle class="blink" cx="1130" cy="427" r="6" fill="#c34032"/><text x="62" y="464" fill="#10231b" font-size="11" class="mono" letter-spacing="1">INVALID OR MISSING COORDINATES ARE EXCLUDED AND REPORTED</text><rect class="sweep" x="-260" y="0" width="220" height="520" fill="white" opacity=".035"/></svg>

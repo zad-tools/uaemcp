@@ -59,6 +59,10 @@ The repository is now a monorepo with separate release lines:
 The SDK has no MCP dependency. Package boundaries and publishing instructions
 are documented in [docs/PACKAGES.md](docs/PACKAGES.md).
 
+<p align="center">
+  <img src="docs/assets/package-architecture.svg" alt="Open Emirates independent package architecture from contracts to SDK, MCP and the Bun engine" width="100%">
+</p>
+
 The server keeps the public `uaemcp` contract and extends it to 43 source-cited
 MCP tools, seventeen resources, three prompts, bilingual catalog search, CKAN,
 OpenDataSoft, ArcGIS, Socrata, JSON, CSV, XLSX, XML, RSS, GraphQL, SDMX and

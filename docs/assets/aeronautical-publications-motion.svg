@@ -1,34 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
-  <title id="title">UAE Aeronautical Publications</title>
-  <desc id="desc">An animated evidence ledger showing GCAA eAIP package, publication and effective dates while warning that the index is not NOTAM or operational guidance.</desc>
-  <style>
-    .bg{fill:#e9e7df}.ink{fill:#151b19}.forest{fill:#10251d}.red{fill:#b62d33}.gold{fill:#d7bd65}.paper{fill:#f1eee7}.line{stroke:#151b19;stroke-width:2}.muted{fill:#64706b}.label{font:700 15px Dubai,Arial,sans-serif;letter-spacing:1.7px}.copy{font:18px Dubai,Arial,sans-serif}.num{font:700 54px Dubai,Arial,sans-serif}.small{font:14px Dubai,Arial,sans-serif}.track{stroke:#b62d33;stroke-width:5;stroke-dasharray:850;stroke-dashoffset:850;animation:draw 5.6s ease-in-out infinite}.node{animation:pulse 5.6s ease-in-out infinite;transform-origin:center}.cursor{animation:scan 5.6s ease-in-out infinite}.row{animation:row 5.6s ease-in-out infinite}.row:nth-of-type(2){animation-delay:.22s}.row:nth-of-type(3){animation-delay:.44s}@keyframes draw{0%,12%{stroke-dashoffset:850}58%,100%{stroke-dashoffset:0}}@keyframes pulse{0%,45%{opacity:.15;transform:scale(.4)}62%,90%{opacity:1;transform:scale(1)}100%{opacity:.15;transform:scale(.4)}}@keyframes scan{0%{transform:translateX(-870px);opacity:0}18%,68%{opacity:.25}82%,100%{transform:translateX(870px);opacity:0}}@keyframes row{0%,16%{opacity:.25;transform:translateY(8px)}35%,88%{opacity:1;transform:translateY(0)}100%{opacity:.25}}@media(prefers-reduced-motion:reduce){.track,.node,.cursor,.row{animation:none}.track{stroke-dashoffset:0}}
-  </style>
-  <rect class="bg" width="1200" height="620"/>
-  <rect class="forest" width="1200" height="80"/>
-  <text x="48" y="50" class="label paper">OPEN EMIRATES / GCAA PUBLICATION LEDGER</text>
-  <text x="1152" y="50" class="label gold" text-anchor="end">CURRENT eAIP INDEX</text>
-  <text x="48" y="130" class="label ink">DATES REPRODUCED. OPERATIONAL MEANING NOT INFERRED.</text>
-  <g transform="translate(48 164)">
-    <rect width="1104" height="112" fill="none" class="line"/>
-    <rect width="230" height="112" class="red"/>
-    <text x="24" y="40" class="label paper">AIRAC AMENDMENT</text>
-    <text x="24" y="86" class="num paper">08/2026</text>
-    <line x1="280" y1="57" x2="1046" y2="57" class="track"/>
-    <circle cx="340" cy="57" r="10" class="node gold"/>
-    <circle cx="655" cy="57" r="10" class="node red"/>
-    <circle cx="982" cy="57" r="10" class="node forest"/>
-    <text x="340" y="34" class="small muted" text-anchor="middle">PACKAGE</text>
-    <text x="655" y="92" class="small muted" text-anchor="middle">PUBLICATION</text>
-    <text x="982" y="34" class="small muted" text-anchor="middle">EFFECTIVE</text>
-  </g>
-  <g transform="translate(48 300)">
-    <rect width="1104" height="190" fill="none" class="line"/>
-    <g class="row"><rect x="0" y="0" width="1104" height="63" fill="#f1eee7"/><text x="24" y="39" class="label red">01 / SUPPLEMENT</text><text x="330" y="39" class="copy ink">SUP 24/2026</text><text x="1065" y="39" class="small muted" text-anchor="end">VERIFY IN GCAA ↗</text></g>
-    <g class="row"><rect x="0" y="63" width="1104" height="64" fill="#e9e7df"/><line x1="0" y1="63" x2="1104" y2="63" class="line"/><text x="24" y="102" class="label red">02 / SUPPLEMENT</text><text x="330" y="102" class="copy ink">SUP 26/2026</text><text x="1065" y="102" class="small muted" text-anchor="end">03 SEP 2026</text></g>
-    <g class="row"><rect x="0" y="127" width="1104" height="63" fill="#f1eee7"/><line x1="0" y1="127" x2="1104" y2="127" class="line"/><text x="24" y="166" class="label red">03 / AIRAC</text><text x="330" y="166" class="copy ink">AIRAC AMDT 08/2026</text><text x="1065" y="166" class="small muted" text-anchor="end">06 AUG 2026</text></g>
-    <rect class="cursor red" x="0" y="0" width="3" height="190"/>
-  </g>
-  <rect x="48" y="520" width="1104" height="58" class="forest"/>
-  <text x="72" y="556" class="label paper">INDEX ≠ NOTAM · NOT FLIGHT PLANNING · NOT AIRSPACE OR SAFETY INTERPRETATION</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc"><title id="title">UAE Aeronautical Publications</title><desc id="desc">Publication packages, publication dates and effective dates without operational interpretation.</desc><defs><style>
+  @font-face{font-family:Dubai;src:url('/assets/fonts/Dubai-Regular.woff')}
+  text{font-family:Dubai,Arial,sans-serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  @keyframes sweep{0%{transform:translateX(-260px)}100%{transform:translateX(1320px)}}
+  @keyframes rise{from{transform:scaleY(.08)}to{transform:scaleY(1)}}
+  @keyframes dash{to{stroke-dashoffset:-48}}
+  @keyframes blink{0%,45%{opacity:1}50%,100%{opacity:.25}}
+  @media(prefers-reduced-motion:no-preference){.sweep{animation:sweep 7s linear infinite}.rise{animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom}.dash{animation:dash 4s linear infinite}.blink{animation:blink 1.8s steps(1) infinite}}
+  @media(prefers-reduced-motion:reduce){.sweep,.rise,.dash,.blink{animation:none}}
+</style></defs><rect width="1200" height="520" fill="#f1eddf"/><path d="M0 42h1200M0 478h1200M42 0v520M1158 0v520" stroke="#10231b" opacity=".16"/><g transform="translate(62 54)"><rect width="46" height="46" fill="#173d2d"/><path d="M9 34V17h4v17m4 29V11h4v23m4 29V20h4v14m4 29V8h4v26m4 29V15h4v19" stroke="#f1eddf" stroke-width="3"/><path d="M8 39h30" stroke="#c34032" stroke-width="4"/></g><text x="122" y="72" fill="#10231b" font-size="14" font-weight="700" letter-spacing="2">OPEN EMIRATES</text><text x="122" y="93" fill="#829188" font-size="10" class="mono" letter-spacing="1.4">INDEPENDENT OPEN-SOURCE INITIATIVE</text><text x="62" y="160" fill="#c34032" font-size="11" class="mono" letter-spacing="2">GCAA PUBLICATION INDEX</text><text x="62" y="212" fill="#10231b" font-size="40" font-weight="700">UAE Aeronautical Publications</text><text x="62" y="247" fill="#52645b" font-size="16">Publication packages, publication dates and effective dates without operational interpretation.</text><g><rect x="62" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="62" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0s"/><text x="80" y="320" fill="#d8b86f" font-size="10" class="mono">01</text><text x="80" y="357" fill="#f1eddf" font-size="15" font-weight="700">PACKAGE</text></g><g><rect x="314.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="314.5" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0.09s"/><text x="332.5" y="320" fill="#d8b86f" font-size="10" class="mono">02</text><text x="332.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">PUBLICATION DATE</text></g><g><rect x="567" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="567" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0.18s"/><text x="585" y="320" fill="#d8b86f" font-size="10" class="mono">03</text><text x="585" y="357" fill="#f1eddf" font-size="15" font-weight="700">EFFECTIVE DATE</text></g><g><rect x="819.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="819.5" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0.27s"/><text x="837.5" y="320" fill="#d8b86f" font-size="10" class="mono">04</text><text x="837.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">SOURCE LINK</text></g><path class="dash" d="M70 427H1130" stroke="#c34032" stroke-width="2" stroke-dasharray="8 8"/><circle class="blink" cx="1130" cy="427" r="6" fill="#c34032"/><text x="62" y="464" fill="#10231b" font-size="11" class="mono" letter-spacing="1">INDEX ≠ NOTAM · DISCOVERY ONLY · NOT OPERATIONAL ADVICE</text><rect class="sweep" x="-260" y="0" width="220" height="520" fill="white" opacity=".035"/></svg>

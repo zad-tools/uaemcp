@@ -1,29 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
-  <title id="title">Runtime-generated MCP tool catalogue</title>
-  <desc id="desc">Runtime registrations generate Markdown, JSON and an MCP resource, with CI checking that all outputs remain current.</desc>
-  <style>
-    @font-face{font-family:Dubai;src:url('https://fonts.cdnfonts.com/s/10524/Dubai-Regular.woff') format('woff')}
-    .bg{fill:#07110f}.grid{stroke:#14322b;stroke-width:1}.box{fill:#0b1b17;stroke:#2e705d;stroke-width:2}.accent{fill:#d5ff52}.txt{fill:#eafff8;font-family:Dubai,Arial,sans-serif}.muted{fill:#81aa9e;font-family:Dubai,Arial,sans-serif}.flow{fill:none;stroke:#d5ff52;stroke-width:3;stroke-dasharray:12 10;animation:dash 2.2s linear infinite}.pulse{animation:pulse 2.2s ease-in-out infinite;transform-origin:center}@keyframes dash{to{stroke-dashoffset:-44}}@keyframes pulse{50%{opacity:.45}}@media(prefers-reduced-motion:reduce){.flow,.pulse{animation:none}}
-  </style>
-  <rect class="bg" width="1200" height="360"/>
-  <path class="grid" d="M0 60h1200M0 120h1200M0 180h1200M0 240h1200M0 300h1200M120 0v360M240 0v360M360 0v360M480 0v360M600 0v360M720 0v360M840 0v360M960 0v360M1080 0v360" opacity=".45"/>
-  <text class="muted" x="54" y="55" font-size="18" letter-spacing="3">UAEMCP · SINGLE SOURCE OF TRUTH</text>
-  <rect class="box" x="54" y="106" width="260" height="150"/>
-  <circle class="accent pulse" cx="84" cy="137" r="7"/>
-  <text class="txt" x="105" y="144" font-size="25">Runtime registrations</text>
-  <text class="muted" x="82" y="188" font-size="18">40 tools · actual server</text>
-  <text class="muted" x="82" y="220" font-size="18">names · kinds · descriptions</text>
-  <path class="flow" d="M314 181H420"/>
-  <rect class="box" x="420" y="82" width="330" height="198"/>
-  <text class="txt" x="450" y="126" font-size="25">Generated catalogue</text>
-  <text class="muted" x="450" y="169" font-size="19">MCP_TOOLS.md</text>
-  <text class="muted" x="450" y="204" font-size="19">mcp-tools.json</text>
-  <text class="muted" x="450" y="239" font-size="19">uae://tools</text>
-  <path class="flow" d="M750 181H856"/>
-  <rect class="box" x="856" y="106" width="290" height="150"/>
-  <circle class="accent pulse" cx="886" cy="137" r="7"/>
-  <text class="txt" x="907" y="144" font-size="25">Release gate</text>
-  <text class="muted" x="884" y="188" font-size="18">CI rejects stale outputs</text>
-  <text class="muted" x="884" y="220" font-size="18">docs always match runtime</text>
-  <text class="muted" x="54" y="325" font-size="16">Deterministic · machine-readable · agent-discoverable</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc"><title id="title">Runtime MCP Tool Catalogue</title><desc id="desc">The browser catalogue is generated from the same registered runtime contract.</desc><defs><style>
+  @font-face{font-family:Dubai;src:url('/assets/fonts/Dubai-Regular.woff')}
+  text{font-family:Dubai,Arial,sans-serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  @keyframes sweep{0%{transform:translateX(-260px)}100%{transform:translateX(1320px)}}
+  @keyframes rise{from{transform:scaleY(.08)}to{transform:scaleY(1)}}
+  @keyframes dash{to{stroke-dashoffset:-48}}
+  @keyframes blink{0%,45%{opacity:1}50%,100%{opacity:.25}}
+  @media(prefers-reduced-motion:no-preference){.sweep{animation:sweep 7s linear infinite}.rise{animation:rise 1.1s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom}.dash{animation:dash 4s linear infinite}.blink{animation:blink 1.8s steps(1) infinite}}
+  @media(prefers-reduced-motion:reduce){.sweep,.rise,.dash,.blink{animation:none}}
+</style></defs><rect width="1200" height="520" fill="#f1eddf"/><path d="M0 42h1200M0 478h1200M42 0v520M1158 0v520" stroke="#10231b" opacity=".16"/><g transform="translate(62 54)"><rect width="46" height="46" fill="#173d2d"/><path d="M9 34V17h4v17m4 29V11h4v23m4 29V20h4v14m4 29V8h4v26m4 29V15h4v19" stroke="#f1eddf" stroke-width="3"/><path d="M8 39h30" stroke="#c34032" stroke-width="4"/></g><text x="122" y="72" fill="#10231b" font-size="14" font-weight="700" letter-spacing="2">OPEN EMIRATES</text><text x="122" y="93" fill="#829188" font-size="10" class="mono" letter-spacing="1.4">INDEPENDENT OPEN-SOURCE INITIATIVE</text><text x="62" y="160" fill="#c34032" font-size="11" class="mono" letter-spacing="2">43 TOOLS · 17 RESOURCES · 3 PROMPTS</text><text x="62" y="212" fill="#10231b" font-size="40" font-weight="700">Runtime MCP Tool Catalogue</text><text x="62" y="247" fill="#52645b" font-size="16">The browser catalogue is generated from the same registered runtime contract.</text><g><rect x="62" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="62" y="292" width="5" height="112" fill="#087443" style="animation-delay:0s"/><text x="80" y="320" fill="#d8b86f" font-size="10" class="mono">01</text><text x="80" y="357" fill="#f1eddf" font-size="15" font-weight="700">DISCOVER</text></g><g><rect x="314.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="314.5" y="292" width="5" height="112" fill="#087443" style="animation-delay:0.09s"/><text x="332.5" y="320" fill="#d8b86f" font-size="10" class="mono">02</text><text x="332.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">INPUT SCHEMA</text></g><g><rect x="567" y="292" width="236.5" height="112" fill="#10231b"/><rect class="rise" x="567" y="292" width="5" height="112" fill="#087443" style="animation-delay:0.18s"/><text x="585" y="320" fill="#d8b86f" font-size="10" class="mono">03</text><text x="585" y="357" fill="#f1eddf" font-size="15" font-weight="700">TRY READ TOOL</text></g><g><rect x="819.5" y="292" width="236.5" height="112" fill="#173d2d"/><rect class="rise" x="819.5" y="292" width="5" height="112" fill="#c34032" style="animation-delay:0.27s"/><text x="837.5" y="320" fill="#d8b86f" font-size="10" class="mono">04</text><text x="837.5" y="357" fill="#f1eddf" font-size="15" font-weight="700">AGENT CONFIG</text></g><path class="dash" d="M70 427H1130" stroke="#087443" stroke-width="2" stroke-dasharray="8 8"/><circle class="blink" cx="1130" cy="427" r="6" fill="#c34032"/><text x="62" y="464" fill="#10231b" font-size="11" class="mono" letter-spacing="1">ONE RUNTIME CONTRACT · MCP + REST + INTERACTIVE EXPLORER</text><rect class="sweep" x="-260" y="0" width="220" height="520" fill="white" opacity=".035"/></svg>
