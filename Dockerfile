@@ -2,6 +2,9 @@ FROM oven/bun:1.3.14-slim AS install
 
 WORKDIR /app
 COPY package.json bun.lock ./
+COPY packages/contracts/package.json ./packages/contracts/package.json
+COPY packages/sdk/package.json ./packages/sdk/package.json
+COPY packages/mcp/package.json ./packages/mcp/package.json
 RUN bun install --frozen-lockfile --production
 
 FROM oven/bun:1.3.14-slim
