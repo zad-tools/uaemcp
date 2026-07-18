@@ -11,6 +11,14 @@ on:
           - contracts
           - sdk
           - mcp
+      operation:
+        description: Registry operation
+        required: true
+        default: publish
+        type: choice
+        options:
+          - publish
+          - make-public
   push:
     tags:
       - "contracts-v*"
@@ -60,10 +68,17 @@ jobs:
           test "$version" = "$actual"
           echo "name=$name" >> "$GITHUB_OUTPUT"
       - name: Pack selected package
+        if: github.event_name != 'workflow_dispatch' || inputs.operation == 'publish'
         working-directory: packages/${{ steps.package.outputs.name }}
         run: npm pack --dry-run
       - name: Publish with provenance
+        if: github.event_name != 'workflow_dispatch' || inputs.operation == 'publish'
         working-directory: packages/${{ steps.package.outputs.name }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance
+      - name: Ensure public registry access
+        if: github.event_name == 'workflow_dispatch' && inputs.operation == 'make-public'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm access set status=public "@open-emirates/${{ steps.package.outputs.name }}"
