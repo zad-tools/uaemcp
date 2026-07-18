@@ -5,6 +5,9 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "paths": {
+      "@open-emirates/contracts": ["../contracts/dist/index.d.ts"]
+    },
     "rootDir": "src",
     "outDir": "dist"
   },
