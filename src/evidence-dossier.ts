@@ -7,6 +7,10 @@ export type EvidenceDossierTemplate = typeof EVIDENCE_DOSSIER_TEMPLATES[number];
 export type EvidencePillarId = typeof EVIDENCE_PILLAR_IDS[number];
 export type EvidenceDelivery = typeof EVIDENCE_DELIVERY_MODES[number];
 export type LocalizedEvidenceText = Readonly<{ en: string; ar: string }>;
+export type EvidenceQualitySignal = Readonly<{
+  status: "warning";
+  flags: readonly Readonly<{ code: string; years: readonly number[] }>[];
+}>;
 
 export type EvidencePillar = Readonly<{
   id: EvidencePillarId;
@@ -20,6 +24,7 @@ export type EvidencePillar = Readonly<{
   fetchedAt: string | null;
   delivery: EvidenceDelivery;
   limitations: readonly LocalizedEvidenceText[];
+  quality?: EvidenceQualitySignal;
 }>;
 
 export type EvidenceDossierInput = Readonly<{
@@ -109,6 +114,7 @@ function copyPillar(pillar: EvidencePillar, index: number): EvidencePillar {
   if (citation.protocol !== "https:") throw new Error(`pillars[${index}].citation must be an HTTPS URL`);
   if (pillar.period !== null) assertText(pillar.period, `pillars[${index}].period`, 100);
   if (pillar.fetchedAt !== null && !Number.isFinite(Date.parse(pillar.fetchedAt))) throw new Error(`pillars[${index}].fetchedAt must be an ISO date or null`);
+  const quality = pillar.quality === undefined ? undefined : copyQualitySignal(pillar.quality, `pillars[${index}].quality`);
 
   return {
     id: pillar.id,
@@ -122,6 +128,23 @@ function copyPillar(pillar: EvidencePillar, index: number): EvidencePillar {
     fetchedAt: pillar.fetchedAt,
     delivery: pillar.delivery,
     limitations: localizedList(pillar.limitations, `pillars[${index}].limitations`),
+    ...(quality ? { quality } : {}),
+  };
+}
+
+function copyQualitySignal(value: EvidenceQualitySignal, field: string): EvidenceQualitySignal {
+  if (!value || typeof value !== "object" || value.status !== "warning" || !Array.isArray(value.flags) || value.flags.length === 0) {
+    throw new Error(`${field} must contain one or more warning flags`);
+  }
+  return {
+    status: "warning",
+    flags: value.flags.map((flag: Readonly<{ code: string; years: readonly number[] }>, index) => {
+      assertText(flag.code, `${field}.flags[${index}].code`, 100);
+      if (!Array.isArray(flag.years) || flag.years.length === 0 || flag.years.some((year: number) => !Number.isInteger(year))) {
+        throw new Error(`${field}.flags[${index}].years must contain integers`);
+      }
+      return { code: flag.code.trim(), years: [...new Set<number>(flag.years)] };
+    }),
   };
 }
 

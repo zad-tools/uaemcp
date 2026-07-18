@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { runHttp } from "../src/index.js";
 import { createFetchHandler } from "../src/index.js";
 import { SETTINGS } from "../src/config.js";
+import { VERSION } from "../src/version.js";
 
 let server: Bun.Server<unknown>;
 let baseUrl: string;
@@ -62,7 +63,7 @@ describe("Bun HTTP runtime", () => {
     expect(response.status).toBe(200);
     expect(payload.result.serverInfo).toEqual({
       name: "open-emirates-intelligence",
-      version: "1.82.0",
+      version: VERSION,
     });
     expect(payload.result.capabilities.tools).toBeDefined();
     expect(payload.result.capabilities.resources).toBeDefined();
@@ -124,7 +125,13 @@ describe("Bun HTTP runtime", () => {
     const { payload } = await rpc("tools/call", { name: "uae_products_list", arguments: {} });
     const body = JSON.parse(payload.result.content[0].text);
     expect(body.ok).toBe(true);
-    expect(body.meta).toEqual({ total: 24, published: 24 });
+    expect(body.meta).toMatchObject({ total: 24, published: 24 });
+    expect(body.meta.evidenceDossier).toMatchObject({
+      pillarIds: ["education", "health_facilities", "health_indicators", "industry", "tax_activity"],
+      productPillarMap: { education_ledger: ["education"], health_facilities_atlas: ["health_facilities"] },
+      questionPrivacy: { handling: "transient", persisted: false },
+    });
+    expect(body.meta.evidenceDossier.examples[0].pillars).toEqual(["education", "health_facilities"]);
     expect(body.data.map((product: { id: string }) => product.id)).toEqual([
       "employment_gender", "connectivity_pulse", "tourism_pulse", "policy_evidence_watch", "evidence_studio", "founder_pathway", "national_evidence_brief", "startup_support_navigator", "business_setup_navigator", "golden_residency_navigator", "education_ledger", "health_indicators", "health_facilities_atlas", "health_facilities_map", "aeronautical_publications", "trade_flow_radar", "ajman_business_evidence", "ajman_urban_evidence", "ajman_parks_footfall", "industry_atlas", "tax_service_activity", "fta_archive", "place_names", "open_data_observatory",
     ]);

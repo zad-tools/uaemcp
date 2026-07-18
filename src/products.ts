@@ -1,3 +1,5 @@
+import { EVIDENCE_PILLAR_IDS, type EvidencePillarId } from "./evidence-dossier.js";
+
 type LocalizedText = Readonly<{ en: string; ar: string }>;
 
 export type PublicProduct = Readonly<{
@@ -11,11 +13,61 @@ export type PublicProduct = Readonly<{
   webPath: string;
   apiPath: string;
   sourceIds: readonly string[];
+  evidenceDossierPillarIds?: readonly EvidencePillarId[];
   evidence: Readonly<{
     scope: LocalizedText;
     limitations: readonly LocalizedText[];
   }>;
 }>;
+
+const EVIDENCE_DOSSIER_PILLARS = Object.freeze([
+  { id: "education", title: { en: "Education", ar: "التعليم" }, productIds: ["education_ledger"] },
+  { id: "health_facilities", title: { en: "Health facilities", ar: "المنشآت الصحية" }, productIds: ["health_facilities_atlas"] },
+  { id: "health_indicators", title: { en: "Health indicators", ar: "المؤشرات الصحية" }, productIds: ["health_indicators"] },
+  { id: "industry", title: { en: "Industry", ar: "الصناعة" }, productIds: ["industry_atlas"] },
+  { id: "tax_activity", title: { en: "Tax service activity", ar: "نشاط الخدمات الضريبية" }, productIds: ["tax_service_activity"] },
+] satisfies readonly Readonly<{ id: EvidencePillarId; title: LocalizedText; productIds: readonly string[] }>[]);
+
+function dossierPillarsForProduct(productId: string): EvidencePillarId[] {
+  return EVIDENCE_DOSSIER_PILLARS.filter((pillar) => pillar.productIds.includes(productId)).map((pillar) => pillar.id);
+}
+
+const EVIDENCE_DOSSIER_EXAMPLES = Object.freeze([
+  {
+    template: "research_dossier",
+    question: "What official evidence describes education and health provision in the UAE?",
+    language: "en",
+    pillars: ["education", "health_facilities"],
+  },
+  {
+    template: "source_comparison",
+    question: "ما الأدلة الرسمية المتاحة عن المؤشرات الصحية والمنشآت الصحية في الإمارات؟",
+    language: "ar",
+    pillars: ["health_facilities", "health_indicators"],
+  },
+] as const);
+
+export function evidenceDossierQuestionPrivacy() {
+  return {
+    handling: "transient" as const,
+    persisted: false as const,
+    description: {
+      en: "The research question is used only to compose the current response and is not persisted by Evidence Dossier.",
+      ar: "يُستخدم سؤال البحث فقط لإعداد الاستجابة الحالية ولا يحتفظ به ملف الأدلة.",
+    },
+  };
+}
+
+export function evidenceDossierCatalog() {
+  const productIds = [...new Set(EVIDENCE_DOSSIER_PILLARS.flatMap((pillar) => pillar.productIds))];
+  return {
+    pillarIds: [...EVIDENCE_PILLAR_IDS],
+    pillars: EVIDENCE_DOSSIER_PILLARS.map((pillar) => ({ ...pillar, title: { ...pillar.title }, productIds: [...pillar.productIds] })),
+    productPillarMap: Object.fromEntries(productIds.map((productId) => [productId, dossierPillarsForProduct(productId)])),
+    examples: EVIDENCE_DOSSIER_EXAMPLES.map((example) => ({ ...example, pillars: [...example.pillars] })),
+    questionPrivacy: evidenceDossierQuestionPrivacy(),
+  };
+}
 
 const PRODUCTS: readonly PublicProduct[] = Object.freeze([
   {
@@ -395,6 +447,7 @@ export function listProducts(): PublicProduct[] {
     title: { ...product.title },
     description: { ...product.description },
     sourceIds: [...product.sourceIds],
+    evidenceDossierPillarIds: [...dossierPillarsForProduct(product.id)],
     evidence: {
       scope: { ...product.evidence.scope },
       limitations: product.evidence.limitations.map((item) => ({ ...item })),

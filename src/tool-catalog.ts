@@ -57,6 +57,12 @@ function title(name: string): string {
 function exampleValue(schema: JsonSchema, field = ""): unknown {
   if (schema.default !== undefined) return schema.default;
   if (Array.isArray(schema.enum) && schema.enum.length) return schema.enum[0];
+  if (schema.type === "array") {
+    const item = (schema.items ?? {}) as JsonSchema;
+    const count = typeof schema.minItems === "number" ? Math.max(1, schema.minItems) : 1;
+    if (Array.isArray(item.enum) && item.enum.length) return item.enum.slice(0, count);
+    return [exampleValue(item, field)];
+  }
   if (schema.type === "boolean") return false;
   if (schema.type === "integer" || schema.type === "number") return schema.minimum ?? 1;
   if (field.includes("query") || field === "q") return "Dubai";

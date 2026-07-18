@@ -39,7 +39,7 @@ import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
 import { ajmanUrbanPage } from "./ajman-urban-web.js";
 import { loadAjmanParksProduct } from "./ajman-parks-service.js";
 import { ajmanParksPage } from "./ajman-parks-web.js";
-import { listProducts } from "./products.js";
+import { evidenceDossierCatalog, evidenceDossierQuestionPrivacy, listProducts } from "./products.js";
 import { healthIndicatorsPage } from "./health-indicators-web.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { healthFacilitiesPage } from "./health-facilities-web.js";
@@ -225,7 +225,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
     }
     if (request.method === "GET" && path === "/api/v1/products") {
       const products = listProducts();
-      return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length }));
+      return json(envelope(products, { total: products.length, published: products.filter((product) => product.status === "published").length, evidenceDossier: evidenceDossierCatalog() }));
     }
     if (request.method === "GET" && path === "/api/v1/connectivity") {
       const series = optional(url.searchParams, "series");
@@ -328,7 +328,7 @@ export async function handleRest(request: Request, dependencies: RuntimeDependen
         fetchIndustryRecords: dependencies.fetchIndustryRecords,
         fetchTaxRecords: dependencies.fetchTaxRecords,
       });
-      return json(envelope(result.data, { ...result.meta, stored: false }));
+      return json(envelope(result.data, { ...result.meta, stored: false, question_privacy: evidenceDossierQuestionPrivacy() }));
     }
     if (request.method === "GET" && path === "/api/v1/national-brief") {
       const positive = (key: string, fallback: number, max: number) => {

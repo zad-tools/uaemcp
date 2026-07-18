@@ -5,7 +5,7 @@
  * provenance. Read tools are open; the write tool requires a token.
  */
 
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate, type ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { aggregate, type Metric } from "./aggregate.js";
 import { requireWrite } from "./auth.js";
@@ -32,7 +32,7 @@ import { loadTradeFlowProduct } from "./trade-flow-service.js";
 import { loadAjmanBusinessProduct } from "./ajman-business-service.js";
 import { loadAjmanUrbanProduct } from "./ajman-urban-service.js";
 import { loadAjmanParksProduct } from "./ajman-parks-service.js";
-import { listProducts } from "./products.js";
+import { evidenceDossierCatalog, evidenceDossierQuestionPrivacy, listProducts } from "./products.js";
 import { loadHealthIndicators } from "./health-indicators-service.js";
 import { loadHealthFacilitiesAtlas } from "./health-facilities-service.js";
 import { HEALTH_FACILITY_EMIRATES, HEALTH_FACILITY_SECTORS, HEALTH_FACILITY_YEARS } from "./health-facilities.js";
@@ -70,6 +70,19 @@ function text(payload: Json) {
   return { content: [{ type: "text" as const, text: JSON.stringify(payload, null, 2) }] };
 }
 
+function enforceStrictToolSchemas(server: McpServer): void {
+  const registerTool = server.registerTool.bind(server);
+  server.registerTool = ((name: string, config: Record<string, unknown>, handler: ToolCallback<z.ZodObject<z.ZodRawShape, "strict">>) => {
+    const schema = config.inputSchema;
+    const strictSchema = schema instanceof z.ZodObject
+      ? schema.strict()
+      : schema === undefined || (typeof schema === "object" && schema !== null && Object.values(schema).every((field) => field instanceof z.ZodType))
+        ? z.object((schema ?? {}) as z.ZodRawShape).strict()
+        : (() => { throw new TypeError(`Tool ${name} inputSchema must be a Zod object or raw object shape`); })();
+    return registerTool(name, { ...config, inputSchema: strictSchema }, handler);
+  }) as typeof server.registerTool;
+}
+
 const HEALTH_MAP_BOUNDS = { minLat: 22, maxLat: 27, minLon: 51, maxLon: 57 } as const;
 function mapBbox(raw: string | undefined): [number, number, number, number] | undefined {
   if (!raw) return undefined;
@@ -90,6 +103,7 @@ function mapNear(raw: string | undefined): [number, number, number] | undefined 
 
 export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
+  enforceStrictToolSchemas(server);
 
   server.registerTool(
     "uae_connectivity_pulse",
@@ -289,12 +303,17 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   server.registerTool(
     "uae_health_indicators",
     {
-      description: "Search official MOHAP health core indicator rows across published year columns. Values are source-native and not silently normalized; the response states mixed ratio/percentage scale and period limitations.",
-      inputSchema: { query: z.string().optional(), limit: z.number().int().min(1).max(200).default(100) },
+      description: "Search official MOHAP health core indicator rows across published year columns. Returns a compact paginated payload by default; set compact=false for full raw series. Values remain source-native and generic quality flags identify scale shifts or relative outliers without normalization.",
+      inputSchema: {
+        query: z.string().optional(),
+        limit: z.number().int().min(1).max(200).default(12),
+        offset: z.number().int().min(0).default(0),
+        compact: z.boolean().default(true),
+      },
     },
-    async ({ query, limit }) => {
+    async ({ query, limit, offset, compact }) => {
       try {
-        const loaded = await loadHealthIndicators(dependencies.fetchHealthRecords ?? fetchResult, { query, limit });
+        const loaded = await loadHealthIndicators(dependencies.fetchHealthRecords ?? fetchResult, { query, limit, offset, compact });
         return text(ok(loaded.report, loaded.meta));
       } catch (error) { return text(fail(error)); }
     },
@@ -307,7 +326,7 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
     },
     async () => {
       const products = listProducts();
-      return text(ok(products, { total: products.length, published: products.length }));
+      return text(ok(products, { total: products.length, published: products.length, evidenceDossier: evidenceDossierCatalog() }));
     },
   );
 
@@ -370,10 +389,10 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
   server.registerTool(
     "uae_evidence_dossier",
     {
-      description: "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. Keeps periods and units separate, reports unavailable evidence explicitly, and never produces a ranking or composite score.",
+      description: "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. The question is transient and not persisted. Accepted pillar IDs: education, health_facilities, health_indicators, industry, tax_activity. Example: education plus health_facilities. Periods and units remain separate; unavailable evidence is explicit; no ranking or composite score is produced.",
       inputSchema: {
         template: z.enum(EVIDENCE_DOSSIER_TEMPLATES).default("research_dossier"),
-        question: z.string().trim().min(1).max(200),
+        question: z.string().trim().min(1).max(200).describe("Transient research question used only for the current response; not persisted by Evidence Dossier."),
         language: z.enum(["en", "ar"]).default("en"),
         pillars: z.array(z.enum(EVIDENCE_PILLAR_IDS)).min(2).max(5).refine((items) => new Set(items).size === items.length, "pillar ids must be unique"),
         query: z.string().trim().max(100).optional(),
@@ -391,7 +410,7 @@ export function buildServer(dependencies: RuntimeDependencies = {}): McpServer {
           fetchIndustryRecords: dependencies.fetchIndustryRecords,
           fetchTaxRecords: dependencies.fetchTaxRecords,
         });
-        return text(ok(result.data, { ...result.meta, stored: false }));
+        return text(ok(result.data, { ...result.meta, stored: false, question_privacy: evidenceDossierQuestionPrivacy() }));
       } catch (error) { return text(fail(error)); }
     },
   );

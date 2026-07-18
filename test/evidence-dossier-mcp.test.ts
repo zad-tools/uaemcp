@@ -22,6 +22,10 @@ describe("UAE Evidence Studio MCP contract", () => {
 
     expect(response.status).toBe(200);
     expect(mcp.data).toEqual(rest.data);
-    expect(mcp.meta).toMatchObject({ stored: false, available_pillars: 2 });
+    expect(mcp.meta).toMatchObject({
+      stored: false,
+      available_pillars: 2,
+      question_privacy: { handling: "transient", persisted: false },
+    });
   });
 });

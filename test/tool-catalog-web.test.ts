@@ -57,6 +57,20 @@ describe("public MCP Tools Explorer", () => {
     expect(missing?.status).toBe(404);
   });
 
+  it("documents a valid Evidence Dossier example and transient question handling", async () => {
+    const response = await handleRest(new Request("http://localhost/api/v1/tools/uae_evidence_dossier"));
+    const tool = (await response?.json()).data;
+
+    expect(response?.status).toBe(200);
+    expect(tool.description).toContain("question is transient and not persisted");
+    expect(tool.exampleArguments).toMatchObject({
+      template: "research_dossier",
+      question: "example",
+      language: "en",
+      pillars: ["education", "health_facilities"],
+    });
+  });
+
   it("ships a bilingual Dubai Font explorer driven by the REST contract", () => {
     const html = toolExplorerPage();
     expect(html).toContain("MCP Tools Explorer");

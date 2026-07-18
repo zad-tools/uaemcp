@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.83.0 - 2026-07-18
+
+- Reject unknown arguments across every MCP tool instead of silently stripping them, including the reported `indicator` filter case.
+- Added a discoverable Evidence Dossier pillar catalogue, product mappings, valid examples and explicit transient-question privacy metadata.
+- Added source-preserving health-series quality flags for scale shifts and relative outliers; flagged facts now carry machine-readable and bilingual warnings in evidence dossiers.
+- Made health-indicator MCP responses compact and paginated by default while retaining complete raw series through `compact=false`.
+
 ## 1.82.0 - 2026-07-18
 
 - Added Schema 2.1 tool contracts with output envelopes, stability, deprecation, idempotency, side-effect and authorization metadata.

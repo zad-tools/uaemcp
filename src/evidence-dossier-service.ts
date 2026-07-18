@@ -83,11 +83,19 @@ async function healthIndicatorsPillar(fetcher: Fetcher, limit: number, query?: s
   const loaded = await loadHealthIndicators(fetcher, { limit, query });
   const data = loaded.report;
   const first = data.indicators[0];
+  const latestFlags = first?.quality?.flags.filter((flag) => flag.years.includes(first.latest.year)) ?? [];
+  const flaggedLatest = latestFlags.length > 0;
+  const qualityLimitations = flaggedLatest && first ? [localized(
+    `The raw ${first.latest.year} value ${first.latest.value} for ${first.name} is flagged as a relative outlier or scale inconsistency; verify the official source before interpretation.`,
+    `القيمة الخام ${first.latest.value} لعام ${first.latest.year} للمؤشر ${first.name} مُعلّمة كقيمة شاذة نسبيًا أو عدم اتساق في المقياس؛ يجب مراجعة المصدر الرسمي قبل التفسير.`,
+  )] : [];
   return {
     id: "health_indicators",
     title: data.title,
     fact: first
-      ? localized(`${first.name}: ${first.latest.value} (${first.latest.year}), preserved on its source-native scale.`, `${first.name}: ${first.latest.value} (${first.latest.year}) بالقيمة الأصلية المنشورة.`)
+      ? flaggedLatest
+        ? localized(`${first.name}: ${first.latest.value} (${first.latest.year}), raw source value — QUALITY WARNING: flagged for verification before interpretation.`, `${first.name}: ${first.latest.value} (${first.latest.year}) قيمة خام من المصدر — تحذير جودة: مُعلّمة للمراجعة قبل التفسير.`)
+        : localized(`${first.name}: ${first.latest.value} (${first.latest.year}), preserved on its source-native scale.`, `${first.name}: ${first.latest.value} (${first.latest.year}) بالقيمة الأصلية المنشورة.`)
       : localized("No indicator matched the bounded request.", "لم يطابق أي مؤشر الطلب المحدود."),
     period: data.scope.years.length ? `${data.scope.years[0]}–${data.scope.years.at(-1)}` : null,
     unit: localized("source-native indicator row", "صف مؤشر بقيمته الأصلية"),
@@ -96,11 +104,13 @@ async function healthIndicatorsPillar(fetcher: Fetcher, limit: number, query?: s
     citation: String(loaded.meta.citation),
     fetchedAt: String(loaded.meta.fetched_at),
     delivery: loaded.meta.delivery === "verified_snapshot" ? "verified_snapshot" : "live",
-    limitations: bilingualLimitations(data.limitations, [
+    limitations: [...qualityLimitations, ...bilingualLimitations(data.limitations, [
       "القيم محفوظة بمقاييس المصدر الأصلية، وقد تختلف النسب والقيم المئوية بين المؤشرات أو السنوات.",
       "الملف منشور كتقرير 2024، بينما تنتهي أعمدة السلسلة الزمنية الظاهرة حاليًا في 2023.",
       "لا تستنتج المنصة السببية أو الأهداف الوطنية أو التحسن أو التدهور من هذه الصفوف.",
-    ]),
+      "أعلام الجودة فحوص عامة لكل سلسلة، ولا تستبدل القيم الخام أو تطبّعها.",
+    ])],
+    ...(flaggedLatest ? { quality: { status: "warning" as const, flags: latestFlags.map(({ code, years }) => ({ code, years })) } } : {}),
   };
 }
 

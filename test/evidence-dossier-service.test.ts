@@ -78,6 +78,24 @@ describe("evidence dossier service", () => {
     expect(loaded.data.pillars.find(({ id }) => id === "health_indicators")?.scope.en).toContain("1 of 1");
   });
 
+  it("qualifies a flagged latest health observation without changing its raw value", async () => {
+    const flaggedRows = [{ "Indicator Name": "Population size", "2020": 9_282_410, "2021": 9_557_000, "2022": null, "2023": 10_679 }];
+    const loaded = await loadEvidenceDossier({ pillars: ["education", "health_indicators"], query: "population" }, {
+      fetchHealthIndicatorsRecords: async () => result("mohap_health_core_indicators_2024", flaggedRows),
+    } as any);
+    const health = loaded.data.pillars.find(({ id }) => id === "health_indicators");
+
+    expect(health?.fact.en).toContain("10679");
+    expect(health?.fact.en).toContain("QUALITY WARNING");
+    expect(health?.fact.ar).toContain("تحذير جودة");
+    expect(health?.quality).toEqual({ status: "warning", flags: [{ code: "relative_outlier", years: [2023] }] });
+    expect(health?.limitations).toContainEqual({
+      en: expect.stringContaining("relative outlier"),
+      ar: expect.stringContaining("قيمة شاذة نسبيًا"),
+    });
+    expect(loaded.data.limitations).toContainEqual(expect.objectContaining({ en: expect.stringContaining("relative outlier") }));
+  });
+
   it("loads only the selected two-to-five pillars", async () => {
     let unexpectedCalls = 0;
     const unexpected = async () => { unexpectedCalls += 1; throw new Error("must not load"); };

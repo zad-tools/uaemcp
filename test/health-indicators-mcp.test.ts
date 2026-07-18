@@ -19,17 +19,27 @@ beforeAll(() => {
 afterAll(() => server.stop(true));
 
 describe("MOHAP Health Indicators MCP product", () => {
-  it("matches the REST evidence contract", async () => {
+  it("defaults to a compact payload while retaining explicit full compatibility", async () => {
     const response = await fetch(`${baseUrl}/mcp`, {
       method: "POST",
       headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "uae_health_indicators", arguments: { query: "life", limit: 10 } } }),
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "uae_health_indicators", arguments: { query: "life" } } }),
     });
     const payload = await response.json();
     const mcp = JSON.parse(payload.result.content[0].text);
-    const rest = await fetch(`${baseUrl}/api/v1/health-indicators?q=life&limit=10`).then((result) => result.json());
     expect(response.status).toBe(200);
-    expect(mcp.data).toEqual(rest.data);
+    expect(mcp.data.scope).toMatchObject({ compact: true, offset: 0 });
+    expect(mcp.data.indicators[0]).not.toHaveProperty("series");
     expect(mcp.meta).toMatchObject({ source_id: "mohap_health_core_indicators_2024", returned_records: 1 });
+
+    const fullResponse = await fetch(`${baseUrl}/mcp`, {
+      method: "POST",
+      headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "uae_health_indicators", arguments: { query: "life", compact: false, limit: 10, offset: 0 } } }),
+    });
+    const fullPayload = await fullResponse.json();
+    const full = JSON.parse(fullPayload.result.content[0].text);
+    const rest = await fetch(`${baseUrl}/api/v1/health-indicators?q=life&limit=10`).then((result) => result.json());
+    expect(full.data).toEqual(rest.data);
   });
 });

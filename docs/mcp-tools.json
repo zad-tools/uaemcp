@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.1",
-  "serverVersion": "1.82.0",
+  "serverVersion": "1.83.0",
   "generatedFrom": "runtime_registered_tools",
   "summary": {
     "total": 43,
@@ -193,7 +193,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -553,7 +554,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -830,7 +832,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -1089,8 +1092,12 @@
       "exampleArguments": {
         "left_source": "example",
         "right_source": "example",
-        "left_fields": "example",
-        "right_fields": "example",
+        "left_fields": [
+          "example"
+        ],
+        "right_fields": [
+          "example"
+        ],
         "limit": 100
       },
       "limitations": [
@@ -1113,7 +1120,7 @@
       "name": "uae_evidence_dossier",
       "title": "Evidence Dossier",
       "kind": "read",
-      "description": "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. Keeps periods and units separate, reports unavailable evidence explicitly, and never produces a ranking or composite score.",
+      "description": "Compose two to five official UAE evidence pillars into one bilingual, source-cited dossier. The question is transient and not persisted. Accepted pillar IDs: education, health_facilities, health_indicators, industry, tax_activity. Example: education plus health_facilities. Periods and units remain separate; unavailable evidence is explicit; no ranking or composite score is produced.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1129,7 +1136,8 @@
           "question": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200
+            "maxLength": 200,
+            "description": "Transient research question used only for the current response; not persisted by Evidence Dossier."
           },
           "language": {
             "type": "string",
@@ -1245,7 +1253,10 @@
         "template": "research_dossier",
         "question": "example",
         "language": "en",
-        "pillars": "example",
+        "pillars": [
+          "education",
+          "health_facilities"
+        ],
         "healthFacilitiesLimit": 50
       },
       "limitations": [
@@ -1812,7 +1823,7 @@
       "name": "uae_health_indicators",
       "title": "Health Indicators",
       "kind": "read",
-      "description": "Search official MOHAP health core indicator rows across published year columns. Values are source-native and not silently normalized; the response states mixed ratio/percentage scale and period limitations.",
+      "description": "Search official MOHAP health core indicator rows across published year columns. Returns a compact paginated payload by default; set compact=false for full raw series. Values remain source-native and generic quality flags identify scale shifts or relative outliers without normalization.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1823,7 +1834,16 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 200,
-            "default": 100
+            "default": 12
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "compact": {
+            "type": "boolean",
+            "default": true
           }
         },
         "additionalProperties": false,
@@ -1875,7 +1895,9 @@
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "exampleArguments": {
-        "limit": 100
+        "limit": 12,
+        "offset": 0,
+        "compact": true
       },
       "limitations": [
         "Results remain bounded by the cited source, its availability and its published coverage."
@@ -2688,7 +2710,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -3713,7 +3736,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -4012,7 +4036,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",
@@ -4084,7 +4109,8 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "outputSchema": {
         "type": "object",

@@ -25,6 +25,12 @@ describe("Health Indicators REST contract", () => {
     expect(response?.status).toBe(200);
     expect(payload.meta).toMatchObject({ delivery: "verified_snapshot", returned_records: 111 });
     expect(payload.data.source).toMatchObject({ delivery: "verified_snapshot", sha256: "d44fc92682b2bc5b76a98fcf53578c9f4ebc4d39acb3c06aca12291673f7a3d0" });
+    expect(payload.data.indicators[0]).toMatchObject({
+      name: "Population size",
+      latest: { year: 2023, value: 10_679 },
+      quality: { flags: [expect.objectContaining({ code: "relative_outlier", years: [2023] })] },
+    });
+    expect(payload.data.indicators[0].series.at(-1)).toEqual({ year: 2023, value: 10_679 });
     expect(payload.data.limitations.at(-1)).toContain("verified snapshot");
   });
 });

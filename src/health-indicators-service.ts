@@ -12,9 +12,16 @@ export interface LoadedHealthIndicators {
   meta: Record<string, unknown>;
 }
 
+export interface HealthIndicatorLoadOptions {
+  query?: string;
+  limit: number;
+  offset?: number;
+  compact?: boolean;
+}
+
 export async function loadHealthIndicators(
   fetcher: HealthFetcher,
-  options: { query?: string; limit: number },
+  options: HealthIndicatorLoadOptions,
 ): Promise<LoadedHealthIndicators> {
   const source = REGISTRY.get("mohap_health_core_indicators_2024");
   if (fetcher === fetchResult && Date.now() < upstreamRetryAt) {
@@ -44,7 +51,7 @@ export async function loadHealthIndicators(
   }
 }
 
-function snapshotHealthIndicators(sourceId: string, options: { query?: string; limit: number }, upstreamError: string): LoadedHealthIndicators {
+function snapshotHealthIndicators(sourceId: string, options: HealthIndicatorLoadOptions, upstreamError: string): LoadedHealthIndicators {
   const records = MOHAP_HEALTH_INDICATOR_SNAPSHOT as unknown as ReadonlyArray<Readonly<Record<string, unknown>>>;
   const report = buildHealthIndicators(records, {
     citation: MOHAP_HEALTH_INDICATOR_SNAPSHOT_META.source,

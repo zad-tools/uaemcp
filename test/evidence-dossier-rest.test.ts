@@ -15,7 +15,12 @@ describe("UAE Evidence Studio REST contract", () => {
     expect(response?.status).toBe(200);
     expect(body.data).toMatchObject({ kind: "uae_evidence_dossier", scope: { pillarsRequested: 2, pillarsAvailable: 2 }, methodology: { compositeScore: false, ranking: false } });
     expect(body.data.pillars.map(({ id }: { id: string }) => id)).toEqual(["education", "health_facilities"]);
-    expect(body.meta).toMatchObject({ stored: false, partial: false, filters: { pillars: ["education", "health_facilities"] } });
+    expect(body.meta).toMatchObject({
+      stored: false,
+      partial: false,
+      filters: { pillars: ["education", "health_facilities"] },
+      question_privacy: { handling: "transient", persisted: false },
+    });
   });
 
   it("rejects unknown fields, identifying payloads and invalid pillar selections", async () => {

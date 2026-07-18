@@ -7,6 +7,12 @@ const rows = [
   { "Indicator Name": "Empty indicator", "2016": null, "2022": null, "2023": null },
 ];
 
+const qualityRows = [
+  { "Indicator Name": "Population size", "2020": 9_282_410, "2021": 9_557_000, "2022": null, "2023": 10_679 },
+  { "Indicator Name": "Mixed percentage scale", "2020": 0.95, "2021": 95, "2022": 0.96, "2023": 96 },
+  { "Indicator Name": "Stable series", "2020": 10, "2021": 11, "2022": 12, "2023": 13 },
+];
+
 describe("MOHAP health indicators", () => {
   it("preserves source-native values as an explicit time series", () => {
     const report = buildHealthIndicators(rows, {
@@ -33,5 +39,31 @@ describe("MOHAP health indicators", () => {
     expect(report.indicators.map((item) => item.name)).toEqual(["Population growth rate"]);
     expect(report.scope.matchedIndicators).toBe(1);
     expect(rows).toEqual(before);
+  });
+
+  it("retains raw values while flagging generic scale shifts and relative outliers", () => {
+    const report = buildHealthIndicators(qualityRows, { citation: "official", fetchedAt: "now" });
+    const population = report.indicators.find(({ name }) => name === "Population size");
+    const mixed = report.indicators.find(({ name }) => name === "Mixed percentage scale");
+
+    expect(population?.latest).toEqual({ year: 2023, value: 10_679 });
+    expect(population?.series?.at(-1)).toEqual({ year: 2023, value: 10_679 });
+    expect(population?.quality?.flags).toContainEqual(expect.objectContaining({ code: "relative_outlier", years: [2023] }));
+    expect(mixed?.quality?.flags).toContainEqual(expect.objectContaining({ code: "scale_shift", years: [2020, 2021, 2022, 2023] }));
+    expect(report.scope.flaggedIndicators).toBe(2);
+    expect(report.methodology.join(" ")).toContain("never replace or normalize raw values");
+  });
+
+  it("paginates after filtering and supports an opt-in compact response", () => {
+    const full = buildHealthIndicators(qualityRows, { citation: "official", fetchedAt: "now", offset: 1, limit: 1 });
+    expect(full.indicators).toHaveLength(1);
+    expect(full.indicators[0]?.name).toBe("Mixed percentage scale");
+    expect(full.scope).toMatchObject({ offset: 1, returnedIndicators: 1, hasMore: true, nextOffset: 2 });
+    expect(full.indicators[0]?.series).toBeArray();
+
+    const compact = buildHealthIndicators(qualityRows, { citation: "official", fetchedAt: "now", compact: true, limit: 2 });
+    expect(compact.scope).toMatchObject({ offset: 0, returnedIndicators: 2, compact: true, hasMore: true, nextOffset: 2 });
+    expect(compact.indicators[0]).toMatchObject({ name: "Population size", latest: { year: 2023, value: 10_679 } });
+    expect(compact.indicators[0]).not.toHaveProperty("series");
   });
 });
