@@ -116,5 +116,13 @@ export async function getBytes(url: string, params?: Record<string, unknown>, ti
 }
 
 export async function probe(url: string, timeoutMs?: number): Promise<void> {
-  await request(url, { timeoutMs });
+  // A probe checks reachability only and never reads the body, so a document
+  // larger than the response cap (e.g. an official PDF) is proof the source is
+  // up — not a failure. Only status/transport errors should fail a probe.
+  try {
+    await request(url, { timeoutMs });
+  } catch (err) {
+    if (err instanceof SourceUnavailable && err.message.startsWith("source response too large")) return;
+    throw err;
+  }
 }
