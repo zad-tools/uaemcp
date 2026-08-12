@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.85.0 - 2026-08-12
+
+- Added the optional Open Emirates Pro layer: stateless HMAC API keys (`oe_…`),
+  a SaaSpress-metered monthly quota (`mcp_calls`), and a `/pro/usage` account
+  endpoint that is never billed. Fully disabled unless `SAASPRESS_*` and
+  `UAEMCP_PRO_KEY_SECRET` are configured — the free public behavior is unchanged.
+- Usage is counted locally in SQLite (restart-safe) and reported to the control
+  plane in idempotent batches, so control-plane outages can neither lose nor
+  double-bill calls. Entitlements are cached for 60s per subject.
+- Keyless requests keep the existing per-IP rate limit; valid keys bypass it and
+  are metered on successful responses only.
+
 ## 1.84.0 - 2026-07-18
 
 - Added `uae_discover`, `uae_query` and `uae_analyze` as three agent-first facades while preserving all specialist MCP tools.

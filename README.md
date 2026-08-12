@@ -281,6 +281,22 @@ claim.
 }
 ```
 
+### Open Emirates Pro (hosted plan)
+
+The public endpoint above is free with a per-IP rate limit — it always stays that
+way. **Open Emirates Pro** adds a personal API key with a metered monthly quota
+(10,000 calls/month) and no per-IP throttling, for agents and applications in
+production. The code stays MIT: self-hosting always remains free and unmetered.
+
+- Subscribe: [zadstack.com — Open Emirates Pro](https://zadstack.com/product/open-emirates-pro-10000-%d8%a7%d8%b3%d8%aa%d8%b9%d9%84%d8%a7%d9%85-%d8%b4%d9%87%d8%b1%d9%8a%d8%a7/)
+- Your key and live usage: [zadstack.com/my-key](https://zadstack.com/my-key/)
+- Use it by sending `X-API-Key: oe_…` on `/mcp` and every REST route; check
+  usage anytime via `GET /pro/usage` (never billed).
+
+Self-hosters can run the same metering layer against their own control plane —
+see the `SAASPRESS_*` and `UAEMCP_PRO_*` variables in `.env.example`; leaving
+them unset disables the paid layer entirely.
+
 ## Run with Bun
 
 Requires Bun 1.3 or newer.

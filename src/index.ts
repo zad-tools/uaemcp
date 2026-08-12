@@ -13,6 +13,7 @@ import { completionScript, doctorReport, formatDoctor, helpText, parseCli } from
 import { VERSION } from "./version.js";
 import { healthScanScheduler } from "./health-scheduler.js";
 import { policyWatchScheduler } from "./policy-watch-scheduler.js";
+import { proMetering } from "./pro-metering.js";
 
 const startedAt = Date.now();
 let requestCount = 0;
@@ -74,16 +75,65 @@ export function createFetchHandler(dependencies: RuntimeDependencies = {}): (req
       }
       return new Response(null, { status: 204, headers });
     }
+    // Open Emirates Pro: a valid X-API-Key rides the paid quota (no IP rate limit);
+    // no key keeps today's free behavior. Unconfigured pro layer = everything free.
+    let proSubject: string | null = null;
     if (!["/health", "/healthz", "/ready", "/readyz", "/metrics"].includes(path)) {
-      const rate = checkRateLimit(request);
-      if (!rate.allowed) {
+      const metering = proMetering();
+      const apiKey = request.headers.get("x-api-key");
+      const gate = metering ? await metering.gate(apiKey) : ({ kind: "free" } as const);
+      if (gate.kind === "invalid_key") {
         return responseHeaders(request, json({
-          ok: false,
-          data: null,
-          error: { code: "RATE_LIMITED", message: "Too many requests" },
-          meta: { retryAfter: rate.retryAfter },
-        }, 429));
+          ok: false, data: null,
+          error: { code: "INVALID_KEY", message: "Unknown or malformed API key" },
+          meta: {},
+        }, 401));
       }
+      if (gate.kind === "denied") {
+        const quota = gate.reason === "limit_exceeded";
+        return responseHeaders(request, json({
+          ok: false, data: null,
+          error: {
+            code: quota ? "QUOTA_EXCEEDED" : "NO_ACTIVE_PLAN",
+            message: quota
+              ? "Monthly quota exhausted — upgrade or wait for the next cycle"
+              : "No active Open Emirates Pro plan for this key",
+          },
+          meta: { used: gate.used, plans: "https://zadstack.com/agent-tasks/" },
+        }, 402));
+      }
+      if (gate.kind === "allowed") {
+        proSubject = gate.subject;
+      } else {
+        const rate = checkRateLimit(request);
+        if (!rate.allowed) {
+          return responseHeaders(request, json({
+            ok: false,
+            data: null,
+            error: { code: "RATE_LIMITED", message: "Too many requests" },
+            meta: { retryAfter: rate.retryAfter },
+          }, 429));
+        }
+      }
+    }
+    const metered = (response: Response): Response => {
+      if (proSubject && response.status < 400) proMetering()?.record(proSubject);
+      return responseHeaders(request, response);
+    };
+    // Account status for the customer portal — never billed, requires a valid key.
+    if (path === "/pro/usage") {
+      if (!proSubject) {
+        return responseHeaders(request, json({
+          ok: false, data: null,
+          error: { code: "INVALID_KEY", message: "A valid X-API-Key is required" }, meta: {},
+        }, 401));
+      }
+      const metering = proMetering();
+      return responseHeaders(request, json({
+        ok: true,
+        data: { subject: proSubject, used: metering?.usedThisMonth(proSubject) ?? 0 },
+        error: null, meta: {},
+      }));
     }
 
     if (path === "/health" || path === "/healthz") {
@@ -109,7 +159,7 @@ export function createFetchHandler(dependencies: RuntimeDependencies = {}): (req
       ));
     }
     const restResponse = await handleRest(request, dependencies);
-    if (restResponse) return responseHeaders(request, restResponse);
+    if (restResponse) return metered(restResponse);
     if (path !== "/mcp") return responseHeaders(request, new Response("not found", { status: 404 }));
 
     const transport = new WebStandardStreamableHTTPServerTransport({
@@ -120,7 +170,7 @@ export function createFetchHandler(dependencies: RuntimeDependencies = {}): (req
     await server.connect(transport);
 
     try {
-      return responseHeaders(request, await transport.handleRequest(request));
+      return metered(await transport.handleRequest(request));
     } catch (error) {
       await transport.close();
       await server.close();
