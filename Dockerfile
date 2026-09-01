@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.14-slim AS install
+FROM oven/bun:1.4.0-slim AS install
 
 WORKDIR /app
 COPY package.json bun.lock ./
@@ -7,7 +7,7 @@ COPY packages/sdk/package.json ./packages/sdk/package.json
 COPY packages/mcp/package.json ./packages/mcp/package.json
 RUN bun install --frozen-lockfile --production
 
-FROM oven/bun:1.3.14-slim
+FROM oven/bun:1.4.0-slim
 
 ENV UAEMCP_HOST=0.0.0.0 \
     UAEMCP_PORT=8080 \
