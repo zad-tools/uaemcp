@@ -70,7 +70,7 @@
     "@modelcontextprotocol/sdk": "1.30.0",
     "fflate": "0.8.3",
     "ipaddr.js": "2.5.0",
-    "zod": "3.25.76",
+    "zod": "4.5.4",
     "zod-to-json-schema": "3.25.2"
   },
   "devDependencies": {
