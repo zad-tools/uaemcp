@@ -65,9 +65,9 @@
     "prepublishOnly": "bun run check && bun run benchmark"
   },
   "dependencies": {
-    "@maplibre/geojson-vt": "6.1.1",
+    "@maplibre/geojson-vt": "6.1.2",
     "@maplibre/vt-pbf": "4.3.2",
-    "@modelcontextprotocol/sdk": "1.30.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "fflate": "0.8.3",
     "ipaddr.js": "2.5.0",
     "zod": "3.25.76",
